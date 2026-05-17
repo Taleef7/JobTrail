@@ -54,3 +54,6 @@ coverage/
 # Temporary
 .tmp/
 temp/
+
+# Screenshots
+*.png
