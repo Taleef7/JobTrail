@@ -12,8 +12,9 @@ import { getTimeEntriesByJobId, deleteTimeEntry } from '../../src/data/local/tim
 import { getExtractionResultsByJobId } from '../../src/data/local/extractionRepository';
 import { getPhotosByJobId, deletePhoto } from '../../src/data/local/photoRepository';
 import { getApprovalsByJobId, deleteApproval } from '../../src/data/local/customerApprovalRepository';
+import { getVoiceNotesByJobId, deleteVoiceNote } from '../../src/data/local/voiceNoteRepository';
 import { statusColor, formatDate } from '../../src/utils/formatting';
-import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset, CustomerApproval } from '../../src/domain/types';
+import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset, CustomerApproval, VoiceNote } from '../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 function syncDotColor(status: string): string {
@@ -39,6 +40,7 @@ export default function JobDetailScreen() {
   const [extractions, setExtractions] = useState<AiExtractionResult[]>([]);
   const [photos, setPhotos] = useState<PhotoAsset[]>([]);
   const [approvals, setApprovals] = useState<CustomerApproval[]>([]);
+  const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -53,6 +55,7 @@ export default function JobDetailScreen() {
         getExtractionResultsByJobId(db, id),
       ]);
       const a = await getApprovalsByJobId(db, id);
+      const vn = await getVoiceNotesByJobId(db, id);
       setJob(j);
       setNotes(n);
       setPhotos(p);
@@ -60,6 +63,7 @@ export default function JobDetailScreen() {
       setTimeEntries(t);
       setExtractions(e);
       setApprovals(a);
+      setVoiceNotes(vn);
     } catch (error) {
       console.error('Failed to load job:', error);
     } finally {
@@ -165,6 +169,20 @@ export default function JobDetailScreen() {
         style: 'destructive',
         onPress: async () => {
           await deleteApproval(db, approvalId);
+          loadData();
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteVoiceNote = (voiceNoteId: string) => {
+    Alert.alert('Delete Voice Note', 'Delete this voice note?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteVoiceNote(db, voiceNoteId);
           loadData();
         },
       },
@@ -394,6 +412,41 @@ export default function JobDetailScreen() {
             })}
           </View>
         )}
+      </View>
+
+      {/* Voice Notes */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderLeft}>
+            <Ionicons name="mic-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Voice Notes{voiceNotes.length > 0 ? ` · ${voiceNotes.length}` : ''}</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push(`/job/${id}/voice`)}>
+            <Ionicons name="add-circle-outline" size={22} color={Colors.primary} />
+          </TouchableOpacity>
+        </View>
+        {voiceNotes.length === 0 && (
+          <Text style={styles.emptySection}>No voice notes yet</Text>
+        )}
+        {voiceNotes.map((vn) => (
+          <View key={vn.id} style={styles.itemCard}>
+            <View style={styles.itemRow}>
+              <View style={styles.itemContent}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Ionicons name="mic" size={14} color={Colors.primary} />
+                  <Text style={styles.itemText}>
+                    {vn.durationSeconds ? `${Math.floor(vn.durationSeconds / 60)}:${(vn.durationSeconds % 60).toString().padStart(2, '0')}` : 'Recording'}
+                  </Text>
+                </View>
+                {vn.transcript && <Text style={styles.itemMeta} numberOfLines={2}>{vn.transcript}</Text>}
+                <Text style={styles.itemMeta}>{formatDate(vn.createdAt)}</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleDeleteVoiceNote(vn.id)} style={styles.itemDeleteButton}>
+                <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
       </View>
 
       {/* Customer Approval */}

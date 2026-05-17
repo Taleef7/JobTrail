@@ -234,3 +234,17 @@ export type CustomerApproval = {
   deletedAt: string | null;
   syncStatus: SyncStatus;
 };
+
+export type VoiceNote = {
+  id: string;
+  jobId: string;
+  userId: string;
+  localAudioUri: string | null;
+  durationSeconds: number | null;
+  transcript: string | null;
+  transcriptSource: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  syncStatus: SyncStatus;
+};

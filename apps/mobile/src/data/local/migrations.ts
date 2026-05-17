@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 4;
+const DATABASE_VERSION = 5;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
   const result = await db.getFirstAsync<{ user_version: number }>(
@@ -195,6 +195,24 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
         signatureRemoteUrl TEXT,
         approvedAt TEXT,
         approvalNotes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        deletedAt TEXT,
+        syncStatus TEXT NOT NULL DEFAULT 'local_only'
+      );
+    `);
+  }
+
+  if (currentVersion < 5) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS voice_notes (
+        id TEXT PRIMARY KEY,
+        jobId TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        localAudioUri TEXT,
+        durationSeconds INTEGER,
+        transcript TEXT,
+        transcriptSource TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         deletedAt TEXT,

@@ -11,6 +11,7 @@ import { getUserById, updateUser } from '../local/userRepository';
 import { getClientById, upsertClient } from '../local/clientRepository';
 import { getSiteById, upsertSite } from '../local/siteRepository';
 import { getApprovalById, upsertApproval } from '../local/customerApprovalRepository';
+import { getVoiceNoteById, upsertVoiceNote } from '../local/voiceNoteRepository';
 import { uploadPhoto } from './storageService';
 
 async function checkFirebase(): Promise<boolean> {
@@ -262,6 +263,31 @@ export async function processSyncQueue(
           }
           break;
         }
+        case 'voice_note': {
+          const voiceNote = await getVoiceNoteById(localDb, op.entityId);
+          if (!voiceNote) {
+            await updateSyncOperation(localDb, op.id, { status: 'synced', processedAt: new Date().toISOString() });
+            synced++;
+            break;
+          }
+          if (op.operationType === 'delete') {
+            await deleteDoc(doc(db, `users/${userId}/jobs/${voiceNote.jobId}/voiceNotes/${op.entityId}`));
+          } else {
+            await setDoc(doc(db, `users/${userId}/jobs/${voiceNote.jobId}/voiceNotes/${op.entityId}`), {
+              id: voiceNote.id,
+              jobId: voiceNote.jobId,
+              localAudioUri: voiceNote.localAudioUri,
+              durationSeconds: voiceNote.durationSeconds,
+              transcript: voiceNote.transcript,
+              transcriptSource: voiceNote.transcriptSource,
+              createdAt: voiceNote.createdAt,
+              updatedAt: voiceNote.updatedAt,
+              ownerUid: userId,
+              localId: voiceNote.id,
+            });
+          }
+          break;
+        }
       }
 
       await updateSyncOperation(localDb, op.id, {
@@ -509,7 +535,37 @@ export async function pullFromCloud(
       console.warn('Failed to pull customer approvals:', e);
     }
 
-    // 7. Update lastSyncedAt on the local user record
+    // 7. Pull voice notes (subcollection under jobs)
+    try {
+      const jobsSnapshot = await getDocs(collection(db, `users/${userId}/jobs`));
+      for (const jobDoc of jobsSnapshot.docs) {
+        try {
+          const voiceNotesSnapshot = await getDocs(collection(db, `users/${userId}/jobs/${jobDoc.id}/voiceNotes`));
+          for (const vnDoc of voiceNotesSnapshot.docs) {
+            const vnData = vnDoc.data();
+            await upsertVoiceNote(localDb, {
+              id: vnData.id,
+              jobId: vnData.jobId ?? jobDoc.id,
+              userId: localUserId,
+              localAudioUri: vnData.localAudioUri ?? null,
+              durationSeconds: vnData.durationSeconds ?? null,
+              transcript: vnData.transcript ?? null,
+              transcriptSource: vnData.transcriptSource ?? null,
+              createdAt: vnData.createdAt ?? new Date().toISOString(),
+              updatedAt: vnData.updatedAt ?? new Date().toISOString(),
+              deletedAt: vnData.deletedAt ?? null,
+            });
+            pulled++;
+          }
+        } catch (e) {
+          console.warn(`Failed to pull voice notes for job ${jobDoc.id}:`, e);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to pull voice notes:', e);
+    }
+
+    // 8. Update lastSyncedAt on the local user record
     const localUser = await getUserById(localDb, localUserId);
     if (localUser) {
       await updateUser(localDb, localUserId, { lastSyncedAt: new Date().toISOString() });

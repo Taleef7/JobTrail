@@ -174,6 +174,19 @@ async function initMockDb(): Promise<MockSQLiteDatabase> {
       deletedAt TEXT,
       syncStatus TEXT NOT NULL DEFAULT 'local_only'
     );
+    CREATE TABLE IF NOT EXISTS voice_notes (
+      id TEXT PRIMARY KEY,
+      jobId TEXT NOT NULL,
+      userId TEXT NOT NULL,
+      localAudioUri TEXT,
+      durationSeconds INTEGER,
+      transcript TEXT,
+      transcriptSource TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      deletedAt TEXT,
+      syncStatus TEXT NOT NULL DEFAULT 'local_only'
+    );
   `);
   return db;
 }
