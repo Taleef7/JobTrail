@@ -40,7 +40,7 @@ jobs:
       - run: npx eslint . --ext .ts,.tsx
 
   build-check:
-    name: Expo Export
+    name: Metro Bundle
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,7 +53,9 @@ jobs:
           cache: npm
           cache-dependency-path: apps/mobile/package-lock.json
       - run: npm ci
-      - run: npx expo export --platform web --output-dir dist
+      # Export for iOS (creates JS bundle, works on Linux).
+      # Skips web export because expo-sqlite WASM is not available in CI.
+      - run: npx expo export --platform ios --output-dir dist
         env:
           EXPO_PUBLIC_FIREBASE_API_KEY: ${{ vars.EXPO_PUBLIC_FIREBASE_API_KEY }}
           EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
