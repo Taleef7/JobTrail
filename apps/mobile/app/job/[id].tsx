@@ -214,10 +214,37 @@ export default function JobDetailScreen() {
         ) : (
           <Text style={styles.emptySection}>Add a note first to run extraction</Text>
         )}
-        {extractions.filter((e) => e.acceptedAt).length > 0 && (
-          <Text style={styles.acceptedInfo}>
-            {extractions.filter((e) => e.acceptedAt).length} extraction(s) accepted
-          </Text>
+        {extractions.length > 0 && (
+          <View style={styles.extractionHistory}>
+            <Text style={styles.extractionHistoryTitle}>Extraction History</Text>
+            {extractions.slice(0, 5).map((ext) => {
+              let extracted: any = {};
+              try { extracted = JSON.parse(ext.extractedJson); } catch {}
+              const status = ext.acceptedAt ? 'Accepted' : ext.rejectedAt ? 'Rejected' : 'Pending';
+              const statusColor = ext.acceptedAt ? Colors.secondary : ext.rejectedAt ? Colors.accent : Colors.textTertiary;
+              const fields: string[] = [];
+              if (extracted.jobType) fields.push(`type: ${extracted.jobType}`);
+              if (extracted.materials?.length) fields.push(`${extracted.materials.length} material(s)`);
+              if (extracted.durationMinutes) fields.push(`${extracted.durationMinutes} min`);
+              if (extracted.workPerformed?.length) fields.push(`${extracted.workPerformed.length} task(s)`);
+
+              return (
+                <View key={ext.id} style={styles.extractionItem}>
+                  <View style={styles.extractionHeader}>
+                    <Text style={[styles.extractionStatus, { color: statusColor }]}>{status}</Text>
+                    <Text style={styles.extractionMeta}>{ext.provider.replace('_', ' ')}</Text>
+                    {ext.confidence !== null && (
+                      <Text style={styles.extractionConfidence}>{Math.round(ext.confidence * 100)}%</Text>
+                    )}
+                  </View>
+                  {fields.length > 0 && (
+                    <Text style={styles.extractionFields}>{fields.join(' · ')}</Text>
+                  )}
+                  <Text style={styles.extractionDate}>{formatDate(ext.createdAt)}</Text>
+                </View>
+              );
+            })}
+          </View>
         )}
       </View>
 
@@ -262,6 +289,15 @@ const styles = StyleSheet.create({
   extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center' },
   extractButtonText: { color: Colors.textInverse, fontWeight: Typography.fontWeight.semibold as any, fontSize: Typography.fontSize.md },
   acceptedInfo: { fontSize: Typography.fontSize.sm, color: Colors.secondary, marginTop: Spacing.sm },
+  extractionHistory: { marginTop: Spacing.md },
+  extractionHistoryTitle: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, fontWeight: Typography.fontWeight.medium as any, marginBottom: Spacing.sm },
+  extractionItem: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.sm, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.border },
+  extractionHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: 2 },
+  extractionStatus: { fontSize: Typography.fontSize.xs, fontWeight: Typography.fontWeight.semibold as any },
+  extractionMeta: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary },
+  extractionConfidence: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginLeft: 'auto' as any },
+  extractionFields: { fontSize: Typography.fontSize.sm, color: Colors.text, marginTop: 2 },
+  extractionDate: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 1 },
   reportButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center' },
   reportButtonText: { color: Colors.textInverse, fontWeight: Typography.fontWeight.semibold as any, fontSize: Typography.fontSize.lg },
   photoCard: { marginRight: Spacing.sm, width: 120 },
