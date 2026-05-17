@@ -365,3 +365,87 @@ npx expo start --web
 - Sync engine uses last-write-wins conflict resolution
 - No push notifications
 - `userId` is still hardcoded as `'local_user'` in photo creation (pending user context integration)
+
+---
+
+## Milestone C Status: COMPLETE ✅
+
+### What was implemented
+
+**Report sharing:**
+- Share Report button using React Native's built-in `Share` API
+- Formatted plain-text report output (compatible with email, messaging, notes)
+- Generates full report text including job info, work performed, materials, time, follow-up
+
+**Improved report preview:**
+- Customer-visible summary section when `job.customerVisibleSummary` is set
+- More polished layout with consistent styling
+
+**AI extraction history:**
+- Full extraction history section in job detail screen (shows last 5 extractions)
+- Each extraction shows: status (Accepted/Rejected/Pending), provider name, confidence %, extracted fields summary, and timestamp
+- Color-coded status indicators (green = accepted, red = rejected, gray = pending)
+
+### How to test
+
+**Test share:**
+1. Open any job's report preview
+2. Tap "Share Report"
+3. System share sheet opens with formatted text report
+
+**Test extraction history:**
+1. Create a job and add a note
+2. Run extraction multiple times
+3. Accept or reject some results
+4. Job detail shows history of all extractions with status
+
+### Known limitations (from Milestone C)
+
+- Share outputs plain text only (no PDF)
+- No cloud PDF generation
+- Extraction history capped at 5 most recent results
+
+---
+
+## UI/UX Overhaul Status: COMPLETE ✅
+
+### What was improved
+
+**Design system:**
+- Added `Elevation` tokens (none/low/medium/high) for consistent shadows across all screens
+- Increased border radii (4→6, 8→10, 12→14, 16→20) for a more modern feel
+- All shadow values now come from a single source of truth
+
+**Job list screen:**
+- Empty state now shows 📋 icon with message
+- Job cards use consistent `Elevation.low` shadow
+- FAB uses `Elevation.high`
+
+**Form screens (create job, note, material, time):**
+- Helper text below complex inputs for better guidance
+- `autoCapitalize` and `autoCorrect` configured per input type
+- Submit buttons use elevation with proper disabled state
+- Scroll content has proper bottom padding for keyboard avoidance
+
+**Job detail screen:**
+- Sync status shows colored dots (green=synced, yellow=pending, red=failed)
+- All item cards use consistent elevation
+- Status button active state has elevation feedback
+
+**Extract screen:**
+- Confidence percentage now shows a visual bar indicator (color-coded)
+- Suggestion cards use elevation
+- Improved checkbox styling
+
+**Report preview:**
+- Report header has surface background with elevation
+- Section dividers are more subtle
+- Share button uses elevation
+
+**Auth screens:**
+- Form content wrapped in card container with surface bg and elevation
+- Sign-in and Google buttons use elevation
+
+### Files changed
+
+`src/theme/colors.ts`, `app/index.tsx`, `app/job/create.tsx`, `app/job/[id].tsx`, `app/job/[id]/note.tsx`, `app/job/[id]/material.tsx`, `app/job/[id]/time.tsx`, `app/job/[id]/extract.tsx`, `app/job/[id]/report.tsx`, `app/auth/login.tsx`, `app/auth/signup.tsx`
