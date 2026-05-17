@@ -21,12 +21,14 @@ export function statusColor(status: string): string {
  */
 export function formatDate(iso: string, style: 'short' | 'long' = 'short'): string {
   try {
+    const date = new Date(iso);
+    if (isNaN(date.getTime())) return iso;
     if (style === 'long') {
-      return new Date(iso).toLocaleDateString('en-US', {
+      return date.toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
       });
     }
-    return new Date(iso).toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   } catch {
