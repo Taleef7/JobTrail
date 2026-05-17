@@ -12,11 +12,17 @@ import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { RuleBasedAiProvider } from '../../../src/ai/RuleBasedAiProvider';
 import { CloudAiProvider } from '../../../src/ai/CloudAiProvider';
 import type { Job, JobNote, JobExtractionResult } from '../../../src/domain/types';
-import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
 type AiMode = 'rule' | 'cloud';
+
+function confidenceColor(confidence: number): string {
+  if (confidence >= 0.8) return Colors.secondary;
+  if (confidence >= 0.5) return Colors.accent;
+  return Colors.danger;
+}
 
 export default function ExtractScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -229,6 +235,9 @@ export default function ExtractScreen() {
           <Text style={styles.confidence}>
             Confidence: {Math.round((extractionResult.confidence ?? 0) * 100)}%
           </Text>
+          <View style={styles.confidenceBarTrack}>
+            <View style={[styles.confidenceBarFill, { width: `${Math.round((extractionResult.confidence ?? 0) * 100)}%`, backgroundColor: confidenceColor(extractionResult.confidence ?? 0) }]} />
+          </View>
 
           {/* Job Type */}
           {extractionResult.jobType && (
@@ -369,20 +378,20 @@ const styles = StyleSheet.create({
   title: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.text, marginBottom: Spacing.md },
   description: { fontSize: Typography.fontSize.md, color: Colors.textSecondary, marginBottom: Spacing.lg, lineHeight: 22 },
   notePreview: { fontSize: Typography.fontSize.md, color: Colors.text, backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, marginBottom: Spacing.lg, lineHeight: 22 },
-  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center' },
+  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', ...Elevation.low },
   extractButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
   resultsSection: { marginTop: Spacing.md },
   confidence: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginBottom: Spacing.lg },
-  suggestionCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.border },
+  suggestionCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.low },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start' },
-  checkbox: { width: 24, height: 24, borderRadius: BorderRadius.sm, borderWidth: 2, borderColor: Colors.border, marginRight: Spacing.md, justifyContent: 'center', alignItems: 'center' },
+  checkbox: { width: 24, height: 24, borderRadius: BorderRadius.sm, borderWidth: 2, borderColor: Colors.border, marginRight: Spacing.md, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.surface },
   checkboxChecked: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   checkmark: { color: Colors.textInverse, fontSize: 14, fontWeight: '700' as any },
   suggestionContent: { flex: 1 },
   suggestionLabel: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, fontWeight: Typography.fontWeight.medium as any, marginBottom: 2 },
   suggestionValue: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 22 },
   missingValue: { fontSize: Typography.fontSize.sm, color: Colors.accent, lineHeight: 20 },
-  applyButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.lg },
+  applyButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.lg, ...Elevation.medium },
   applyButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
   buttonDisabled: { opacity: 0.6 },
   reRunButton: { marginTop: Spacing.md, padding: Spacing.md, alignItems: 'center' },
@@ -397,4 +406,6 @@ const styles = StyleSheet.create({
   providerChipTextActive: { color: Colors.textInverse },
   providerChipTextDisabled: { color: Colors.textTertiary },
   providerHint: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: Spacing.xs, lineHeight: 16 },
+  confidenceBarTrack: { height: 6, borderRadius: 3, backgroundColor: Colors.surfaceSecondary, marginBottom: Spacing.lg, overflow: 'hidden' as const },
+  confidenceBarFill: { height: 6, borderRadius: 3 },
 });

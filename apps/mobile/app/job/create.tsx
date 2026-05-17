@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createJob } from '../../src/data/local/jobRepository';
 import { useDatabase } from '../../src/data/local/DatabaseProvider';
 import { showAlert } from '../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 export default function CreateJobScreen() {
   const db = useDatabase();
@@ -50,6 +50,8 @@ export default function CreateJobScreen() {
             value={title}
             onChangeText={setTitle}
             autoFocus
+            autoCapitalize="sentences"
+            autoCorrect={true}
           />
         </View>
 
@@ -60,6 +62,8 @@ export default function CreateJobScreen() {
             placeholder="e.g., plumbing, electrical, cleaning"
             value={jobType}
             onChangeText={setJobType}
+            autoCapitalize="none"
+            autoCorrect={false}
           />
         </View>
 
@@ -73,7 +77,10 @@ export default function CreateJobScreen() {
             multiline
             numberOfLines={4}
             textAlignVertical="top"
+            autoCapitalize="sentences"
+            autoCorrect={true}
           />
+          <Text style={styles.helperText}>Describe the job, what you did, materials used, time spent...</Text>
         </View>
 
         <TouchableOpacity
@@ -92,7 +99,7 @@ export default function CreateJobScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg },
+  scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   section: { marginBottom: Spacing.lg },
   label: {
     fontSize: Typography.fontSize.md,
@@ -118,12 +125,17 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
     alignItems: 'center',
-    marginTop: Spacing.sm,
+    marginTop: Spacing.md,
+    ...Elevation.low,
   },
-  saveButtonDisabled: { opacity: 0.6 },
+  saveButtonDisabled: {
+    opacity: 0.5,
+    ...Elevation.none,
+  },
   saveButtonText: {
     color: Colors.textInverse,
     fontSize: Typography.fontSize.lg,
-    fontWeight: Typography.fontWeight.semibold as any,
+    fontWeight: '600' as const,
   },
+  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

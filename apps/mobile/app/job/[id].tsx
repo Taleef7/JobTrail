@@ -11,7 +11,18 @@ import { getExtractionResultsByJobId } from '../../src/data/local/extractionRepo
 import { getPhotosByJobId } from '../../src/data/local/photoRepository';
 import { statusColor, formatDate } from '../../src/utils/formatting';
 import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset } from '../../src/domain/types';
-import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
+
+function syncDotColor(status: string): string {
+  switch (status) {
+    case 'synced': return Colors.syncSynced;
+    case 'pending': return Colors.syncPending;
+    case 'syncing': return Colors.syncSyncing;
+    case 'failed': return Colors.syncFailed;
+    case 'conflict': return Colors.syncConflict;
+    default: return Colors.syncLocalOnly;
+  }
+}
 
 export default function JobDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -91,9 +102,12 @@ export default function JobDetailScreen() {
           </View>
           {job.jobType && <Text style={styles.jobType}>{job.jobType}</Text>}
           {job.syncStatus && (
-            <Text style={styles.syncStatusText}>
-              Sync: {job.syncStatus.replace('_', ' ')}
-            </Text>
+            <View style={styles.syncStatusRow}>
+              <View style={[styles.syncDot, { backgroundColor: syncDotColor(job.syncStatus) }]} />
+              <Text style={styles.syncStatusText}>
+                Sync: {job.syncStatus.replace('_', ' ')}
+              </Text>
+            </View>
           )}
         </View>
       </View>
@@ -272,33 +286,35 @@ const styles = StyleSheet.create({
   statusText: { fontSize: Typography.fontSize.xs, color: Colors.textInverse, fontWeight: Typography.fontWeight.medium as any, textTransform: 'uppercase' as any },
   jobType: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginLeft: Spacing.sm },
   syncStatusText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 2 },
+  syncStatusRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  syncDot: { width: 8, height: 8, borderRadius: 4 },
   section: { marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.sm },
   sectionTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm },
   emptySection: { fontSize: Typography.fontSize.sm, color: Colors.textTertiary, fontStyle: 'italic' as any },
   emptyText: { fontSize: Typography.fontSize.lg, color: Colors.textSecondary },
-  itemCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.border },
+  itemCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.border, ...Elevation.low },
   itemText: { fontSize: Typography.fontSize.md, color: Colors.text },
   itemMeta: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 2 },
   addAction: { fontSize: Typography.fontSize.md, color: Colors.primary, fontWeight: Typography.fontWeight.semibold as any },
   statusButtons: { flexDirection: 'row', gap: Spacing.sm },
   statusButton: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderRadius: BorderRadius.md, backgroundColor: Colors.surfaceSecondary, borderWidth: 1, borderColor: Colors.border },
-  statusButtonActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
+  statusButtonActive: { backgroundColor: Colors.primary, borderColor: Colors.primary, ...Elevation.low },
   statusButtonText: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary },
   statusButtonTextActive: { color: Colors.textInverse },
-  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center' },
+  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.md, alignItems: 'center', ...Elevation.low },
   extractButtonText: { color: Colors.textInverse, fontWeight: Typography.fontWeight.semibold as any, fontSize: Typography.fontSize.md },
   acceptedInfo: { fontSize: Typography.fontSize.sm, color: Colors.secondary, marginTop: Spacing.sm },
   extractionHistory: { marginTop: Spacing.md },
   extractionHistoryTitle: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, fontWeight: Typography.fontWeight.medium as any, marginBottom: Spacing.sm },
-  extractionItem: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.sm, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.border },
+  extractionItem: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.sm, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.border, ...Elevation.low },
   extractionHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: 2 },
   extractionStatus: { fontSize: Typography.fontSize.xs, fontWeight: Typography.fontWeight.semibold as any },
   extractionMeta: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary },
   extractionConfidence: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginLeft: 'auto' as any },
   extractionFields: { fontSize: Typography.fontSize.sm, color: Colors.text, marginTop: 2 },
   extractionDate: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 1 },
-  reportButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center' },
+  reportButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', ...Elevation.medium },
   reportButtonText: { color: Colors.textInverse, fontWeight: Typography.fontWeight.semibold as any, fontSize: Typography.fontSize.lg },
   photoCard: { marginRight: Spacing.sm, width: 120 },
   photoThumb: { width: 120, height: 90, borderRadius: BorderRadius.md, backgroundColor: Colors.surfaceSecondary },

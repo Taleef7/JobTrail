@@ -11,7 +11,7 @@ import { getExtractionResultsByJobId } from '../../../src/data/local/extractionR
 import { getPhotosByJobId } from '../../../src/data/local/photoRepository';
 import { formatDate } from '../../../src/utils/formatting';
 import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset } from '../../../src/domain/types';
-import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 function generateReportText(
   job: Job,
@@ -274,11 +274,11 @@ const styles = StyleSheet.create({
   scrollContent: { padding: Spacing.lg, paddingBottom: 40 },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
   emptyText: { fontSize: Typography.fontSize.lg, color: Colors.textSecondary },
-  reportHeader: { marginBottom: Spacing.lg },
+  reportHeader: { marginBottom: Spacing.lg, backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.lg, ...Elevation.low },
   reportTitle: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.primary, marginBottom: Spacing.xs },
   reportSubtitle: { fontSize: Typography.fontSize.xl, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm },
   reportMeta: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginBottom: 2 },
-  divider: { height: 1, backgroundColor: Colors.border, marginBottom: Spacing.lg },
+  divider: { height: 1, backgroundColor: Colors.border, marginBottom: Spacing.lg, opacity: 0.5 },
   section: { marginBottom: Spacing.xl },
   sectionTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border, paddingBottom: Spacing.xs },
   bulletItem: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 24, marginBottom: 2 },
@@ -295,6 +295,6 @@ const styles = StyleSheet.create({
   photoTypeLabel: { fontSize: Typography.fontSize.xs, color: Colors.primary, fontWeight: '500' as any, marginTop: 2, textTransform: 'uppercase' as any },
   photoCaption: { fontSize: Typography.fontSize.xs, color: Colors.textSecondary, marginTop: 1 },
   customerSummary: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 24, backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.md, fontStyle: 'italic' as any },
-  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.border },
+  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.medium },
   shareButtonText: { color: Colors.text, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
 });

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { showAlert } from '../../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 export default function AddTimeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -48,19 +48,24 @@ export default function AddTimeScreen() {
             onChangeText={setDurationMinutes}
             keyboardType="number-pad"
             autoFocus
+            autoCapitalize="none"
+            autoCorrect={false}
           />
+          <Text style={styles.helperText}>Enter the time spent in minutes</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="What did you work on?"
+            placeholder="What did you work on? Describe the task, progress, or issues..."
             value={description}
             onChangeText={setDescription}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
+            autoCapitalize="sentences"
+            autoCorrect={true}
           />
         </View>
 
@@ -78,12 +83,13 @@ export default function AddTimeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg },
+  scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   section: { marginBottom: Spacing.lg },
   label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text, marginBottom: Spacing.sm },
   input: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: Typography.fontSize.md, color: Colors.text },
   textArea: { minHeight: 80, paddingTop: Spacing.md },
-  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.sm },
-  saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
+  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
+  saveButtonDisabled: { opacity: 0.5, ...Elevation.none },
+  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: '600' as const },
+  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '../../src/context/AuthContext';
 import { showAlert } from '../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -57,62 +57,64 @@ export default function SignupScreen() {
         <Text style={styles.title}>Create Account</Text>
         <Text style={styles.subtitle}>Sign up for JobTrail</Text>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Display Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Your name (optional)"
-            value={displayName}
-            onChangeText={setDisplayName}
-            autoCapitalize="words"
-          />
-        </View>
+        <View style={styles.formCard}>
+          <View style={styles.section}>
+            <Text style={styles.label}>Display Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Your name (optional)"
+              value={displayName}
+              onChangeText={setDisplayName}
+              autoCapitalize="words"
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="email@example.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="email@example.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="At least 6 characters"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="At least 6 characters"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Confirm Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Re-enter your password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+            />
+          </View>
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleSignup}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color={Colors.textInverse} />
-          ) : (
-            <Text style={styles.buttonText}>Create Account</Text>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleSignup}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color={Colors.textInverse} />
+            ) : (
+              <Text style={styles.buttonText}>Create Account</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.linkContainer} onPress={() => router.push('/auth/login')}>
           <Text style={styles.linkText}>Already have an account? Sign In</Text>
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   section: { marginBottom: Spacing.lg },
+  formCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, padding: Spacing.lg, ...Elevation.low },
   label: {
     fontSize: Typography.fontSize.md,
     fontWeight: '500' as const,
@@ -160,6 +163,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     alignItems: 'center',
     marginTop: Spacing.md,
+    ...Elevation.medium,
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: {

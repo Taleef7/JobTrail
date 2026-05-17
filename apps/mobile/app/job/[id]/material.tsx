@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { showAlert } from '../../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 export default function AddMaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,6 +53,8 @@ export default function AddMaterialScreen() {
             value={name}
             onChangeText={setName}
             autoFocus
+            autoCapitalize="words"
+            autoCorrect={true}
           />
         </View>
 
@@ -74,9 +76,12 @@ export default function AddMaterialScreen() {
               placeholder="e.g., kit, each"
               value={unit}
               onChangeText={setUnit}
+              autoCapitalize="none"
+              autoCorrect={false}
             />
           </View>
         </View>
+        <Text style={styles.helperText}>e.g., kit, each, ft, lbs</Text>
 
         <View style={styles.section}>
           <Text style={styles.label}>Unit Cost ($)</Text>
@@ -103,13 +108,14 @@ export default function AddMaterialScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg },
+  scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   section: { marginBottom: Spacing.lg },
   label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text, marginBottom: Spacing.sm },
   input: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: Typography.fontSize.md, color: Colors.text },
   row: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg },
   rowItem: { flex: 1 },
-  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.sm },
-  saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
+  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
+  saveButtonDisabled: { opacity: 0.5, ...Elevation.none },
+  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: '600' as const },
+  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createNote } from '../../../src/data/local/noteRepository';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { showAlert } from '../../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 export default function AddNoteScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -44,6 +44,8 @@ export default function AddNoteScreen() {
           numberOfLines={6}
           textAlignVertical="top"
           autoFocus
+          autoCapitalize="sentences"
+          autoCorrect={true}
         />
 
         <TouchableOpacity
@@ -60,11 +62,12 @@ export default function AddNoteScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg },
+  scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text, marginBottom: Spacing.sm },
   input: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: Typography.fontSize.md, color: Colors.text },
   textArea: { minHeight: 150, paddingTop: Spacing.md },
-  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.lg },
-  saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
+  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
+  saveButtonDisabled: { opacity: 0.5, ...Elevation.none },
+  saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: '600' as const },
+  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

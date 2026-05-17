@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '../../src/context/AuthContext';
 import { showAlert } from '../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -58,41 +58,43 @@ export default function LoginScreen() {
         <Text style={styles.title}>Sign In</Text>
         <Text style={styles.subtitle}>Sign in to your JobTrail account</Text>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="email@example.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoFocus
-          />
-        </View>
+        <View style={styles.formCard}>
+          <View style={styles.section}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="email@example.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoFocus
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color={Colors.textInverse} />
-          ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color={Colors.textInverse} />
+            ) : (
+              <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
@@ -137,6 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   section: { marginBottom: Spacing.lg },
+  formCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, padding: Spacing.lg, ...Elevation.low },
   label: {
     fontSize: Typography.fontSize.md,
     fontWeight: '500' as const,
@@ -158,6 +161,7 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     alignItems: 'center',
     marginTop: Spacing.md,
+    ...Elevation.medium,
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: {
@@ -177,6 +181,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
+    ...Elevation.low,
   },
   googleButtonText: {
     color: Colors.text,

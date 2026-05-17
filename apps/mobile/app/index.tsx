@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useDatabase } from '../src/data/local/DatabaseProvider';
 import { getAllJobs } from '../src/data/local/jobRepository';
 import type { Job } from '../src/domain/types';
-import { Colors, Spacing, Typography, BorderRadius } from '../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../src/theme/colors';
 import { statusColor, formatDate } from '../src/utils/formatting';
 
 export default function JobListScreen() {
@@ -43,6 +43,7 @@ export default function JobListScreen() {
     <View style={styles.container}>
       {jobs.length === 0 ? (
         <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>📋</Text>
           <Text style={styles.emptyTitle}>No jobs yet</Text>
           <Text style={styles.emptySubtitle}>Tap + to create your first job</Text>
         </View>
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
   listContent: { padding: Spacing.md },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   emptyTitle: { fontSize: Typography.fontSize.xl, fontWeight: '600' as const, color: Colors.text, marginBottom: Spacing.sm },
+  emptyIcon: { fontSize: 48, marginBottom: Spacing.md },
   emptySubtitle: { fontSize: Typography.fontSize.md, color: Colors.textSecondary },
   card: {
     backgroundColor: Colors.surface,
@@ -109,11 +111,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     borderWidth: 1,
     borderColor: Colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    ...Elevation.low,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xs },
   cardTitle: { fontSize: Typography.fontSize.lg, fontWeight: '600' as const, color: Colors.text, flex: 1, marginRight: Spacing.sm },
@@ -131,11 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 8,
+    ...Elevation.high,
   },
   fabText: { fontSize: 28, color: Colors.textInverse, fontWeight: '300' as const },
   syncDot: { width: 8, height: 8, borderRadius: 4, marginLeft: Spacing.xs },
