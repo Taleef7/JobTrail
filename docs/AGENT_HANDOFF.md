@@ -531,7 +531,7 @@ npx expo start --web
 2. ~~One-way sync only~~ FIXED — now two-way sync with pull from cloud
 3. ~~Photo upload not wired~~ FIXED — photos upload to Firebase Storage via sync engine
 4. ~~No error boundaries~~ FIXED — ErrorBoundary wraps AuthGate
-5. No automated tests — no .test.ts or .spec.ts files exist
+5. ~~No automated tests~~ DONE — 39 tests across 3 suites (AI parser, formatting, domain schemas)
 6. ~~No pull-to-refresh~~ FIXED
 7. ~~No search/filter~~ FIXED
 
@@ -545,4 +545,5 @@ npx expo start --web
 6. ~~Wire photo upload into sync engine~~ DONE
 7. ~~Implement two-way sync (pull from cloud)~~ DONE
 8. ~~Implement Client/Site management~~ DONE
-9. Add automated tests
+9. ~~Add automated tests~~ DONE (39 tests, 3 suites)
+10. Implement remaining features: voice notes, customer approval/signature, PDF generation
