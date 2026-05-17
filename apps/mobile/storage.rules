@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Photos - scoped by user
+    match /users/{uid}/jobs/{jobId}/photos/{photoId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
