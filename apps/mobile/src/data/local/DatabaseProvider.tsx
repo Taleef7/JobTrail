@@ -131,6 +131,49 @@ async function initMockDb(): Promise<MockSQLiteDatabase> {
       updatedAt TEXT NOT NULL,
       processedAt TEXT
     );
+    CREATE TABLE IF NOT EXISTS clients (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      name TEXT NOT NULL,
+      phone TEXT,
+      email TEXT,
+      notes TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      deletedAt TEXT,
+      syncStatus TEXT NOT NULL DEFAULT 'local_only'
+    );
+    CREATE TABLE IF NOT EXISTS sites (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      clientId TEXT,
+      name TEXT,
+      addressLine1 TEXT,
+      addressLine2 TEXT,
+      city TEXT,
+      state TEXT,
+      postalCode TEXT,
+      country TEXT,
+      notes TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      deletedAt TEXT,
+      syncStatus TEXT NOT NULL DEFAULT 'local_only'
+    );
+    CREATE TABLE IF NOT EXISTS customer_approvals (
+      id TEXT PRIMARY KEY,
+      jobId TEXT NOT NULL,
+      userId TEXT NOT NULL,
+      customerName TEXT,
+      signatureLocalUri TEXT,
+      signatureRemoteUrl TEXT,
+      approvedAt TEXT,
+      approvalNotes TEXT,
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL,
+      deletedAt TEXT,
+      syncStatus TEXT NOT NULL DEFAULT 'local_only'
+    );
   `);
   return db;
 }

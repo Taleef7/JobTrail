@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 3;
+const DATABASE_VERSION = 4;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
   const result = await db.getFirstAsync<{ user_version: number }>(
@@ -180,6 +180,25 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
         syncStatus TEXT NOT NULL DEFAULT 'local_only',
         FOREIGN KEY (userId) REFERENCES users(id),
         FOREIGN KEY (clientId) REFERENCES clients(id)
+      );
+    `);
+  }
+
+  if (currentVersion < 4) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS customer_approvals (
+        id TEXT PRIMARY KEY,
+        jobId TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        customerName TEXT,
+        signatureLocalUri TEXT,
+        signatureRemoteUrl TEXT,
+        approvedAt TEXT,
+        approvalNotes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        deletedAt TEXT,
+        syncStatus TEXT NOT NULL DEFAULT 'local_only'
       );
     `);
   }

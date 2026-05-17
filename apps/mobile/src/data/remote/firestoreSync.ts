@@ -10,6 +10,7 @@ import { getPhotoById, updatePhoto, upsertPhoto } from '../local/photoRepository
 import { getUserById, updateUser } from '../local/userRepository';
 import { getClientById, upsertClient } from '../local/clientRepository';
 import { getSiteById, upsertSite } from '../local/siteRepository';
+import { getApprovalById, upsertApproval } from '../local/customerApprovalRepository';
 import { uploadPhoto } from './storageService';
 
 async function checkFirebase(): Promise<boolean> {
@@ -235,6 +236,32 @@ export async function processSyncQueue(
           }
           break;
         }
+        case 'customer_approval': {
+          const approval = await getApprovalById(localDb, op.entityId);
+          if (!approval) {
+            await updateSyncOperation(localDb, op.id, { status: 'synced', processedAt: new Date().toISOString() });
+            synced++;
+            break;
+          }
+          if (op.operationType === 'delete') {
+            await deleteDoc(doc(db, `users/${userId}/jobs/${approval.jobId}/approvals/${op.entityId}`));
+          } else {
+            await setDoc(doc(db, `users/${userId}/jobs/${approval.jobId}/approvals/${op.entityId}`), {
+              id: approval.id,
+              jobId: approval.jobId,
+              customerName: approval.customerName,
+              signatureLocalUri: approval.signatureLocalUri,
+              signatureRemoteUrl: approval.signatureRemoteUrl,
+              approvedAt: approval.approvedAt,
+              approvalNotes: approval.approvalNotes,
+              createdAt: approval.createdAt,
+              updatedAt: approval.updatedAt,
+              ownerUid: userId,
+              localId: approval.id,
+            });
+          }
+          break;
+        }
       }
 
       await updateSyncOperation(localDb, op.id, {
@@ -451,7 +478,38 @@ export async function pullFromCloud(
       console.warn('Failed to pull sites:', e);
     }
 
-    // 6. Update lastSyncedAt on the local user record
+    // 6. Pull customer approvals (subcollection under jobs)
+    try {
+      const jobsSnapshot = await getDocs(collection(db, `users/${userId}/jobs`));
+      for (const jobDoc of jobsSnapshot.docs) {
+        try {
+          const approvalsSnapshot = await getDocs(collection(db, `users/${userId}/jobs/${jobDoc.id}/approvals`));
+          for (const approvalDoc of approvalsSnapshot.docs) {
+            const approvalData = approvalDoc.data();
+            await upsertApproval(localDb, {
+              id: approvalData.id,
+              jobId: approvalData.jobId ?? jobDoc.id,
+              userId: localUserId,
+              customerName: approvalData.customerName ?? null,
+              signatureLocalUri: approvalData.signatureLocalUri ?? null,
+              signatureRemoteUrl: approvalData.signatureRemoteUrl ?? null,
+              approvedAt: approvalData.approvedAt ?? null,
+              approvalNotes: approvalData.approvalNotes ?? null,
+              createdAt: approvalData.createdAt ?? new Date().toISOString(),
+              updatedAt: approvalData.updatedAt ?? new Date().toISOString(),
+              deletedAt: approvalData.deletedAt ?? null,
+            });
+            pulled++;
+          }
+        } catch (e) {
+          console.warn(`Failed to pull approvals for job ${jobDoc.id}:`, e);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to pull customer approvals:', e);
+    }
+
+    // 7. Update lastSyncedAt on the local user record
     const localUser = await getUserById(localDb, localUserId);
     if (localUser) {
       await updateUser(localDb, localUserId, { lastSyncedAt: new Date().toISOString() });

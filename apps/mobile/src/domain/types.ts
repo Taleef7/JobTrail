@@ -219,3 +219,18 @@ export type Site = {
   deletedAt: string | null;
   syncStatus: SyncStatus;
 };
+
+export type CustomerApproval = {
+  id: string;
+  jobId: string;
+  userId: string;
+  customerName: string | null;
+  signatureLocalUri: string | null;
+  signatureRemoteUrl: string | null;
+  approvedAt: string | null;
+  approvalNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  syncStatus: SyncStatus;
+};

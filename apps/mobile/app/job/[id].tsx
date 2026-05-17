@@ -11,8 +11,9 @@ import { getMaterialsByJobId, deleteMaterial } from '../../src/data/local/materi
 import { getTimeEntriesByJobId, deleteTimeEntry } from '../../src/data/local/timeEntryRepository';
 import { getExtractionResultsByJobId } from '../../src/data/local/extractionRepository';
 import { getPhotosByJobId, deletePhoto } from '../../src/data/local/photoRepository';
+import { getApprovalsByJobId, deleteApproval } from '../../src/data/local/customerApprovalRepository';
 import { statusColor, formatDate } from '../../src/utils/formatting';
-import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset } from '../../src/domain/types';
+import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset, CustomerApproval } from '../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 function syncDotColor(status: string): string {
@@ -37,6 +38,7 @@ export default function JobDetailScreen() {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [extractions, setExtractions] = useState<AiExtractionResult[]>([]);
   const [photos, setPhotos] = useState<PhotoAsset[]>([]);
+  const [approvals, setApprovals] = useState<CustomerApproval[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -50,12 +52,14 @@ export default function JobDetailScreen() {
         getTimeEntriesByJobId(db, id),
         getExtractionResultsByJobId(db, id),
       ]);
+      const a = await getApprovalsByJobId(db, id);
       setJob(j);
       setNotes(n);
       setPhotos(p);
       setMaterials(m);
       setTimeEntries(t);
       setExtractions(e);
+      setApprovals(a);
     } catch (error) {
       console.error('Failed to load job:', error);
     } finally {
@@ -147,6 +151,20 @@ export default function JobDetailScreen() {
         style: 'destructive',
         onPress: async () => {
           await deletePhoto(db, photoId);
+          loadData();
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteApproval = (approvalId: string) => {
+    Alert.alert('Delete Approval', 'Delete this approval?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteApproval(db, approvalId);
           loadData();
         },
       },
@@ -376,6 +394,36 @@ export default function JobDetailScreen() {
             })}
           </View>
         )}
+      </View>
+
+      {/* Customer Approval */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderLeft}>
+            <Ionicons name="checkmark-done-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Approval{approvals.length > 0 ? ` · ${approvals.length}` : ''}</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push(`/job/${id}/approval`)}>
+            <Ionicons name="add-circle-outline" size={22} color={Colors.primary} />
+          </TouchableOpacity>
+        </View>
+        {approvals.length === 0 && (
+          <Text style={styles.emptySection}>No approvals yet</Text>
+        )}
+        {approvals.map((approval) => (
+          <View key={approval.id} style={styles.itemCard}>
+            <View style={styles.itemRow}>
+              <View style={styles.itemContent}>
+                <Text style={styles.itemText}>{approval.customerName || 'Unknown'}</Text>
+                <Text style={styles.itemMeta}>{approval.approvedAt ? formatDate(approval.approvedAt) : ''}</Text>
+                {approval.approvalNotes && <Text style={styles.itemMeta}>{approval.approvalNotes}</Text>}
+              </View>
+              <TouchableOpacity onPress={() => handleDeleteApproval(approval.id)} style={styles.itemDeleteButton}>
+                <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
       </View>
 
       {/* Report */}
