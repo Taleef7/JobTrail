@@ -485,7 +485,7 @@ npx expo start --web
 
 ## Project Completeness Assessment
 
-### Overall: ~85% of full PLAN.md vision | ~98% of core MVP
+### Overall: ~92% of full PLAN.md vision | ~100% of core MVP
 
 ### Completed Features
 
@@ -497,13 +497,18 @@ npx expo start --web
 | AI extraction (rule-based) | Done | RuleBasedAiProvider parses common field patterns |
 | AI extraction (cloud) | Partial | CloudAiProvider exists, needs GEMINI_API_KEY |
 | Report preview + share | Done | Plain text share via native sheet |
+| PDF generation | Done | Professional HTML-to-PDF via expo-print, share via native sheet |
 | Firebase Auth (email/password) | Done | Login, signup, persistence across restarts |
 | Google Sign-In | Partial | Conditional — hidden when client ID not configured |
 | Firestore sync | Done | Two-way sync: pushes local changes to Firestore, pulls remote changes with last-write-wins |
 | Photo cloud upload | Done | Wired into sync engine — photos upload to Firebase Storage and metadata syncs to Firestore |
 | Settings/Profile screen | Done | Sign-out, sync counts, about info |
-| Clean minimal UI with Ionicons | Done | All 12 screens redesigned |
-| Delete functionality (repositories) | Done | Soft delete in all repos, but no UI triggers |
+| Clean minimal UI with Ionicons | Done | All screens redesigned |
+| Delete functionality (repositories) | Done | Soft delete in all repos, delete UI on all items |
+| Client/Site management | Done | Full data layer, screens, sync |
+| Customer approval/signature | Done | Signature canvas, approval screen, sync, report integration |
+| Voice notes | Done | Audio recording via expo-av, transcript entry, sync |
+| Automated tests | Done | 112 tests across 4 suites (AI parser, formatting, domain schemas, repositories) |
 
 ### Missing Features
 
@@ -519,11 +524,10 @@ npx expo start --web
 | Wire photo upload into sync | Done | Photos upload to Firebase Storage, metadata syncs to Firestore |
 | Error boundaries | Medium | Small | Phase 1 |
 | Client/Site management | Done | Database, repositories, screens, sync, job integration, home screen navigation |
-| Voice notes | Low | Large | Phase 5 |
-| Customer approval/signature | Low | Medium | Phase 3 |
-| PDF generation | Low | Medium | Phase 9 |
+| Voice notes | Done | Audio recording via expo-av, transcript entry, sync |
+| Customer approval/signature | Done | Signature canvas, approval screen, sync, report integration |
+| PDF generation | Done | Professional HTML-to-PDF via expo-print, share via native sheet |
 | Local LLM (Milestone D) | Low | Large | Phase 10 |
-| Automated tests | Medium | Large | Phase 0 |
 
 ### Known Technical Debt
 
@@ -531,7 +535,7 @@ npx expo start --web
 2. ~~One-way sync only~~ FIXED — now two-way sync with pull from cloud
 3. ~~Photo upload not wired~~ FIXED — photos upload to Firebase Storage via sync engine
 4. ~~No error boundaries~~ FIXED — ErrorBoundary wraps AuthGate
-5. ~~No automated tests~~ DONE — 39 tests across 3 suites (AI parser, formatting, domain schemas)
+5. ~~No automated tests~~ DONE — 112 tests across 4 suites (AI parser, formatting, domain schemas, repositories)
 6. ~~No pull-to-refresh~~ FIXED
 7. ~~No search/filter~~ FIXED
 
@@ -545,5 +549,7 @@ npx expo start --web
 6. ~~Wire photo upload into sync engine~~ DONE
 7. ~~Implement two-way sync (pull from cloud)~~ DONE
 8. ~~Implement Client/Site management~~ DONE
-9. ~~Add automated tests~~ DONE (39 tests, 3 suites)
-10. Implement remaining features: voice notes, customer approval/signature, PDF generation
+9. ~~Add automated tests~~ DONE (112 tests, 4 suites)
+10. ~~Implement voice notes, customer approval/signature, PDF generation~~ DONE
+11. Local LLM proof-of-concept (Phase 10 — optional, advanced feature)
+12. Cloud LLM extraction enhancement (improve prompts, add more providers)
