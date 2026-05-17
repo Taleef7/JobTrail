@@ -1,8 +1,10 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
+import { useAuth } from '../../../src/context/AuthContext';
 import { showAlert } from '../../../src/utils/alert';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
@@ -10,6 +12,7 @@ export default function AddMaterialScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useDatabase();
   const router = useRouter();
+  const { localUserId } = useAuth();
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('');
@@ -32,7 +35,7 @@ export default function AddMaterialScreen() {
         quantity: qty,
         unit: unit.trim() || undefined,
         unitCost: cost,
-      });
+      }, localUserId || 'local_user');
       router.back();
     } catch (error) {
       console.error('Failed to save material:', error);
@@ -46,7 +49,10 @@ export default function AddMaterialScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.label}>Material Name *</Text>
+          <View style={styles.labelRow}>
+            <Ionicons name="cube-outline" size={16} color={Colors.textSecondary} />
+            <Text style={styles.label}>Material Name *</Text>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="e.g., PVC trap kit"
@@ -81,10 +87,11 @@ export default function AddMaterialScreen() {
             />
           </View>
         </View>
-        <Text style={styles.helperText}>e.g., kit, each, ft, lbs</Text>
-
         <View style={styles.section}>
-          <Text style={styles.label}>Unit Cost ($)</Text>
+          <View style={styles.labelRow}>
+            <Ionicons name="calculator-outline" size={16} color={Colors.textSecondary} />
+            <Text style={styles.label}>Unit Cost ($)</Text>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="0.00"
@@ -99,6 +106,7 @@ export default function AddMaterialScreen() {
           onPress={handleSave}
           disabled={saving}
         >
+          <Ionicons name="checkmark-circle" size={20} color={Colors.textInverse} />
           <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Add Material'}</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -110,11 +118,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   section: { marginBottom: Spacing.lg },
-  label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text, marginBottom: Spacing.sm },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
+  label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text },
   input: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: Typography.fontSize.md, color: Colors.text },
   row: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg },
   rowItem: { flex: 1 },
-  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
+  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
   saveButtonDisabled: { opacity: 0.5, ...Elevation.none },
   saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: '600' as const },
   helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },

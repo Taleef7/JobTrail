@@ -2,8 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { AiExtractionResult } from '../../domain/types';
 import type { AppDatabase } from './types';
 
-const DEFAULT_USER_ID = 'local_user';
-
 function now(): string {
   return new Date().toISOString();
 }
@@ -19,7 +17,8 @@ export async function createExtractionResult(
     inputText: string;
     extractedJson: string;
     confidence?: number;
-  }
+  },
+  userId: string = 'local_user'
 ): Promise<AiExtractionResult> {
   const id = uuidv4();
   const timestamp = now();
@@ -27,7 +26,7 @@ export async function createExtractionResult(
   const result: AiExtractionResult = {
     id,
     jobId: input.jobId,
-    userId: DEFAULT_USER_ID,
+    userId,
     sourceType: input.sourceType,
     sourceId: input.sourceId ?? null,
     provider: input.provider,

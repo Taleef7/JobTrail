@@ -1,7 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+/* eslint-disable import/no-duplicates */
+import { initializeAuth } from 'firebase/auth';
+// @ts-expect-error — getReactNativePersistence is only exported from the RN bundle
+import { getReactNativePersistence } from 'firebase/auth';
+/* eslint-enable import/no-duplicates */
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { createAsyncStorage } from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -14,7 +19,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+// Initialize Auth with React Native persistence so auth state survives app restarts
+const appStorage = createAsyncStorage('firebase_auth');
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(appStorage),
+});
 
 export const db = getFirestore(app);
 

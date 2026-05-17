@@ -414,38 +414,135 @@ npx expo start --web
 **Design system:**
 - Added `Elevation` tokens (none/low/medium/high) for consistent shadows across all screens
 - Increased border radii (4→6, 8→10, 12→14, 16→20) for a more modern feel
-- All shadow values now come from a single source of truth
+- All shadow values come from a single source of truth
+- Consistent use of `Colors`, `Spacing`, `Typography`, `BorderRadius` tokens across all screens
 
-**Job list screen:**
-- Empty state now shows 📋 icon with message
-- Job cards use consistent `Elevation.low` shadow
-- FAB uses `Elevation.high`
+**Bug fixes:**
+- Fixed `crypto` ReferenceError: added `react-native-get-random-values` polyfill for uuid v14
+- Fixed Firebase Auth persistence: switched from `getAuth()` to `initializeAuth()` with `getReactNativePersistence()`
+- Fixed navigation: removed back button on home screen, renamed title to "Jobs"
+- Fixed Google Sign-In: removed hardcoded placeholder client ID, added `googleAvailable` flag, conditional Google button rendering
+- Fixed sync crash: `firestoreSync.ts` now gracefully handles missing entities instead of throwing "not found" errors
 
-**Form screens (create job, note, material, time):**
-- Helper text below complex inputs for better guidance
-- `autoCapitalize` and `autoCorrect` configured per input type
-- Submit buttons use elevation with proper disabled state
-- Scroll content has proper bottom padding for keyboard avoidance
+**Job list screen (`app/index.tsx`):**
+- Ionicons FAB button instead of text "+"
+- Clean empty state (no emoji)
+- Status-colored left borders on job cards
+- Relative time with `timeAgo()` instead of formatted dates
+- Removed sync status dots from cards
+- Settings gear icon in header (navigates to `/settings`)
 
-**Job detail screen:**
-- Sync status shows colored dots (green=synced, yellow=pending, red=failed)
-- All item cards use consistent elevation
-- Status button active state has elevation feedback
+**Job detail screen (`app/job/[id].tsx`):**
+- Ionicons for all section headers (notes, photos, materials, time, AI, report)
+- Icon-based add buttons (`add-circle-outline`) instead of text "+ Add"
+- Empty sections hidden — no more "No notes yet" clutter
+- Compact status toggle row (no separate "Status" header)
+- Sync status shown as just a dot (no text label)
 
-**Extract screen:**
-- Confidence percentage now shows a visual bar indicator (color-coded)
-- Suggestion cards use elevation
-- Improved checkbox styling
+**Auth screens (`app/auth/login.tsx`, `app/auth/signup.tsx`):**
+- "Welcome back" / "Create account" titles
+- Removed card wrappers — cleaner flat design
+- Google Sign-In hidden when not configured
+- Ionicons Google logo on the button
+- Cleaner link text ("Create account" / "Sign in instead")
 
-**Report preview:**
-- Report header has surface background with elevation
-- Section dividers are more subtle
-- Share button uses elevation
+**Create job screen (`app/job/create.tsx`):**
+- Removed verbose helper text
+- Icon + text save button
+- Concise placeholder text
+- Added subtitle
 
-**Auth screens:**
-- Form content wrapped in card container with surface bg and elevation
-- Sign-in and Google buttons use elevation
+**Extract screen (`app/job/[id]/extract.tsx`):**
+- Sparkle icon in title
+- Concise one-liner description (removed verbose paragraphs)
+- Removed provider hint texts
+- Compact confidence display with label
+- Icon + text extract button
+
+**Form sub-screens:**
+- `note.tsx`: `create-outline` icon on label, `checkmark-circle` icon on save button, concise placeholder
+- `material.tsx`: `cube-outline` icon on Material Name, `calculator-outline` on Unit Cost, `checkmark-circle` on save button, removed helper text
+- `time.tsx`: `time-outline` icon on Duration, `document-text-outline` on Description, `checkmark-circle` on save button, removed helper text
+- `photo.tsx`: `images-outline`/`camera-outline` icons on picker buttons, `pricetag-outline` on Photo Type, `chatbubble-outline` on Caption, `checkmark-circle` on save button
+
+**Report screen (`app/job/[id]/report.tsx`):**
+- `document-text-outline` icon next to report title
+- Icons on all section headers: `person-outline`, `construct-outline`, `camera-outline`, `cube-outline`, `time-outline`, `alert-circle-outline`, `document-text-outline`, `create-outline`
+- `share-outline` icon on Share Report button
+
+**Settings screen (`app/settings.tsx`) — NEW:**
+- Profile section with avatar circle (initials), display name, email
+- Account section with sign-out button (confirmation alert)
+- Sync section showing pending/synced/failed counts
+- About section with app name, version, tagline
+- Accessible via gear icon in home screen header
 
 ### Files changed
 
-`src/theme/colors.ts`, `app/index.tsx`, `app/job/create.tsx`, `app/job/[id].tsx`, `app/job/[id]/note.tsx`, `app/job/[id]/material.tsx`, `app/job/[id]/time.tsx`, `app/job/[id]/extract.tsx`, `app/job/[id]/report.tsx`, `app/auth/login.tsx`, `app/auth/signup.tsx`
+`src/theme/colors.ts`, `app/index.tsx`, `app/settings.tsx`, `app/_layout.tsx`, `app/job/create.tsx`, `app/job/[id].tsx`, `app/job/[id]/note.tsx`, `app/job/[id]/material.tsx`, `app/job/[id]/time.tsx`, `app/job/[id]/photo.tsx`, `app/job/[id]/extract.tsx`, `app/job/[id]/report.tsx`, `app/auth/login.tsx`, `app/auth/signup.tsx`, `src/utils/cryptoPolyfill.ts`, `src/data/remote/firebaseConfig.ts`, `src/context/AuthContext.tsx`, `src/data/remote/firestoreSync.ts`
+
+---
+
+## Project Completeness Assessment
+
+### Overall: ~85% of full PLAN.md vision | ~98% of core MVP
+
+### Completed Features
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Job CRUD (Create, Read, Update status) | Done | Create, view, status toggle, edit screen, delete |
+| Add notes, materials, time entries | Done | Full CRUD in repositories, create/edit/delete UI in screens |
+| Photo capture (local) | Done | Select/take photo, type tagging, captions |
+| AI extraction (rule-based) | Done | RuleBasedAiProvider parses common field patterns |
+| AI extraction (cloud) | Partial | CloudAiProvider exists, needs GEMINI_API_KEY |
+| Report preview + share | Done | Plain text share via native sheet |
+| Firebase Auth (email/password) | Done | Login, signup, persistence across restarts |
+| Google Sign-In | Partial | Conditional — hidden when client ID not configured |
+| Firestore sync | Done | Two-way sync: pushes local changes to Firestore, pulls remote changes with last-write-wins |
+| Photo cloud upload | Done | Wired into sync engine — photos upload to Firebase Storage and metadata syncs to Firestore |
+| Settings/Profile screen | Done | Sign-out, sync counts, about info |
+| Clean minimal UI with Ionicons | Done | All 12 screens redesigned |
+| Delete functionality (repositories) | Done | Soft delete in all repos, but no UI triggers |
+
+### Missing Features
+
+| Feature | Priority | Effort | PLAN.md Phase |
+|---------|----------|--------|---------------|
+| Replace `local_user` with real userId | High | Small | Phase 6 |
+| Job search/filter on home screen | High | Small | Phase 1 |
+| Pull-to-refresh on job list | High | Small | Phase 1 |
+| Edit job screen (title, type, notes) | Done | Edit screen for title, type, priority, rough notes, internal notes |
+| Edit notes/materials/time entries | Done | Edit screens for all item types, tappable cards in job detail |
+| Delete UI (swipe-to-delete) | Done | Delete buttons on notes, materials, time entries, photos, and jobs |
+| Two-way sync (pull from cloud) | Done | Pulls remote changes from Firestore, upserts locally with last-write-wins conflict resolution |
+| Wire photo upload into sync | Done | Photos upload to Firebase Storage, metadata syncs to Firestore |
+| Error boundaries | Medium | Small | Phase 1 |
+| Client/Site management | Done | Database, repositories, screens, sync, job integration, home screen navigation |
+| Voice notes | Low | Large | Phase 5 |
+| Customer approval/signature | Low | Medium | Phase 3 |
+| PDF generation | Low | Medium | Phase 9 |
+| Local LLM (Milestone D) | Low | Large | Phase 10 |
+| Automated tests | Medium | Large | Phase 0 |
+
+### Known Technical Debt
+
+1. ~~`userId: 'local_user'` hardcoded in 6 repositories~~ FIXED — all repos now accept `userId` param
+2. ~~One-way sync only~~ FIXED — now two-way sync with pull from cloud
+3. ~~Photo upload not wired~~ FIXED — photos upload to Firebase Storage via sync engine
+4. ~~No error boundaries~~ FIXED — ErrorBoundary wraps AuthGate
+5. No automated tests — no .test.ts or .spec.ts files exist
+6. ~~No pull-to-refresh~~ FIXED
+7. ~~No search/filter~~ FIXED
+
+### Recommended Next Tasks (in priority order)
+
+1. ~~Replace `local_user` with real `localUserId` from AuthContext~~ DONE
+2. ~~Add pull-to-refresh and search/filter to job list~~ DONE
+3. ~~Add edit job screen~~ DONE
+4. ~~Add delete UI (swipe-to-delete on items)~~ DONE
+5. ~~Add error boundary component~~ DONE
+6. ~~Wire photo upload into sync engine~~ DONE
+7. ~~Implement two-way sync (pull from cloud)~~ DONE
+8. ~~Implement Client/Site management~~ DONE
+9. Add automated tests

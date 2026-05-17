@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const DATABASE_VERSION = 2;
+const DATABASE_VERSION = 3;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
   const result = await db.getFirstAsync<{ user_version: number }>(
@@ -139,6 +139,47 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         processedAt TEXT
+      );
+    `);
+  }
+
+  if (currentVersion < 3) {
+    await db.execAsync(`
+      ALTER TABLE jobs ADD COLUMN clientId TEXT;
+      ALTER TABLE jobs ADD COLUMN siteId TEXT;
+
+      CREATE TABLE IF NOT EXISTS clients (
+        id TEXT PRIMARY KEY,
+        userId TEXT NOT NULL,
+        name TEXT NOT NULL,
+        phone TEXT,
+        email TEXT,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        deletedAt TEXT,
+        syncStatus TEXT NOT NULL DEFAULT 'local_only',
+        FOREIGN KEY (userId) REFERENCES users(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS sites (
+        id TEXT PRIMARY KEY,
+        userId TEXT NOT NULL,
+        clientId TEXT,
+        name TEXT,
+        addressLine1 TEXT,
+        addressLine2 TEXT,
+        city TEXT,
+        state TEXT,
+        postalCode TEXT,
+        country TEXT,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        deletedAt TEXT,
+        syncStatus TEXT NOT NULL DEFAULT 'local_only',
+        FOREIGN KEY (userId) REFERENCES users(id),
+        FOREIGN KEY (clientId) REFERENCES clients(id)
       );
     `);
   }

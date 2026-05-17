@@ -3,6 +3,7 @@ import { Platform, Alert as RNAlert } from 'react-native';
 interface AlertButton {
   text: string;
   onPress?: () => void;
+  style?: 'default' | 'cancel' | 'destructive';
 }
 
 /**

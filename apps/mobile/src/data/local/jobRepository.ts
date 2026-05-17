@@ -3,8 +3,6 @@ import type { Job } from '../../domain/types';
 import type { AppDatabase } from './types';
 import { createSyncOperation } from './syncRepository';
 
-const DEFAULT_USER_ID = 'local_user';
-
 function now(): string {
   return new Date().toISOString();
 }
@@ -15,17 +13,20 @@ export function generateId(): string {
 
 export async function createJob(
   db: AppDatabase,
-  input: { title: string; jobType?: string; priority?: string; roughNotes?: string }
+  input: { title: string; jobType?: string; priority?: string; roughNotes?: string; clientId?: string; siteId?: string },
+  userId: string = 'local_user'
 ): Promise<Job> {
   const id = generateId();
   const timestamp = now();
   const job: Job = {
     id,
-    userId: DEFAULT_USER_ID,
+    userId,
     title: input.title,
     jobType: input.jobType ?? null,
     status: 'draft',
     priority: input.priority ?? 'normal',
+    clientId: input.clientId ?? null,
+    siteId: input.siteId ?? null,
     roughNotes: input.roughNotes ?? null,
     structuredSummary: null,
     internalNotes: null,
@@ -37,11 +38,11 @@ export async function createJob(
   };
 
   await db.runAsync(
-    `INSERT INTO jobs (id, userId, title, jobType, status, priority, roughNotes, structuredSummary, internalNotes, customerVisibleSummary, aiStatus, syncStatus, createdAt, updatedAt)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO jobs (id, userId, title, jobType, status, priority, clientId, siteId, roughNotes, structuredSummary, internalNotes, customerVisibleSummary, aiStatus, syncStatus, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       job.id, job.userId, job.title, job.jobType, job.status, job.priority,
-      job.roughNotes, job.structuredSummary, job.internalNotes, job.customerVisibleSummary,
+      job.clientId, job.siteId, job.roughNotes, job.structuredSummary, job.internalNotes, job.customerVisibleSummary,
       job.aiStatus, job.syncStatus, job.createdAt, job.updatedAt,
     ]
   );
@@ -75,7 +76,7 @@ export async function getAllJobs(db: AppDatabase): Promise<Job[]> {
 export async function updateJob(
   db: AppDatabase,
   id: string,
-  updates: Partial<Pick<Job, 'title' | 'jobType' | 'status' | 'priority' | 'roughNotes' | 'structuredSummary' | 'internalNotes' | 'customerVisibleSummary' | 'aiStatus' | 'syncStatus'>>
+  updates: Partial<Pick<Job, 'title' | 'jobType' | 'status' | 'priority' | 'clientId' | 'siteId' | 'roughNotes' | 'structuredSummary' | 'internalNotes' | 'customerVisibleSummary' | 'aiStatus' | 'syncStatus'>>
 ): Promise<Job | null> {
   const existing = await getJobById(db, id);
   if (!existing) return null;
@@ -87,6 +88,8 @@ export async function updateJob(
   if (updates.jobType !== undefined) { fields.push('jobType = ?'); values.push(updates.jobType); }
   if (updates.status !== undefined) { fields.push('status = ?'); values.push(updates.status); }
   if (updates.priority !== undefined) { fields.push('priority = ?'); values.push(updates.priority); }
+  if (updates.clientId !== undefined) { fields.push('clientId = ?'); values.push(updates.clientId); }
+  if (updates.siteId !== undefined) { fields.push('siteId = ?'); values.push(updates.siteId); }
   if (updates.roughNotes !== undefined) { fields.push('roughNotes = ?'); values.push(updates.roughNotes); }
   if (updates.structuredSummary !== undefined) { fields.push('structuredSummary = ?'); values.push(updates.structuredSummary); }
   if (updates.internalNotes !== undefined) { fields.push('internalNotes = ?'); values.push(updates.internalNotes); }
@@ -136,4 +139,44 @@ export async function deleteJob(db: AppDatabase, id: string): Promise<boolean> {
   }
 
   return result.changes > 0;
+}
+
+export async function upsertJob(db: AppDatabase, remote: {
+  id: string;
+  userId: string;
+  title: string;
+  jobType: string | null;
+  status: string;
+  priority: string;
+  clientId: string | null;
+  siteId: string | null;
+  roughNotes: string | null;
+  structuredSummary: string | null;
+  internalNotes: string | null;
+  customerVisibleSummary: string | null;
+  aiStatus: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}): Promise<void> {
+  const existing = await db.getFirstAsync<{ id: string; updatedAt: string }>(
+    'SELECT id, updatedAt FROM jobs WHERE id = ?',
+    [remote.id]
+  );
+
+  if (existing) {
+    // Last-write-wins: only update if remote is newer
+    if (remote.updatedAt > existing.updatedAt) {
+      await db.runAsync(
+        `UPDATE jobs SET userId = ?, title = ?, jobType = ?, status = ?, priority = ?, clientId = ?, siteId = ?, roughNotes = ?, structuredSummary = ?, internalNotes = ?, customerVisibleSummary = ?, aiStatus = ?, syncStatus = ?, updatedAt = ?, deletedAt = ? WHERE id = ?`,
+        [remote.userId, remote.title, remote.jobType, remote.status, remote.priority, remote.clientId, remote.siteId, remote.roughNotes, remote.structuredSummary, remote.internalNotes, remote.customerVisibleSummary, remote.aiStatus, 'synced', remote.updatedAt, remote.deletedAt ?? null, remote.id]
+      );
+    }
+  } else {
+    await db.runAsync(
+      `INSERT INTO jobs (id, userId, title, jobType, status, priority, clientId, siteId, roughNotes, structuredSummary, internalNotes, customerVisibleSummary, aiStatus, syncStatus, createdAt, updatedAt, deletedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [remote.id, remote.userId, remote.title, remote.jobType, remote.status, remote.priority, remote.clientId, remote.siteId, remote.roughNotes, remote.structuredSummary, remote.internalNotes, remote.customerVisibleSummary, remote.aiStatus, 'synced', remote.createdAt, remote.updatedAt, remote.deletedAt ?? null]
+    );
+  }
 }

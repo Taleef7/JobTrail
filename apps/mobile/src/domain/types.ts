@@ -13,6 +13,8 @@ export interface Job {
   jobType: string | null;
   status: JobStatus;
   priority: string;
+  clientId: string | null;
+  siteId: string | null;
   roughNotes: string | null;
   structuredSummary: string | null;
   internalNotes: string | null;
@@ -185,4 +187,35 @@ export type SyncOperation = {
   createdAt: string;
   updatedAt: string;
   processedAt: string | null;
+};
+
+export type Client = {
+  id: string;
+  userId: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  syncStatus: SyncStatus;
+};
+
+export type Site = {
+  id: string;
+  userId: string;
+  clientId: string | null;
+  name: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  postalCode: string | null;
+  country: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  syncStatus: SyncStatus;
 };

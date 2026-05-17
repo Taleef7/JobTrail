@@ -2,8 +2,10 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { showAlert } from '../../../src/utils/alert';
+import { useAuth } from '../../../src/context/AuthContext';
 import { getJobById, updateJob } from '../../../src/data/local/jobRepository';
 import { getNotesByJobId } from '../../../src/data/local/noteRepository';
 import { createExtractionResult, acceptExtractionResult } from '../../../src/data/local/extractionRepository';
@@ -28,6 +30,7 @@ export default function ExtractScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useDatabase();
   const router = useRouter();
+  const { localUserId } = useAuth();
 
   const [job, setJob] = useState<Job | null>(null);
   const [notes, setNotes] = useState<JobNote[]>([]);
@@ -96,7 +99,7 @@ export default function ExtractScreen() {
         inputText: combinedText,
         extractedJson: JSON.stringify(result),
         confidence: result.confidence,
-      });
+      }, localUserId || 'local_user');
 
       setExtractionResult(result);
       setExtractionId(saved.id);
@@ -121,7 +124,7 @@ export default function ExtractScreen() {
             quantity: mat.quantity ?? 1,
             unit: mat.unit,
             unitCost: mat.estimatedCost,
-          });
+          }, localUserId || 'local_user');
         }
       }
 
@@ -129,7 +132,7 @@ export default function ExtractScreen() {
         await createTimeEntry(db, id!, {
           durationMinutes: extractionResult.durationMinutes,
           description: 'AI extracted duration',
-        });
+        }, localUserId || 'local_user');
       }
 
       // Update job type if accepted
@@ -172,9 +175,12 @@ export default function ExtractScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {!extractionResult ? (
         <View style={styles.extractSection}>
-          <Text style={styles.title}>Extract Job Details</Text>
+          <View style={styles.titleRow}>
+            <Ionicons name="sparkles" size={24} color={Colors.secondary} />
+            <Text style={styles.title}>Extract Job Details</Text>
+          </View>
           <Text style={styles.description}>
-            Run AI extraction on your notes to automatically detect materials, time, follow-up items, and more.
+            Automatically detect materials, time, and follow-up items from your notes.
           </Text>
 
           <Text style={styles.notePreview}>
@@ -205,17 +211,6 @@ export default function ExtractScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
-              {aiMode === 'cloud' && (
-                <Text style={styles.providerHint}>
-                  Using Gemini 3.1 Flash Lite with fallback to Gemini 3 Flash Preview.
-                  Includes retries, rate limiting, and timeout protection.
-                </Text>
-              )}
-              {aiMode === 'rule' && (
-                <Text style={styles.providerHint}>
-                  Fast offline extraction using pattern matching.
-                </Text>
-              )}
             </View>
           )}
 
@@ -224,19 +219,19 @@ export default function ExtractScreen() {
             onPress={handleExtract}
             disabled={extracting || notes.length === 0}
           >
-            <Text style={styles.extractButtonText}>
-              {extracting ? 'Extracting...' : 'Run Extraction'}
-            </Text>
+            <Ionicons name="sparkles" size={20} color={Colors.textInverse} />
+            <Text style={styles.extractButtonText}>{extracting ? 'Extracting...' : 'Extract Details'}</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.resultsSection}>
           <Text style={styles.title}>Extraction Results</Text>
-          <Text style={styles.confidence}>
-            Confidence: {Math.round((extractionResult.confidence ?? 0) * 100)}%
-          </Text>
-          <View style={styles.confidenceBarTrack}>
-            <View style={[styles.confidenceBarFill, { width: `${Math.round((extractionResult.confidence ?? 0) * 100)}%`, backgroundColor: confidenceColor(extractionResult.confidence ?? 0) }]} />
+
+          <View style={styles.confidenceRow}>
+            <View style={styles.confidenceBarTrack}>
+              <View style={[styles.confidenceBarFill, { width: `${Math.round((extractionResult.confidence ?? 0) * 100)}%`, backgroundColor: confidenceColor(extractionResult.confidence ?? 0) }]} />
+            </View>
+            <Text style={styles.confidence}>Confidence {Math.round((extractionResult.confidence ?? 0) * 100)}%</Text>
           </View>
 
           {/* Job Type */}
@@ -375,13 +370,17 @@ const styles = StyleSheet.create({
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
   emptyText: { fontSize: Typography.fontSize.lg, color: Colors.textSecondary },
   extractSection: { marginTop: Spacing.md },
-  title: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.text, marginBottom: Spacing.md },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.md },
+  title: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.text },
   description: { fontSize: Typography.fontSize.md, color: Colors.textSecondary, marginBottom: Spacing.lg, lineHeight: 22 },
   notePreview: { fontSize: Typography.fontSize.md, color: Colors.text, backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, marginBottom: Spacing.lg, lineHeight: 22 },
-  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', ...Elevation.low },
+  extractButton: { backgroundColor: Colors.secondary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, ...Elevation.low },
   extractButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
   resultsSection: { marginTop: Spacing.md },
-  confidence: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginBottom: Spacing.lg },
+  confidenceRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.lg },
+  confidence: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary },
+  confidenceBarTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: Colors.surfaceSecondary, overflow: 'hidden' as const },
+  confidenceBarFill: { height: 6, borderRadius: 3 },
   suggestionCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.low },
   checkboxRow: { flexDirection: 'row', alignItems: 'flex-start' },
   checkbox: { width: 24, height: 24, borderRadius: BorderRadius.sm, borderWidth: 2, borderColor: Colors.border, marginRight: Spacing.md, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.surface },
@@ -405,7 +404,4 @@ const styles = StyleSheet.create({
   providerChipText: { fontSize: Typography.fontSize.sm, color: Colors.text },
   providerChipTextActive: { color: Colors.textInverse },
   providerChipTextDisabled: { color: Colors.textTertiary },
-  providerHint: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: Spacing.xs, lineHeight: 16 },
-  confidenceBarTrack: { height: 6, borderRadius: 3, backgroundColor: Colors.surfaceSecondary, marginBottom: Spacing.lg, overflow: 'hidden' as const },
-  confidenceBarFill: { height: 6, borderRadius: 3 },
 });

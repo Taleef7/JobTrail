@@ -99,6 +99,43 @@ EXPO_PUBLIC_FIREBASE_APP_ID=your-app-id
 - Firestore + Storage security rules
 - Photo gallery in reports
 
+### Milestone C — Reports & AI Enhancement ✅
+- Share Report button using native share sheet
+- Formatted plain-text report output
+- Customer-visible summary section
+- AI extraction history in job detail
+
+### UI/UX Overhaul ✅
+- Clean, minimal, curated mobile design with Ionicons throughout
+- Consistent design system (Colors, Spacing, Typography, BorderRadius, Elevation tokens)
+- Status-colored left borders on job cards
+- Relative time display ("5m ago", "Yesterday")
+- Icon-based section headers and action buttons
+- Empty sections hidden (no "No notes yet" clutter)
+- Settings screen with profile, sign-out, sync status, and about
+- Conditional Google Sign-In (hidden when not configured)
+- Graceful sync error handling (no crashes on missing entities)
+- Crypto polyfill for uuid v14 in React Native
+
+## What's Not Yet Built
+
+| Feature | Status |
+|---------|--------|
+| ~~Job search/filter~~ | Done |
+| ~~Pull-to-refresh~~ | Done |
+| ~~Edit job screen~~ | Done |
+| ~~Delete UI~~ | Done (delete job button) |
+| ~~Replace `local_user` with real userId~~ | Done |
+| ~~Error boundaries~~ | Done |
+| Two-way sync (pull from cloud) | Done — pull from Firestore with last-write-wins |
+| Photo cloud upload | Done — wired into sync engine |
+| Client/Site management | Done — database, repositories, screens, sync, job integration |
+| Voice notes | Not started |
+| Customer approval/signature | Not started |
+| PDF generation | Not started |
+| Local LLM | Not started |
+| Automated tests | Not started |
+
 ## Scripts
 
 ```bash

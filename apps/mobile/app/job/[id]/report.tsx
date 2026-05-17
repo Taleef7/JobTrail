@@ -2,6 +2,7 @@ import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Share, To
 import { useLocalSearchParams } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { getJobById } from '../../../src/data/local/jobRepository';
 import { getNotesByJobId } from '../../../src/data/local/noteRepository';
@@ -150,7 +151,10 @@ export default function ReportPreviewScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* Header */}
       <View style={styles.reportHeader}>
-        <Text style={styles.reportTitle}>JobTrail Report</Text>
+        <View style={styles.reportTitleRow}>
+          <Ionicons name="document-text-outline" size={24} color={Colors.primary} />
+          <Text style={styles.reportTitle}>JobTrail Report</Text>
+        </View>
         <Text style={styles.reportSubtitle}>{job.title}</Text>
         {job.jobType && <Text style={styles.reportMeta}>Type: {job.jobType}</Text>}
         <Text style={styles.reportMeta}>Status: {job.status.replace('_', ' ')}</Text>
@@ -160,7 +164,10 @@ export default function ReportPreviewScreen() {
       {/* Customer Summary */}
       {job.customerVisibleSummary && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Customer Summary</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="person-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Customer Summary</Text>
+          </View>
           <Text style={styles.customerSummary}>{job.customerVisibleSummary}</Text>
         </View>
       )}
@@ -170,7 +177,10 @@ export default function ReportPreviewScreen() {
       {/* Work Performed */}
       {(extractedWorkPerformed.length > 0 || notes.length > 0) && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Work Performed</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="construct-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Work Performed</Text>
+          </View>
           {extractedWorkPerformed.map((w, i) => (
             <Text key={i} style={styles.bulletItem}>• {w}</Text>
           ))}
@@ -183,7 +193,10 @@ export default function ReportPreviewScreen() {
       {/* Photos */}
       {photos.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Photos</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="camera-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Photos</Text>
+          </View>
           <View style={styles.photoGrid}>
             {photos.map((photo) => (
               <View key={photo.id} style={styles.photoItem}>
@@ -199,7 +212,10 @@ export default function ReportPreviewScreen() {
       {/* Materials */}
       {materials.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Materials Used</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="cube-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Materials Used</Text>
+          </View>
           {materials.map((m) => (
             <View key={m.id} style={styles.materialRow}>
               <Text style={styles.bulletItem}>{m.quantity} {m.unit ?? ''} {m.name}</Text>
@@ -217,7 +233,10 @@ export default function ReportPreviewScreen() {
       {/* Labor Time */}
       {totalMinutes > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Labor Time</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="time-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Labor Time</Text>
+          </View>
           <Text style={styles.bulletItem}>
             Total: {totalMinutes} minutes ({Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m)
           </Text>
@@ -232,7 +251,10 @@ export default function ReportPreviewScreen() {
       {/* Follow-up Notes */}
       {extractedFollowUps.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Follow-up</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="alert-circle-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Follow-up</Text>
+          </View>
           {extractedFollowUps.map((f, i) => (
             <Text key={i} style={styles.bulletItem}>• {f}</Text>
           ))}
@@ -242,7 +264,10 @@ export default function ReportPreviewScreen() {
       {/* Internal Notes */}
       {job.internalNotes && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notes</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="document-text-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Notes</Text>
+          </View>
           <Text style={styles.bulletItem}>{job.internalNotes}</Text>
         </View>
       )}
@@ -250,13 +275,17 @@ export default function ReportPreviewScreen() {
       {/* Rough Notes */}
       {job.roughNotes && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Original Notes</Text>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="create-outline" size={18} color={Colors.primary} />
+            <Text style={styles.sectionTitle}>Original Notes</Text>
+          </View>
           <Text style={styles.roughNotes}>{job.roughNotes}</Text>
         </View>
       )}
 
       {/* Share Report */}
       <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+        <Ionicons name="share-outline" size={20} color={Colors.text} />
         <Text style={styles.shareButtonText}>Share Report</Text>
       </TouchableOpacity>
 
@@ -275,12 +304,14 @@ const styles = StyleSheet.create({
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
   emptyText: { fontSize: Typography.fontSize.lg, color: Colors.textSecondary },
   reportHeader: { marginBottom: Spacing.lg, backgroundColor: Colors.surface, borderRadius: BorderRadius.md, padding: Spacing.lg, ...Elevation.low },
-  reportTitle: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.primary, marginBottom: Spacing.xs },
+  reportTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.xs },
+  reportTitle: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.primary },
   reportSubtitle: { fontSize: Typography.fontSize.xl, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm },
   reportMeta: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginBottom: 2 },
   divider: { height: 1, backgroundColor: Colors.border, marginBottom: Spacing.lg, opacity: 0.5 },
   section: { marginBottom: Spacing.xl },
-  sectionTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border, paddingBottom: Spacing.xs },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border, paddingBottom: Spacing.xs },
+  sectionTitle: { fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text },
   bulletItem: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 24, marginBottom: 2 },
   subBulletItem: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, lineHeight: 20, marginLeft: Spacing.md },
   materialRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },
@@ -295,6 +326,6 @@ const styles = StyleSheet.create({
   photoTypeLabel: { fontSize: Typography.fontSize.xs, color: Colors.primary, fontWeight: '500' as any, marginTop: 2, textTransform: 'uppercase' as any },
   photoCaption: { fontSize: Typography.fontSize.xs, color: Colors.textSecondary, marginTop: 1 },
   customerSummary: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 24, backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.md, fontStyle: 'italic' as any },
-  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.medium },
+  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.medium },
   shareButtonText: { color: Colors.text, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
 });

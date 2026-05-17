@@ -62,3 +62,11 @@ export async function updateUser(
     values
   );
 }
+
+export async function getUserById(db: AppDatabase, id: string): Promise<User | null> {
+  const row = await db.getFirstAsync<User>(
+    'SELECT * FROM users WHERE id = ?',
+    [id]
+  );
+  return row ?? null;
+}

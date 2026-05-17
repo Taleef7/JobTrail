@@ -1,61 +1,73 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { getTimeEntryById, updateTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
-import { useAuth } from '../../../src/context/AuthContext';
 import { showAlert } from '../../../src/utils/alert';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
-export default function AddTimeScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+export default function EditTimeScreen() {
+  const { timeEntryId } = useLocalSearchParams<{ id: string; timeEntryId: string }>();
   const db = useDatabase();
   const router = useRouter();
-  const { localUserId } = useAuth();
-  const [durationMinutes, setDurationMinutes] = useState('');
+  const [duration, setDuration] = useState('');
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const handleSave = async () => {
-    const minutes = parseInt(durationMinutes, 10);
-    if (!minutes || minutes <= 0) {
-      showAlert('Required', 'Please enter a valid duration in minutes.');
-      return;
-    }
+  useFocusEffect(
+    useCallback(() => {
+      if (!timeEntryId) return;
+      (async () => {
+        const entry = await getTimeEntryById(db, timeEntryId);
+        if (entry) {
+          setDuration(String(entry.durationMinutes ?? ''));
+          setDescription(entry.description ?? '');
+        }
+        setLoading(false);
+      })();
+    }, [db, timeEntryId])
+  );
 
+  const handleSave = async () => {
+    if (!duration.trim() || !timeEntryId) return;
     try {
       setSaving(true);
-      await createTimeEntry(db, id, {
-        durationMinutes: minutes,
-        description: description.trim() || undefined,
-      }, localUserId || 'local_user');
+      await updateTimeEntry(db, timeEntryId, {
+        durationMinutes: parseInt(duration, 10) || 0,
+        description: description.trim() || null,
+      });
       router.back();
     } catch (error) {
-      console.error('Failed to save time entry:', error);
-      showAlert('Error', 'Failed to save time entry.');
+      console.error('Failed to update time entry:', error);
+      showAlert('Error', 'Failed to update time entry.');
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return <View style={styles.centerContainer}><ActivityIndicator size="large" color={Colors.primary} /></View>;
+  }
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Edit Time</Text>
+
         <View style={styles.section}>
           <View style={styles.labelRow}>
             <Ionicons name="time-outline" size={16} color={Colors.textSecondary} />
-            <Text style={styles.label}>Duration *</Text>
+            <Text style={styles.label}>Duration (minutes)</Text>
           </View>
           <TextInput
             style={styles.input}
-            placeholder="e.g., 55"
-            value={durationMinutes}
-            onChangeText={setDurationMinutes}
-            keyboardType="number-pad"
-            autoFocus
-            autoCapitalize="none"
-            autoCorrect={false}
+            placeholder="30"
+            value={duration}
+            onChangeText={setDuration}
+            keyboardType="numeric"
           />
         </View>
 
@@ -66,7 +78,7 @@ export default function AddTimeScreen() {
           </View>
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="What did you work on? Describe the task, progress, or issues..."
+            placeholder="What did you work on?"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -82,8 +94,9 @@ export default function AddTimeScreen() {
           onPress={handleSave}
           disabled={saving}
         >
-          <Ionicons name="checkmark-circle" size={20} color={Colors.textInverse} />
-          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Add Time Entry'}</Text>
+          {saving ? <ActivityIndicator color={Colors.textInverse} /> : (
+            <><Ionicons name="checkmark-circle" size={20} color={Colors.textInverse} /><Text style={styles.saveButtonText}>Save Changes</Text></>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -93,13 +106,14 @@ export default function AddTimeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
+  title: { fontSize: Typography.fontSize.xxl, fontWeight: Typography.fontWeight.bold as any, color: Colors.text, marginBottom: Spacing.lg },
   section: { marginBottom: Spacing.lg },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
   label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.medium as any, color: Colors.text },
   input: { backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md, padding: Spacing.md, fontSize: Typography.fontSize.md, color: Colors.text },
   textArea: { minHeight: 80, paddingTop: Spacing.md },
-  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', marginTop: Spacing.md, ...Elevation.low },
+  saveButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, marginTop: Spacing.md, ...Elevation.low },
   saveButtonDisabled: { opacity: 0.5, ...Elevation.none },
   saveButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.lg, fontWeight: '600' as const },
-  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

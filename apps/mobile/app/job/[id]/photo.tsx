@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
 import { createPhoto } from '../../../src/data/local/photoRepository';
+import { useAuth } from '../../../src/context/AuthContext';
 import { showAlert } from '../../../src/utils/alert';
 import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
 
@@ -13,6 +15,7 @@ export default function AddPhotoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useDatabase();
   const router = useRouter();
+  const { localUserId } = useAuth();
 
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [photoType, setPhotoType] = useState<string>('general');
@@ -55,7 +58,7 @@ export default function AddPhotoScreen() {
     setSaving(true);
     try {
       await createPhoto(db, id!, {
-        userId: 'local_user',
+        userId: localUserId || 'local_user',
         localUri: imageUri,
         remoteUrl: null,
         photoType: photoType as any,
@@ -65,7 +68,7 @@ export default function AddPhotoScreen() {
         syncStatus: 'local_only',
       });
       router.back();
-    } catch (error) {
+    } catch {
       showAlert('Error', 'Failed to save photo.');
     } finally {
       setSaving(false);
@@ -77,10 +80,12 @@ export default function AddPhotoScreen() {
       {/* Image picker buttons */}
       <View style={styles.imagePickerRow}>
         <TouchableOpacity style={styles.pickerButton} onPress={pickImage}>
-          <Text style={styles.pickerButtonText}>Select Photo</Text>
+          <Ionicons name="images-outline" size={20} color={Colors.primary} />
+          <Text style={styles.pickerButtonText}>Gallery</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.pickerButton} onPress={takePhoto}>
-          <Text style={styles.pickerButtonText}>Take Photo</Text>
+          <Ionicons name="camera-outline" size={20} color={Colors.primary} />
+          <Text style={styles.pickerButtonText}>Camera</Text>
         </TouchableOpacity>
       </View>
 
@@ -91,7 +96,10 @@ export default function AddPhotoScreen() {
 
       {/* Photo type selector */}
       <View style={styles.section}>
-        <Text style={styles.label}>Photo Type</Text>
+        <View style={styles.labelRow}>
+          <Ionicons name="pricetag-outline" size={16} color={Colors.textSecondary} />
+          <Text style={styles.label}>Photo Type</Text>
+        </View>
         <View style={styles.typeRow}>
           {PHOTO_TYPES.map((type) => (
             <TouchableOpacity
@@ -109,7 +117,10 @@ export default function AddPhotoScreen() {
 
       {/* Caption */}
       <View style={styles.section}>
-        <Text style={styles.label}>Caption (optional)</Text>
+        <View style={styles.labelRow}>
+          <Ionicons name="chatbubble-outline" size={16} color={Colors.textSecondary} />
+          <Text style={styles.label}>Caption (optional)</Text>
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Add a caption..."
@@ -129,7 +140,10 @@ export default function AddPhotoScreen() {
         {saving ? (
           <ActivityIndicator color={Colors.textInverse} />
         ) : (
-          <Text style={styles.saveButtonText}>Add Photo</Text>
+          <>
+            <Ionicons name="checkmark-circle" size={20} color={Colors.textInverse} />
+            <Text style={styles.saveButtonText}>Add Photo</Text>
+          </>
         )}
       </TouchableOpacity>
     </ScrollView>
@@ -145,6 +159,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
@@ -159,7 +176,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   section: { marginBottom: Spacing.lg },
-  label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text, marginBottom: Spacing.sm },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
+  label: { fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.semibold as any, color: Colors.text },
   typeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   typeChip: {
     paddingHorizontal: Spacing.md,
@@ -189,6 +207,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    justifyContent: 'center',
     alignItems: 'center',
     marginTop: Spacing.sm,
   },

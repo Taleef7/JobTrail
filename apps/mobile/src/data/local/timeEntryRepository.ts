@@ -3,8 +3,6 @@ import type { TimeEntry } from '../../domain/types';
 import type { AppDatabase } from './types';
 import { createSyncOperation } from './syncRepository';
 
-const DEFAULT_USER_ID = 'local_user';
-
 function now(): string {
   return new Date().toISOString();
 }
@@ -12,7 +10,8 @@ function now(): string {
 export async function createTimeEntry(
   db: AppDatabase,
   jobId: string,
-  input: { durationMinutes: number; description?: string; startedAt?: string; endedAt?: string }
+  input: { durationMinutes: number; description?: string; startedAt?: string; endedAt?: string },
+  userId: string = 'local_user'
 ): Promise<TimeEntry> {
   const id = uuidv4();
   const timestamp = now();
@@ -20,7 +19,7 @@ export async function createTimeEntry(
   const entry: TimeEntry = {
     id,
     jobId,
-    userId: DEFAULT_USER_ID,
+    userId,
     startedAt: input.startedAt ?? null,
     endedAt: input.endedAt ?? null,
     durationMinutes: input.durationMinutes,
@@ -79,4 +78,92 @@ export async function deleteTimeEntry(db: AppDatabase, id: string): Promise<bool
   }
 
   return result.changes > 0;
+}
+
+export async function upsertTimeEntry(db: AppDatabase, remote: {
+  id: string;
+  jobId: string;
+  userId: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  durationMinutes: number | null;
+  description: string | null;
+  billable: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}): Promise<void> {
+  const existing = await db.getFirstAsync<{ id: string; updatedAt: string }>(
+    'SELECT id, updatedAt FROM time_entries WHERE id = ?',
+    [remote.id]
+  );
+
+  if (existing) {
+    if (remote.updatedAt > existing.updatedAt) {
+      await db.runAsync(
+        `UPDATE time_entries SET jobId = ?, userId = ?, startedAt = ?, endedAt = ?, durationMinutes = ?, description = ?, billable = ?, syncStatus = ?, updatedAt = ?, deletedAt = ? WHERE id = ?`,
+        [remote.jobId, remote.userId, remote.startedAt, remote.endedAt, remote.durationMinutes, remote.description, remote.billable ? 1 : 0, 'synced', remote.updatedAt, remote.deletedAt ?? null, remote.id]
+      );
+    }
+  } else {
+    await db.runAsync(
+      `INSERT INTO time_entries (id, jobId, userId, startedAt, endedAt, durationMinutes, description, billable, createdAt, updatedAt, deletedAt, syncStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [remote.id, remote.jobId, remote.userId, remote.startedAt, remote.endedAt, remote.durationMinutes, remote.description, remote.billable ? 1 : 0, remote.createdAt, remote.updatedAt, remote.deletedAt ?? null, 'synced']
+    );
+  }
+}
+
+export async function getTimeEntryById(db: AppDatabase, id: string): Promise<TimeEntry | null> {
+  const row = await db.getFirstAsync<TimeEntry>(
+    'SELECT * FROM time_entries WHERE id = ? AND deletedAt IS NULL',
+    [id]
+  );
+  return row ?? null;
+}
+
+export async function updateTimeEntry(
+  db: AppDatabase,
+  id: string,
+  updates: Partial<Pick<TimeEntry, 'durationMinutes' | 'description' | 'startedAt' | 'endedAt' | 'billable'>>
+): Promise<TimeEntry | null> {
+  const existing = await db.getFirstAsync<TimeEntry>(
+    'SELECT * FROM time_entries WHERE id = ? AND deletedAt IS NULL',
+    [id]
+  );
+  if (!existing) return null;
+
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  if (updates.durationMinutes !== undefined) { fields.push('durationMinutes = ?'); values.push(updates.durationMinutes); }
+  if (updates.description !== undefined) { fields.push('description = ?'); values.push(updates.description); }
+  if (updates.startedAt !== undefined) { fields.push('startedAt = ?'); values.push(updates.startedAt); }
+  if (updates.endedAt !== undefined) { fields.push('endedAt = ?'); values.push(updates.endedAt); }
+  if (updates.billable !== undefined) { fields.push('billable = ?'); values.push(updates.billable ? 1 : 0); }
+
+  if (fields.length === 0) return existing;
+
+  fields.push('updatedAt = ?');
+  values.push(now());
+  values.push(id);
+
+  await db.runAsync(
+    `UPDATE time_entries SET ${fields.join(', ')} WHERE id = ?`,
+    values
+  );
+
+  // Create sync operation for the update
+  await createSyncOperation(db, {
+    entityType: 'timeEntry',
+    entityId: id,
+    operationType: 'update',
+    payloadJson: JSON.stringify({ ...updates, id }),
+    status: 'pending',
+  }).catch(() => {});
+
+  return db.getFirstAsync<TimeEntry>(
+    'SELECT * FROM time_entries WHERE id = ? AND deletedAt IS NULL',
+    [id]
+  );
 }

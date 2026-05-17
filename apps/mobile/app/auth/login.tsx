@@ -11,13 +11,14 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/context/AuthContext';
 import { showAlert } from '../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { signIn, signInWithGoogle, googleRequest } = useAuth();
+  const { signIn, signInWithGoogle, googleAvailable } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,33 +56,31 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Sign In</Text>
-        <Text style={styles.subtitle}>Sign in to your JobTrail account</Text>
+        <View style={styles.headerSection}>
+          <Text style={styles.title}>Welcome back</Text>
+          <Text style={styles.subtitle}>Sign in to continue</Text>
+        </View>
 
-        <View style={styles.formCard}>
-          <View style={styles.section}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="email@example.com"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoFocus
-            />
-          </View>
+        <View style={styles.formSection}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor={Colors.textTertiary}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoFocus
+          />
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={Colors.textTertiary}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
@@ -96,26 +95,33 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
-          <View style={styles.dividerLine} />
-        </View>
+        {googleAvailable && (
+          <>
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-        <TouchableOpacity
-          style={[styles.googleButton, (googleLoading || !googleRequest) && styles.buttonDisabled]}
-          onPress={handleGoogleSignIn}
-          disabled={googleLoading || !googleRequest}
-        >
-          {googleLoading ? (
-            <ActivityIndicator color={Colors.text} />
-          ) : (
-            <Text style={styles.googleButtonText}>Sign in with Google</Text>
-          )}
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleSignIn}
+              disabled={googleLoading}
+            >
+              {googleLoading ? (
+                <ActivityIndicator color={Colors.text} />
+              ) : (
+                <>
+                  <Ionicons name="logo-google" size={20} color={Colors.text} />
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </>
+        )}
 
         <TouchableOpacity style={styles.linkContainer} onPress={() => router.push('/auth/signup')}>
-          <Text style={styles.linkText}>No account? Sign Up</Text>
+          <Text style={styles.linkText}>Create account</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -124,44 +130,42 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg, justifyContent: 'center', flex: 1 },
+  scrollContent: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xxl + Spacing.xl,
+    paddingBottom: Spacing.xxl,
+    justifyContent: 'center',
+    flex: 1,
+  },
+  headerSection: { marginBottom: Spacing.xxl },
   title: {
-    fontSize: Typography.fontSize.xxl,
+    fontSize: Typography.fontSize.xxxl,
     fontWeight: '700' as const,
     color: Colors.text,
     textAlign: 'center',
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.fontSize.md,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-  },
-  section: { marginBottom: Spacing.lg },
-  formCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, padding: Spacing.lg, ...Elevation.low },
-  label: {
-    fontSize: Typography.fontSize.md,
-    fontWeight: '500' as const,
-    color: Colors.text,
     marginBottom: Spacing.sm,
   },
+  subtitle: {
+    fontSize: Typography.fontSize.lg,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
+  formSection: { gap: Spacing.lg },
   input: {
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    fontSize: Typography.fontSize.md,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    fontSize: Typography.fontSize.lg,
     color: Colors.text,
   },
   button: {
     backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     alignItems: 'center',
-    marginTop: Spacing.md,
-    ...Elevation.medium,
+    marginTop: Spacing.sm,
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: {
@@ -169,19 +173,25 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontWeight: '600' as const,
   },
-  linkContainer: { marginTop: Spacing.lg, alignItems: 'center' },
-  linkText: { fontSize: Typography.fontSize.md, color: Colors.primary },
-  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: Spacing.lg },
+  linkContainer: { marginTop: Spacing.xl, alignItems: 'center' },
+  linkText: { fontSize: Typography.fontSize.md, color: Colors.primary, fontWeight: '500' as const },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: Spacing.xl },
   dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
-  dividerText: { marginHorizontal: Spacing.md, fontSize: Typography.fontSize.sm, color: Colors.textTertiary },
+  dividerText: {
+    marginHorizontal: Spacing.md,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textTertiary,
+  },
   googleButton: {
+    flexDirection: 'row',
     backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Elevation.low,
+    gap: Spacing.md,
   },
   googleButtonText: {
     color: Colors.text,

@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '../../src/context/AuthContext';
 import { showAlert } from '../../src/utils/alert';
-import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
+import { Colors, Spacing, Typography, BorderRadius } from '../../src/theme/colors';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -54,54 +54,48 @@ export default function SignupScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Sign up for JobTrail</Text>
+        <View style={styles.headerSection}>
+          <Text style={styles.title}>Create account</Text>
+          <Text style={styles.subtitle}>Get started with JobTrail</Text>
+        </View>
 
-        <View style={styles.formCard}>
-          <View style={styles.section}>
-            <Text style={styles.label}>Display Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Your name (optional)"
-              value={displayName}
-              onChangeText={setDisplayName}
-              autoCapitalize="words"
-            />
-          </View>
+        <View style={styles.formSection}>
+          <TextInput
+            style={styles.input}
+            placeholder="Display name (optional)"
+            placeholderTextColor={Colors.textTertiary}
+            value={displayName}
+            onChangeText={setDisplayName}
+            autoCapitalize="words"
+          />
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="email@example.com"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor={Colors.textTertiary}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="At least 6 characters"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={Colors.textTertiary}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Re-enter your password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm password"
+            placeholderTextColor={Colors.textTertiary}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+          />
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
@@ -117,7 +111,7 @@ export default function SignupScreen() {
         </View>
 
         <TouchableOpacity style={styles.linkContainer} onPress={() => router.push('/auth/login')}>
-          <Text style={styles.linkText}>Already have an account? Sign In</Text>
+          <Text style={styles.linkText}>Sign in instead</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -126,44 +120,42 @@ export default function SignupScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  scrollContent: { padding: Spacing.lg, justifyContent: 'center', flex: 1 },
+  scrollContent: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.xxl + Spacing.xl,
+    paddingBottom: Spacing.xxl,
+    justifyContent: 'center',
+    flex: 1,
+  },
+  headerSection: { marginBottom: Spacing.xxl },
   title: {
-    fontSize: Typography.fontSize.xxl,
+    fontSize: Typography.fontSize.xxxl,
     fontWeight: '700' as const,
     color: Colors.text,
     textAlign: 'center',
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.fontSize.md,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-  },
-  section: { marginBottom: Spacing.lg },
-  formCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, padding: Spacing.lg, ...Elevation.low },
-  label: {
-    fontSize: Typography.fontSize.md,
-    fontWeight: '500' as const,
-    color: Colors.text,
     marginBottom: Spacing.sm,
   },
+  subtitle: {
+    fontSize: Typography.fontSize.lg,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
+  formSection: { gap: Spacing.lg },
   input: {
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    fontSize: Typography.fontSize.md,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    fontSize: Typography.fontSize.lg,
     color: Colors.text,
   },
   button: {
     backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     alignItems: 'center',
-    marginTop: Spacing.md,
-    ...Elevation.medium,
+    marginTop: Spacing.sm,
   },
   buttonDisabled: { opacity: 0.6 },
   buttonText: {
@@ -171,6 +163,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontWeight: '600' as const,
   },
-  linkContainer: { marginTop: Spacing.lg, alignItems: 'center' },
-  linkText: { fontSize: Typography.fontSize.md, color: Colors.primary },
+  linkContainer: { marginTop: Spacing.xl, alignItems: 'center' },
+  linkText: { fontSize: Typography.fontSize.md, color: Colors.primary, fontWeight: '500' as const },
 });

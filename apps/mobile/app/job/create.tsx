@@ -1,16 +1,21 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { createJob } from '../../src/data/local/jobRepository';
 import { useDatabase } from '../../src/data/local/DatabaseProvider';
+import { useAuth } from '../../src/context/AuthContext';
 import { showAlert } from '../../src/utils/alert';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../src/theme/colors';
 
 export default function CreateJobScreen() {
   const db = useDatabase();
   const router = useRouter();
+  const { localUserId } = useAuth();
   const [title, setTitle] = useState('');
   const [jobType, setJobType] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [siteAddress, setSiteAddress] = useState('');
   const [roughNotes, setRoughNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -25,8 +30,10 @@ export default function CreateJobScreen() {
       const job = await createJob(db, {
         title: title.trim(),
         jobType: jobType.trim() || undefined,
+        clientId: clientName.trim() || undefined,
+        siteId: siteAddress.trim() || undefined,
         roughNotes: roughNotes.trim() || undefined,
-      });
+      }, localUserId || 'local_user');
       router.replace(`/job/${job.id}`);
     } catch (error) {
       console.error('Failed to create job:', error);
@@ -42,6 +49,9 @@ export default function CreateJobScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Create Job</Text>
+        <Text style={styles.subtitle}>Create a new job to track your work</Text>
+
         <View style={styles.section}>
           <Text style={styles.label}>Job Title *</Text>
           <TextInput
@@ -68,10 +78,38 @@ export default function CreateJobScreen() {
         </View>
 
         <View style={styles.section}>
+          <View style={styles.labelRow}>
+            <Ionicons name="person-outline" size={16} color={Colors.textSecondary} />
+            <Text style={styles.label}>Client</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Client name"
+            value={clientName}
+            onChangeText={setClientName}
+            autoCapitalize="words"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.labelRow}>
+            <Ionicons name="location-outline" size={16} color={Colors.textSecondary} />
+            <Text style={styles.label}>Site</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Site address or location"
+            value={siteAddress}
+            onChangeText={setSiteAddress}
+            autoCapitalize="sentences"
+          />
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.label}>Initial Notes</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
-            placeholder="Describe the job, what you did, materials used, time spent..."
+            placeholder="Add notes about this job..."
             value={roughNotes}
             onChangeText={setRoughNotes}
             multiline
@@ -80,7 +118,6 @@ export default function CreateJobScreen() {
             autoCapitalize="sentences"
             autoCorrect={true}
           />
-          <Text style={styles.helperText}>Describe the job, what you did, materials used, time spent...</Text>
         </View>
 
         <TouchableOpacity
@@ -88,9 +125,9 @@ export default function CreateJobScreen() {
           onPress={handleSave}
           disabled={saving}
         >
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Creating...' : 'Create Job'}
-          </Text>
+          {saving ? <ActivityIndicator color={Colors.textInverse} /> : (
+            <><Ionicons name="checkmark" size={20} color={Colors.textInverse} /><Text style={styles.saveButtonText}>Create Job</Text></>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -100,11 +137,28 @@ export default function CreateJobScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
+  title: {
+    fontSize: Typography.fontSize.xxl,
+    fontWeight: Typography.fontWeight.bold as any,
+    color: Colors.text,
+    marginBottom: Spacing.xs,
+  },
+  subtitle: {
+    fontSize: Typography.fontSize.md,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.xl,
+  },
   section: { marginBottom: Spacing.lg },
   label: {
     fontSize: Typography.fontSize.md,
     fontWeight: Typography.fontWeight.medium as any,
     color: Colors.text,
+    marginBottom: Spacing.sm,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
     marginBottom: Spacing.sm,
   },
   input: {
@@ -124,7 +178,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
     marginTop: Spacing.md,
     ...Elevation.low,
   },
@@ -137,5 +194,4 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
     fontWeight: '600' as const,
   },
-  helperText: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: 4, marginLeft: 2 },
 });

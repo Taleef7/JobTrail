@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -13,10 +13,12 @@ import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../data/remote/firebaseConfig';
 import { useDatabase } from '../data/local/DatabaseProvider';
 import { createUser, getUserByCloudUid } from '../data/local/userRepository';
+import { showAlert } from '../utils/alert';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '1044261050198.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '';
+const GOOGLE_SIGN_IN_AVAILABLE = !!GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes('example');
 
 type AuthContextType = {
   user: FirebaseUser | null;
@@ -26,8 +28,7 @@ type AuthContextType = {
   signUp: (email: string, password: string, displayName?: string) => Promise<void>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  googleRequest: ReturnType<typeof Google.useIdTokenAuthRequest>[0];
-  googlePromptAsync: (() => Promise<any>) | null;
+  googleAvailable: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -44,15 +45,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const db = useDatabase();
 
-  const [googleRequest, googleResponse, googlePromptAsync] = Google.useIdTokenAuthRequest({
-    clientId: GOOGLE_CLIENT_ID,
-  });
+  const [, googleResponse, googlePromptAsync] = Google.useIdTokenAuthRequest(
+    GOOGLE_SIGN_IN_AVAILABLE
+      ? { clientId: GOOGLE_CLIENT_ID }
+      : { clientId: 'disabled' }
+  );
 
   useEffect(() => {
     if (googleResponse?.type === 'success') {
       const { id_token } = googleResponse.params;
       const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential).catch(console.error);
+      signInWithCredential(auth, credential).catch((error) => {
+        showAlert('Sign In Failed', 'Could not sign in with Google. Please try again.');
+        console.error('Google sign-in error:', error);
+      });
+    } else if (googleResponse?.type === 'error') {
+      showAlert('Sign In Failed', 'Google sign-in was cancelled or failed.');
     }
   }, [googleResponse]);
 
@@ -60,16 +68,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        let localUser = await getUserByCloudUid(db, firebaseUser.uid);
-        if (!localUser) {
-          localUser = await createUser(db, {
-            cloudUid: firebaseUser.uid,
-            email: firebaseUser.email ?? '',
-            displayName: firebaseUser.displayName,
-            lastSyncedAt: null,
-          });
+        try {
+          let localUser = await getUserByCloudUid(db, firebaseUser.uid);
+          if (!localUser) {
+            localUser = await createUser(db, {
+              cloudUid: firebaseUser.uid,
+              email: firebaseUser.email ?? '',
+              displayName: firebaseUser.displayName,
+              lastSyncedAt: null,
+            });
+          }
+          setLocalUserId(localUser.id);
+        } catch (error) {
+          console.error('Failed to create/get local user:', error);
         }
-        setLocalUserId(localUser.id);
       } else {
         setLocalUserId(null);
       }
@@ -92,14 +104,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth);
   };
 
-  const signInWithGoogle = async () => {
-    if (googlePromptAsync) {
-      await googlePromptAsync();
+  const signInWithGoogle = useCallback(async () => {
+    if (!GOOGLE_SIGN_IN_AVAILABLE) {
+      showAlert('Not Available', 'Google Sign-In is not configured. Please sign in with email and password.');
+      return;
     }
-  };
+    try {
+      await googlePromptAsync();
+    } catch (error) {
+      showAlert('Sign In Failed', 'Could not open Google Sign-In. Please try again.');
+      console.error('Google sign-in prompt error:', error);
+    }
+  }, [googlePromptAsync]);
 
   return (
-    <AuthContext.Provider value={{ user, localUserId, loading, signIn, signUp, signOut, signInWithGoogle, googleRequest, googlePromptAsync }}>
+    <AuthContext.Provider value={{ user, localUserId, loading, signIn, signUp, signOut, signInWithGoogle, googleAvailable: GOOGLE_SIGN_IN_AVAILABLE }}>
       {children}
     </AuthContext.Provider>
   );

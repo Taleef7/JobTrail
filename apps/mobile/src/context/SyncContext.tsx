@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef, useCallb
 import { useAuth } from './AuthContext';
 import { useDatabase } from '../data/local/DatabaseProvider';
 import { getPendingSyncOperations } from '../data/local/syncRepository';
-import { processSyncQueue } from '../data/remote/firestoreSync';
+import { processSyncQueue, pullFromCloud } from '../data/remote/firestoreSync';
 
 type SyncStatusCounts = {
   pending: number;
@@ -14,6 +14,7 @@ type SyncContextType = {
   syncStatus: SyncStatusCounts;
   triggerSync: () => Promise<void>;
   isSyncing: boolean;
+  lastPulledAt: string | null;
 };
 
 const SyncContext = createContext<SyncContextType | null>(null);
@@ -42,12 +43,20 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   const { user, localUserId } = useAuth();
   const [syncStatus, setSyncStatus] = useState<SyncStatusCounts>({ pending: 0, synced: 0, failed: 0 });
   const [isSyncing, setIsSyncing] = useState(false);
+  const [lastPulledAt, setLastPulledAt] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const triggerSync = useCallback(async () => {
     if (!user || !localUserId || isSyncing) return;
     setIsSyncing(true);
     try {
+      // Pull from cloud first, then push local changes
+      const pullResult = await pullFromCloud(db, user.uid, localUserId);
+      if (pullResult.pulled > 0) {
+        setLastPulledAt(new Date().toISOString());
+      }
+
+      // Then push local changes
       await processSyncQueue(db, user.uid, localUserId);
       const counts = await countSyncOperations(db);
       setSyncStatus(counts);
@@ -81,7 +90,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   }, [db, triggerSync]);
 
   return (
-    <SyncContext.Provider value={{ syncStatus, triggerSync, isSyncing }}>
+    <SyncContext.Provider value={{ syncStatus, triggerSync, isSyncing, lastPulledAt }}>
       {children}
     </SyncContext.Provider>
   );

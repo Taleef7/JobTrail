@@ -3,8 +3,6 @@ import type { JobNote } from '../../domain/types';
 import type { AppDatabase } from './types';
 import { createSyncOperation } from './syncRepository';
 
-const DEFAULT_USER_ID = 'local_user';
-
 function now(): string {
   return new Date().toISOString();
 }
@@ -12,14 +10,15 @@ function now(): string {
 export async function createNote(
   db: AppDatabase,
   jobId: string,
-  input: { content: string; noteType?: string }
+  input: { content: string; noteType?: string },
+  userId: string = 'local_user'
 ): Promise<JobNote> {
   const id = uuidv4();
   const timestamp = now();
   const note: JobNote = {
     id,
     jobId,
-    userId: DEFAULT_USER_ID,
+    userId,
     noteType: (input.noteType as JobNote['noteType']) ?? 'manual',
     content: input.content,
     createdAt: timestamp,
@@ -79,4 +78,72 @@ export async function deleteNote(db: AppDatabase, id: string): Promise<boolean> 
   }
 
   return result.changes > 0;
+}
+
+export async function upsertNote(db: AppDatabase, remote: {
+  id: string;
+  jobId: string;
+  userId: string;
+  noteType: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}): Promise<void> {
+  const existing = await db.getFirstAsync<{ id: string; updatedAt: string }>(
+    'SELECT id, updatedAt FROM job_notes WHERE id = ?',
+    [remote.id]
+  );
+
+  if (existing) {
+    if (remote.updatedAt > existing.updatedAt) {
+      await db.runAsync(
+        `UPDATE job_notes SET jobId = ?, userId = ?, noteType = ?, content = ?, syncStatus = ?, updatedAt = ?, deletedAt = ? WHERE id = ?`,
+        [remote.jobId, remote.userId, remote.noteType, remote.content, 'synced', remote.updatedAt, remote.deletedAt ?? null, remote.id]
+      );
+    }
+  } else {
+    await db.runAsync(
+      `INSERT INTO job_notes (id, jobId, userId, noteType, content, createdAt, updatedAt, deletedAt, syncStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [remote.id, remote.jobId, remote.userId, remote.noteType, remote.content, remote.createdAt, remote.updatedAt, remote.deletedAt ?? null, 'synced']
+    );
+  }
+}
+
+export async function updateNote(
+  db: AppDatabase,
+  id: string,
+  updates: Partial<Pick<JobNote, 'content' | 'noteType'>>
+): Promise<JobNote | null> {
+  const existing = await getNoteById(db, id);
+  if (!existing) return null;
+
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  if (updates.content !== undefined) { fields.push('content = ?'); values.push(updates.content); }
+  if (updates.noteType !== undefined) { fields.push('noteType = ?'); values.push(updates.noteType); }
+
+  if (fields.length === 0) return existing;
+
+  fields.push('updatedAt = ?');
+  values.push(now());
+  values.push(id);
+
+  await db.runAsync(
+    `UPDATE job_notes SET ${fields.join(', ')} WHERE id = ?`,
+    values
+  );
+
+  // Create sync operation for the update
+  await createSyncOperation(db, {
+    entityType: 'note',
+    entityId: id,
+    operationType: 'update',
+    payloadJson: JSON.stringify({ ...updates, id }),
+    status: 'pending',
+  }).catch(() => {});
+
+  return getNoteById(db, id);
 }
