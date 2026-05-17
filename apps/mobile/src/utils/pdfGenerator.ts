@@ -1,0 +1,232 @@
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
+import type { Job, JobNote, MaterialLineItem, TimeEntry, CustomerApproval, PhotoAsset } from '../domain/types';
+import { formatDate } from '../utils/formatting';
+
+interface ReportData {
+  job: Job;
+  notes: JobNote[];
+  materials: MaterialLineItem[];
+  timeEntries: TimeEntry[];
+  approvals: CustomerApproval[];
+  photos: PhotoAsset[];
+  clientName?: string;
+  siteAddress?: string;
+}
+
+function formatDuration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours > 0) {
+    return `${hours}h ${mins}m`;
+  }
+  return `${mins}m`;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function generateReportHtml(data: ReportData): string {
+  const { job, notes, materials, timeEntries, approvals, photos, clientName, siteAddress } = data;
+  const totalMinutes = timeEntries.reduce((sum, t) => sum + (t.durationMinutes ?? 0), 0);
+  const totalCost = materials.reduce((sum, m) => sum + (m.totalCost ?? 0), 0);
+
+  const sections: string[] = [];
+
+  // Header
+  sections.push(`
+    <div class="header">
+      <h1>${escapeHtml(job.title)}</h1>
+      <div class="meta">
+        ${job.jobType ? `<span class="badge">${escapeHtml(job.jobType)}</span>` : ''}
+        <span class="badge status-${job.status}">${job.status.replace('_', ' ')}</span>
+        <span class="date">${formatDate(job.createdAt, 'long')}</span>
+      </div>
+    </div>
+  `);
+
+  // Client & Site
+  if (clientName || siteAddress) {
+    sections.push(`
+      <div class="section">
+        <h2>Client &amp; Site</h2>
+        ${clientName ? `<p><strong>Client:</strong> ${escapeHtml(clientName)}</p>` : ''}
+        ${siteAddress ? `<p><strong>Site:</strong> ${escapeHtml(siteAddress)}</p>` : ''}
+      </div>
+    `);
+  }
+
+  // Work Performed
+  if (job.structuredSummary || notes.length > 0) {
+    sections.push(`
+      <div class="section">
+        <h2>Work Performed</h2>
+        ${job.structuredSummary ? `<p>${escapeHtml(job.structuredSummary)}</p>` : ''}
+        ${notes.length > 0 ? `
+          <ul>
+            ${notes.map(n => `<li>${escapeHtml(n.content)}</li>`).join('')}
+          </ul>
+        ` : ''}
+      </div>
+    `);
+  }
+
+  // Materials
+  if (materials.length > 0) {
+    sections.push(`
+      <div class="section">
+        <h2>Materials</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${materials.map(m => `
+              <tr>
+                <td>${escapeHtml(m.name)}</td>
+                <td>${m.quantity}</td>
+                <td>${m.unit ?? '-'}</td>
+                <td>${m.totalCost != null ? `$${m.totalCost.toFixed(2)}` : '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ${totalCost > 0 ? `<p class="total"><strong>Total Cost:</strong> $${totalCost.toFixed(2)}</p>` : ''}
+      </div>
+    `);
+  }
+
+  // Labor Time
+  if (totalMinutes > 0) {
+    sections.push(`
+      <div class="section">
+        <h2>Labor Time</h2>
+        <p><strong>Total:</strong> ${formatDuration(totalMinutes)}</p>
+        <ul>
+          ${timeEntries.map(t => `
+            <li>${t.durationMinutes} min${t.description ? ` — ${escapeHtml(t.description)}` : ''}</li>
+          `).join('')}
+        </ul>
+      </div>
+    `);
+  }
+
+  // Photos
+  if (photos.length > 0) {
+    sections.push(`
+      <div class="section">
+        <h2>Photos</h2>
+        <div class="photo-grid">
+          ${photos.map(p => `
+            <div class="photo-item">
+              <div class="photo-type">${escapeHtml(p.photoType)}</div>
+              ${p.caption ? `<div class="photo-caption">${escapeHtml(p.caption)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `);
+  }
+
+  // Customer Approval
+  if (approvals.length > 0) {
+    sections.push(`
+      <div class="section">
+        <h2>Customer Approval</h2>
+        ${approvals.map(a => `
+          <div class="approval-item">
+            <p><strong>Approved by:</strong> ${escapeHtml(a.customerName ?? 'Unknown')}</p>
+            ${a.approvedAt ? `<p><strong>Date:</strong> ${formatDate(a.approvedAt)}</p>` : ''}
+            ${a.approvalNotes ? `<p><strong>Notes:</strong> ${escapeHtml(a.approvalNotes)}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `);
+  }
+
+  // Follow-up Notes
+  if (job.internalNotes) {
+    sections.push(`
+      <div class="section">
+        <h2>Follow-up Notes</h2>
+        <p>${escapeHtml(job.internalNotes)}</p>
+      </div>
+    `);
+  }
+
+  // Footer
+  sections.push(`
+    <div class="footer">
+      <p>Generated by JobTrail — ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    </div>
+  `);
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 24px; color: #333; line-height: 1.6; }
+    .header { margin-bottom: 24px; border-bottom: 2px solid #2563eb; padding-bottom: 16px; }
+    .header h1 { font-size: 24px; color: #1e3a5f; margin-bottom: 8px; }
+    .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; background: #e5e7eb; color: #374151; }
+    .status-draft { background: #fef3c7; color: #92400e; }
+    .status-scheduled { background: #dbeafe; color: #1e40af; }
+    .status-in_progress { background: #fef3c7; color: #92400e; }
+    .status-completed { background: #d1fae5; color: #065f46; }
+    .status-archived { background: #f3f4f6; color: #6b7280; }
+    .date { font-size: 13px; color: #6b7280; }
+    .section { margin-bottom: 20px; }
+    .section h2 { font-size: 16px; color: #1e3a5f; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; }
+    .section p { margin-bottom: 4px; }
+    .section ul { padding-left: 20px; margin-bottom: 8px; }
+    .section li { margin-bottom: 2px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    th { background: #f9fafb; font-weight: 600; }
+    .total { font-weight: 600; margin-top: 4px; }
+    .photo-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .photo-item { border: 1px solid #e5e7eb; border-radius: 4px; padding: 6px 10px; font-size: 12px; }
+    .photo-type { font-weight: 600; text-transform: uppercase; font-size: 10px; color: #2563eb; }
+    .photo-caption { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .approval-item { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 8px 12px; margin-bottom: 8px; }
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; }
+    .footer p { font-size: 11px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  ${sections.join('\n')}
+</body>
+</html>
+  `;
+}
+
+export async function generatePdf(data: ReportData): Promise<string> {
+  const html = generateReportHtml(data);
+  const { uri } = await Print.printToFileAsync({ html });
+  return uri;
+}
+
+export async function sharePdf(data: ReportData): Promise<void> {
+  const uri = await generatePdf(data);
+  await shareAsync(uri, {
+    UTI: '.pdf',
+    mimeType: 'application/pdf',
+    dialogTitle: `JobTrail Report: ${data.job.title}`,
+  });
+}
+
+export { generateReportHtml };

@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Share, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Image, Share, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,6 +11,9 @@ import { getTimeEntriesByJobId } from '../../../src/data/local/timeEntryReposito
 import { getExtractionResultsByJobId } from '../../../src/data/local/extractionRepository';
 import { getPhotosByJobId } from '../../../src/data/local/photoRepository';
 import { getApprovalsByJobId } from '../../../src/data/local/customerApprovalRepository';
+import { getClientById } from '../../../src/data/local/clientRepository';
+import { getSiteById } from '../../../src/data/local/siteRepository';
+import { sharePdf } from '../../../src/utils/pdfGenerator';
 import { formatDate } from '../../../src/utils/formatting';
 import type { Job, JobNote, MaterialLineItem, TimeEntry, AiExtractionResult, PhotoAsset, CustomerApproval } from '../../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
@@ -95,6 +98,8 @@ export default function ReportPreviewScreen() {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [extractions, setExtractions] = useState<AiExtractionResult[]>([]);
   const [approvals, setApprovals] = useState<CustomerApproval[]>([]);
+  const [clientName, setClientName] = useState<string | undefined>();
+  const [siteAddress, setSiteAddress] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -116,6 +121,20 @@ export default function ReportPreviewScreen() {
       setTimeEntries(t);
       setExtractions(e);
       setApprovals(a);
+
+      // Load client/site names
+      if (j?.clientId) {
+        const client = await getClientById(db, j.clientId);
+        if (client) setClientName(client.name);
+      }
+      if (j?.siteId) {
+        const site = await getSiteById(db, j.siteId);
+        if (site) {
+          const parts = [site.addressLine1, site.city, site.state].filter(Boolean);
+          if (parts.length > 0) setSiteAddress(parts.join(', '));
+          else if (site.name) setSiteAddress(site.name);
+        }
+      }
     } catch (error) {
       console.error('Failed to load report data:', error);
     } finally {
@@ -159,6 +178,23 @@ export default function ReportPreviewScreen() {
       await Share.share({ message: text, title: `JobTrail Report: ${job.title}` });
     } catch (error) {
       console.error('Share failed:', error);
+    }
+  };
+
+  const handleGeneratePdf = async () => {
+    try {
+      await sharePdf({
+        job,
+        notes,
+        materials,
+        timeEntries,
+        approvals,
+        photos,
+        clientName,
+        siteAddress,
+      });
+    } catch (error: any) {
+      Alert.alert('PDF Error', error.message || 'Failed to generate PDF');
     }
   };
 
@@ -318,11 +354,17 @@ export default function ReportPreviewScreen() {
         </View>
       )}
 
-      {/* Share Report */}
-      <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-        <Ionicons name="share-outline" size={20} color={Colors.text} />
-        <Text style={styles.shareButtonText}>Share Report</Text>
-      </TouchableOpacity>
+      {/* Share & PDF */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+          <Ionicons name="share-outline" size={20} color={Colors.text} />
+          <Text style={styles.shareButtonText}>Share Text</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.pdfButton} onPress={handleGeneratePdf}>
+          <Ionicons name="document-attach-outline" size={20} color={Colors.textInverse} />
+          <Text style={styles.pdfButtonText}>Generate PDF</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Footer */}
       <View style={styles.reportFooter}>
@@ -363,6 +405,9 @@ const styles = StyleSheet.create({
   customerSummary: { fontSize: Typography.fontSize.md, color: Colors.text, lineHeight: 24, backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.md, fontStyle: 'italic' as any },
   itemText: { fontSize: Typography.fontSize.md, color: Colors.text, fontWeight: '500' as any },
   itemMeta: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginTop: 2 },
-  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.border, ...Elevation.medium },
-  shareButtonText: { color: Colors.text, fontSize: Typography.fontSize.lg, fontWeight: Typography.fontWeight.semibold as any },
+  shareButton: { backgroundColor: Colors.surfaceSecondary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', flex: 1, borderWidth: 1, borderColor: Colors.border, ...Elevation.medium },
+  shareButtonText: { color: Colors.text, fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.semibold as any },
+  pdfButton: { backgroundColor: Colors.primary, borderRadius: BorderRadius.md, padding: Spacing.lg, flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', alignItems: 'center', flex: 1, ...Elevation.medium },
+  pdfButtonText: { color: Colors.textInverse, fontSize: Typography.fontSize.md, fontWeight: Typography.fontWeight.semibold as any },
+  actionRow: { flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md },
 });
