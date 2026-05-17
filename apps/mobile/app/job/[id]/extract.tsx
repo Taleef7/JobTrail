@@ -10,8 +10,13 @@ import { createExtractionResult, acceptExtractionResult } from '../../../src/dat
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { RuleBasedAiProvider } from '../../../src/ai/RuleBasedAiProvider';
+import { CloudAiProvider } from '../../../src/ai/CloudAiProvider';
 import type { Job, JobNote, JobExtractionResult } from '../../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius } from '../../../src/theme/colors';
+
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
+
+type AiMode = 'rule' | 'cloud';
 
 export default function ExtractScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,8 +30,8 @@ export default function ExtractScreen() {
   const [loading, setLoading] = useState(true);
   const [extracting, setExtracting] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [aiMode, setAiMode] = useState<AiMode>(GEMINI_API_KEY ? 'cloud' : 'rule');
 
-  // Track which suggestions the user wants to accept
   const [acceptMaterials, setAcceptMaterials] = useState(true);
   const [acceptDuration, setAcceptDuration] = useState(true);
   const [acceptFollowUp, setAcceptFollowUp] = useState(true);
@@ -60,19 +65,28 @@ export default function ExtractScreen() {
       return;
     }
 
+    if (aiMode === 'cloud' && !GEMINI_API_KEY) {
+      showAlert('API Key Missing', 'Set EXPO_PUBLIC_GEMINI_API_KEY in .env to use cloud AI.');
+      return;
+    }
+
     setExtracting(true);
     try {
-      const provider = new RuleBasedAiProvider();
+      const provider = aiMode === 'cloud'
+        ? new CloudAiProvider(GEMINI_API_KEY)
+        : new RuleBasedAiProvider();
       const combinedText = notes.map((n) => n.content).join('\n');
       const result = await provider.extractJobFields({
         noteText: combinedText,
         jobId: id!,
       });
 
+      const providerName = aiMode === 'cloud' ? 'gemini_2.0_flash' : 'rule_based';
+
       const saved = await createExtractionResult(db, {
         jobId: id!,
         sourceType: 'note',
-        provider: 'rule_based',
+        provider: providerName,
         inputText: combinedText,
         extractedJson: JSON.stringify(result),
         confidence: result.confidence,
@@ -162,6 +176,41 @@ export default function ExtractScreen() {
               ? notes.map((n) => n.content).join('\n')
               : 'No notes found. Add a note first.'}
           </Text>
+
+          {/* AI Provider Selector */}
+          {!extractionResult && (
+            <View style={styles.providerSection}>
+              <Text style={styles.providerLabel}>Extraction Engine</Text>
+              <View style={styles.providerRow}>
+                <TouchableOpacity
+                  style={[styles.providerChip, aiMode === 'rule' && styles.providerChipActive]}
+                  onPress={() => setAiMode('rule')}
+                >
+                  <Text style={[styles.providerChipText, aiMode === 'rule' && styles.providerChipTextActive]}>
+                    Rule-based
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.providerChip, aiMode === 'cloud' && styles.providerChipActive, !GEMINI_API_KEY && styles.providerChipDisabled]}
+                  onPress={() => GEMINI_API_KEY && setAiMode('cloud')}
+                >
+                  <Text style={[styles.providerChipText, aiMode === 'cloud' && styles.providerChipTextActive, !GEMINI_API_KEY && styles.providerChipTextDisabled]}>
+                    Cloud AI (Gemini)
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {aiMode === 'cloud' && (
+                <Text style={styles.providerHint}>
+                  Using Gemini 2.0 Flash with fallback to 1.5 Flash. Includes retries and rate limiting.
+                </Text>
+              )}
+              {aiMode === 'rule' && (
+                <Text style={styles.providerHint}>
+                  Fast offline extraction using pattern matching.
+                </Text>
+              )}
+            </View>
+          )}
 
           <TouchableOpacity
             style={[styles.extractButton, (extracting || notes.length === 0) && styles.buttonDisabled]}
@@ -337,4 +386,14 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.6 },
   reRunButton: { marginTop: Spacing.md, padding: Spacing.md, alignItems: 'center' },
   reRunButtonText: { color: Colors.textSecondary, fontSize: Typography.fontSize.md },
+  providerSection: { marginBottom: Spacing.lg },
+  providerLabel: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, fontWeight: Typography.fontWeight.medium as any, marginBottom: Spacing.sm },
+  providerRow: { flexDirection: 'row', gap: Spacing.sm },
+  providerChip: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderRadius: BorderRadius.md, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface },
+  providerChipActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
+  providerChipDisabled: { opacity: 0.5 },
+  providerChipText: { fontSize: Typography.fontSize.sm, color: Colors.text },
+  providerChipTextActive: { color: Colors.textInverse },
+  providerChipTextDisabled: { color: Colors.textTertiary },
+  providerHint: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, marginTop: Spacing.xs, lineHeight: 16 },
 });
