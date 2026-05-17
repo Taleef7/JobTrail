@@ -81,7 +81,7 @@ export default function ExtractScreen() {
         jobId: id!,
       });
 
-      const providerName = aiMode === 'cloud' ? 'gemini_2.0_flash' : 'rule_based';
+      const providerName = aiMode === 'cloud' ? 'gemini_3_flash' : 'rule_based';
 
       const saved = await createExtractionResult(db, {
         jobId: id!,
@@ -201,7 +201,8 @@ export default function ExtractScreen() {
               </View>
               {aiMode === 'cloud' && (
                 <Text style={styles.providerHint}>
-                  Using Gemini 2.0 Flash with fallback to 1.5 Flash. Includes retries and rate limiting.
+                  Using Gemini 3.1 Flash Lite with fallback to Gemini 3 Flash Preview.
+                  Includes retries, rate limiting, and timeout protection.
                 </Text>
               )}
               {aiMode === 'rule' && (

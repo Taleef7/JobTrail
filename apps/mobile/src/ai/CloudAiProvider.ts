@@ -124,10 +124,10 @@ export class CloudAiProvider implements AiProvider {
   private model: GenerativeModel;
   private fallbackModel: GenerativeModel;
 
-  constructor(apiKey: string, modelName = 'gemini-2.0-flash') {
+  constructor(apiKey: string, modelName = 'gemini-3.1-flash-lite') {
     const genAI = new GoogleGenerativeAI(apiKey);
     this.model = genAI.getGenerativeModel({ model: modelName });
-    this.fallbackModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    this.fallbackModel = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
   }
 
   async extractJobFields(input: JobExtractionInput): Promise<JobExtractionResult> {
