@@ -208,18 +208,47 @@ export class MockSQLiteDatabase {
   }
 
   private executeSelect(sql: string, params: any[]): Row[] {
-    // Parse: SELECT * FROM tableName [WHERE ...] [ORDER BY ...]
-    const selectMatch = sql.match(/SELECT\s+\*\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+?))?(?:\s+ORDER\s+BY\s+(\w+)(?:\s+(ASC|DESC))?)?/i);
+    // Parse: SELECT [columns] FROM tableName [WHERE ...] [ORDER BY ...]
+    // Supports both SELECT * and SELECT col1, col2, ...
+    const selectMatch = sql.match(/SELECT\s+(.+?)\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+?))?(?:\s+ORDER\s+BY\s+(.+?))?\s*$/i);
     if (!selectMatch) {
       console.warn('MockDB: Could not parse SELECT:', sql);
       return [];
     }
 
-    const tableName = selectMatch[1];
-    const whereClause = selectMatch[2] || '';
-    const orderBy = selectMatch[3];
-    const orderDir = selectMatch[4] || 'ASC';
+    const tableName = selectMatch[2];
+    const afterFrom = selectMatch[3] ? selectMatch[3].trim() : '';
+    const orderByClause = selectMatch[4] ? selectMatch[4].trim() : '';
     const table = this.getTable(tableName);
+
+    // Parse WHERE clause (everything between WHERE and ORDER BY / end)
+    let whereClause = '';
+    if (afterFrom) {
+      if (orderByClause) {
+        // The WHERE group captured everything including ORDER BY text
+        // Actually, with the non-greedy (.+?) in the WHERE group, the regex engine
+        // captures the minimal text that allows the ORDER BY group to match.
+        // But when there's no =? param in WHERE (only IS NULL/IS NOT NULL),
+        // the non-greedy may match empty. So we parse more carefully:
+        // The WHERE capture stops at the start of ORDER BY
+        whereClause = afterFrom.replace(new RegExp('\\s+ORDER\\s+BY\\s+' + this.escapeRegex(orderByClause) + '\\s*$', 'i'), '').trim();
+      } else {
+        whereClause = afterFrom;
+      }
+    }
+
+    // Parse ORDER BY column and direction
+    let orderBy: string | null = null;
+    let orderDir = 'ASC';
+    if (orderByClause) {
+      const orderMatch = orderByClause.match(/(\w+)\s+(ASC|DESC)/i) || orderByClause.match(/(\w+)/i);
+      if (orderMatch) {
+        orderBy = orderMatch[1];
+        if (orderMatch[2]) {
+          orderDir = orderMatch[2].toUpperCase();
+        }
+      }
+    }
 
     // Parse WHERE clause
     let filtered = [...table];
@@ -263,14 +292,18 @@ export class MockSQLiteDatabase {
     // Sort
     if (orderBy) {
       filtered.sort((a, b) => {
-        const aVal = a[orderBy] ?? '';
-        const bVal = b[orderBy] ?? '';
+        const aVal = a[orderBy!] ?? '';
+        const bVal = b[orderBy!] ?? '';
         const cmp = String(aVal).localeCompare(String(bVal));
-        return orderDir.toUpperCase() === 'DESC' ? -cmp : cmp;
+        return orderDir === 'DESC' ? -cmp : cmp;
       });
     }
 
     return filtered;
+  }
+
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   private saveSnapshot(): void {
