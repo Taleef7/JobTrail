@@ -13,6 +13,16 @@ node_modules/
 *.orig.*
 web-build/
 dist/
+expo-env.d.ts
+metro-health-check*
+
+# Native builds
+/ios
+/android
+.kotlin/
+
+# Typescript
+*.tsbuildinfo
 
 # Build
 *.jsbundle
