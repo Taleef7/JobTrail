@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
@@ -27,6 +27,10 @@ export default function VoiceNoteScreen() {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [transcript, setTranscript] = useState('');
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playbackPos, setPlaybackPos] = useState(0);
+  const [playbackDur, setPlaybackDur] = useState(0);
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -36,13 +40,68 @@ export default function VoiceNoteScreen() {
     } catch (error) {
       console.error('Failed to load voice notes:', error);
     }
-  }, [db, id]);
+}, [db, id]);
 
   useFocusEffect(
     useCallback(() => {
       loadData();
     }, [loadData])
   );
+
+  const handlePlayAudio = async (audioUri: string, noteId: string) => {
+    try {
+      // If already playing this note, pause it
+      if (playingId === noteId && soundRef.current) {
+        await soundRef.current.pauseAsync();
+        setPlayingId(null);
+        return;
+      }
+
+      // Stop any existing playback
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+
+      // Check if file exists
+      const fileInfo = await FileSystem.getInfoAsync(audioUri);
+      if (!fileInfo.exists) {
+        showAlert('File Missing', 'Audio file not found.');
+        return;
+      }
+
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: audioUri },
+        { shouldPlay: true },
+        onPlaybackStatusUpdate
+      );
+      soundRef.current = sound;
+      setPlayingId(noteId);
+    } catch (error) {
+      console.error('Playback failed:', error);
+      showAlert('Playback Error', 'Could not play audio file.');
+    }
+  };
+
+  const onPlaybackStatusUpdate = useCallback((status: any) => {
+    if (status.isLoaded) {
+      setPlaybackPos(status.positionMillis);
+      setPlaybackDur(status.durationMillis ?? 0);
+      if (status.didJustFinish) {
+        setPlayingId(null);
+        setPlaybackPos(0);
+      }
+    }
+  }, []);
+
+  // Cleanup sound on unmount
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync().catch(() => {});
+      }
+    };
+  }, []);
 
   const startRecording = async () => {
     try {
@@ -202,6 +261,19 @@ export default function VoiceNoteScreen() {
           <Text style={styles.sectionTitle}>Recorded Notes</Text>
           {voiceNotes.map((vn) => (
             <View key={vn.id} style={styles.noteCard}>
+              {/* Playback controls */}
+              {vn.localAudioUri ? (
+                <TouchableOpacity
+                  style={styles.playButton}
+                  onPress={() => handlePlayAudio(vn.localAudioUri!, vn.id)}
+                >
+                  <Ionicons
+                    name={playingId === vn.id ? 'pause' : 'play'}
+                    size={22}
+                    color={Colors.primary}
+                  />
+                </TouchableOpacity>
+              ) : null}
               <View style={styles.noteContent}>
                 <View style={styles.noteHeader}>
                   <Ionicons name="mic" size={16} color={Colors.primary} />
@@ -210,6 +282,15 @@ export default function VoiceNoteScreen() {
                   </Text>
                   <Text style={styles.noteDate}>{formatDate(vn.createdAt)}</Text>
                 </View>
+                {/* Progress bar when playing this note */}
+                {playingId === vn.id && playbackDur > 0 && (
+                  <View style={styles.progressContainer}>
+                    <View style={[styles.progressBar, { width: `${Math.min((playbackPos / playbackDur) * 100, 100)}%` }]} />
+                    <Text style={styles.progressText}>
+                      {formatDuration(Math.floor(playbackPos / 1000))} / {formatDuration(Math.floor(playbackDur / 1000))}
+                    </Text>
+                  </View>
+                )}
                 {vn.transcript && (
                   <Text style={styles.noteTranscript}>{vn.transcript}</Text>
                 )}
@@ -263,6 +344,10 @@ const styles = StyleSheet.create({
   noteTranscript: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, marginTop: 2 },
   noteSource: { fontSize: Typography.fontSize.xs, color: Colors.textTertiary, fontStyle: 'italic' as any, marginTop: 2 },
   deleteButton: { padding: Spacing.sm },
+  playButton: { padding: Spacing.xs, marginRight: Spacing.sm },
+  progressContainer: { marginTop: Spacing.xs, marginBottom: Spacing.xs, height: 3, backgroundColor: Colors.border, borderRadius: 2 },
+  progressBar: { height: 3, backgroundColor: Colors.primary, borderRadius: 2 },
+  progressText: { fontSize: 10, color: Colors.textTertiary },
   emptySection: { alignItems: 'center', padding: Spacing.xxl },
   emptyText: { fontSize: Typography.fontSize.lg, color: Colors.textSecondary, marginTop: Spacing.md },
   emptySubtext: { fontSize: Typography.fontSize.sm, color: Colors.textTertiary, marginTop: Spacing.xs },

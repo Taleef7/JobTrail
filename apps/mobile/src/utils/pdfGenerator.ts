@@ -62,10 +62,11 @@ function generateReportHtml(data: ReportData): string {
   }
 
   // Work Performed
-  if (job.structuredSummary || notes.length > 0) {
+  if (job.roughNotes || job.structuredSummary || notes.length > 0) {
     sections.push(`
       <div class="section">
         <h2>Work Performed</h2>
+        ${job.roughNotes ? `<p>${escapeHtml(job.roughNotes)}</p>` : ''}
         ${job.structuredSummary ? `<p>${escapeHtml(job.structuredSummary)}</p>` : ''}
         ${notes.length > 0 ? `
           <ul>

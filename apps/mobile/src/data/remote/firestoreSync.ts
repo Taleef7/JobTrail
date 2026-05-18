@@ -44,7 +44,16 @@ export async function processSyncQueue(
       switch (op.entityType) {
         case 'job': {
           const job = await getJobById(localDb, op.entityId);
-          if (!job) throw new Error('Job not found');
+          if (!job) {
+            // Entity was soft-deleted locally — push the delete to Firestore if it's a create/update,
+            // otherwise just mark it as synced
+            if (op.operationType !== 'delete') {
+              await deleteDoc(doc(db, `users/${userId}/jobs/${op.entityId}`));
+            }
+            await updateSyncOperation(localDb, op.id, { status: 'synced', processedAt: new Date().toISOString() });
+            synced++;
+            break;
+          }
 
           if (op.operationType === 'delete') {
             await deleteDoc(doc(db, `users/${userId}/jobs/${op.entityId}`));

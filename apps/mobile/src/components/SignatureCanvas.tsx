@@ -12,15 +12,11 @@ interface SignatureCanvasProps {
   onSignatureChange: (base64: string | null) => void;
 }
 
-/**
- * A reusable signature drawing component using react-native-svg.
- * Tracks touch events via GestureResponderEvent and exports the
- * drawn signature as a base64-encoded SVG string.
- */
 export default function SignatureCanvas({ onSignatureChange }: SignatureCanvasProps) {
   const [strokes, setStrokes] = useState<Point[][]>([]);
   const [size, setSize] = useState({ width: 300, height: 200 });
   const isDrawing = useRef(false);
+  const strokesRef = useRef<Point[][]>([]);
 
   const buildSvgString = useCallback((strokeData: Point[][], w: number, h: number): string => {
     const paths = strokeData
@@ -41,7 +37,6 @@ export default function SignatureCanvas({ onSignatureChange }: SignatureCanvasPr
     try {
       return btoa(str);
     } catch {
-      // Pure-JS fallback for environments without btoa
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
       let output = '';
       let i = 0;
@@ -78,31 +73,31 @@ export default function SignatureCanvas({ onSignatureChange }: SignatureCanvasPr
   const handleGrant = useCallback((e: GestureResponderEvent) => {
     const { locationX, locationY } = e.nativeEvent;
     isDrawing.current = true;
-    setStrokes((prev) => [...prev, [{ x: locationX, y: locationY }]]);
+    const next = [...strokesRef.current, [{ x: locationX, y: locationY }]];
+    strokesRef.current = next;
+    setStrokes(next);
   }, []);
 
   const handleMove = useCallback((e: GestureResponderEvent) => {
     if (!isDrawing.current) return;
     const { locationX, locationY } = e.nativeEvent;
-    setStrokes((prev) => {
-      if (prev.length === 0) return prev;
-      const next = [...prev];
-      next[next.length - 1] = [...next[next.length - 1], { x: locationX, y: locationY }];
-      return next;
-    });
+    const prev = strokesRef.current;
+    if (prev.length === 0) return;
+    const next = [...prev];
+    next[next.length - 1] = [...next[next.length - 1], { x: locationX, y: locationY }];
+    strokesRef.current = next;
+    setStrokes(next);
   }, []);
 
   const handleRelease = useCallback(() => {
     if (!isDrawing.current) return;
     isDrawing.current = false;
-    setStrokes((prev) => {
-      emitChange(prev);
-      return prev;
-    });
+    emitChange(strokesRef.current);
   }, [emitChange]);
 
   const handleClear = useCallback(() => {
     isDrawing.current = false;
+    strokesRef.current = [];
     setStrokes([]);
     onSignatureChange(null);
   }, [onSignatureChange]);

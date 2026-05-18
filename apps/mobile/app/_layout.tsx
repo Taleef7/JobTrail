@@ -55,7 +55,16 @@ function AuthGate() {
         <Stack.Screen name="job/[id]/photo" options={{ title: 'Add Photo', presentation: 'modal' }} />
         <Stack.Screen name="job/[id]/report" options={{ title: 'Report Preview' }} />
         <Stack.Screen name="job/[id]/edit" options={{ title: 'Edit Job' }} />
+        <Stack.Screen name="job/[id]/voice" options={{ title: 'Voice Notes' }} />
+        <Stack.Screen name="job/[id]/approval" options={{ title: 'Customer Approval' }} />
+        <Stack.Screen name="job/[id]/note-edit" options={{ title: 'Edit Note', presentation: 'modal' }} />
+        <Stack.Screen name="job/[id]/material-edit" options={{ title: 'Edit Material', presentation: 'modal' }} />
+        <Stack.Screen name="job/[id]/time-edit" options={{ title: 'Edit Time Entry', presentation: 'modal' }} />
         <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+        <Stack.Screen name="clients/index" options={{ title: 'Clients' }} />
+        <Stack.Screen name="clients/create" options={{ title: 'New Client', presentation: 'modal' }} />
+        <Stack.Screen name="sites/index" options={{ title: 'Sites' }} />
+        <Stack.Screen name="sites/create" options={{ title: 'New Site', presentation: 'modal' }} />
         <Stack.Screen name="auth/login" options={{ title: 'Sign In', headerShown: false }} />
         <Stack.Screen name="auth/signup" options={{ title: 'Sign Up', headerShown: false }} />
       </Stack>

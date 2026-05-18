@@ -69,8 +69,9 @@ export default function ExtractScreen() {
   );
 
   const handleExtract = async () => {
-    if (!notes.length) {
-      showAlert('No Notes', 'Add a note to the job first before running extraction.');
+    const roughNotes = job?.roughNotes;
+    if (!notes.length && !roughNotes) {
+      showAlert('No Notes', 'Add a note or job description before running extraction.');
       return;
     }
 
@@ -84,7 +85,10 @@ export default function ExtractScreen() {
       const provider = aiMode === 'cloud'
         ? new CloudAiProvider(GEMINI_API_KEY)
         : new RuleBasedAiProvider();
-      const combinedText = notes.map((n) => n.content).join('\n');
+      const parts: string[] = [];
+      if (roughNotes) parts.push(roughNotes);
+      parts.push(...notes.map((n) => n.content));
+      const combinedText = parts.join('\n');
       const result = await provider.extractJobFields({
         noteText: combinedText,
         jobId: id!,
@@ -171,6 +175,8 @@ export default function ExtractScreen() {
     return <View style={styles.centerContainer}><Text style={styles.emptyText}>Job not found</Text></View>;
   }
 
+  const hasNotes = notes.length > 0 || Boolean(job?.roughNotes);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {!extractionResult ? (
@@ -184,9 +190,9 @@ export default function ExtractScreen() {
           </Text>
 
           <Text style={styles.notePreview}>
-            {notes.length > 0
-              ? notes.map((n) => n.content).join('\n')
-              : 'No notes found. Add a note first.'}
+{notes.length > 0 || job?.roughNotes
+              ? 'Extract structured fields from your notes'
+              : 'Add a job description first'} 
           </Text>
 
           {/* AI Provider Selector */}
@@ -215,9 +221,9 @@ export default function ExtractScreen() {
           )}
 
           <TouchableOpacity
-            style={[styles.extractButton, (extracting || notes.length === 0) && styles.buttonDisabled]}
+            style={[styles.extractButton, (extracting || !hasNotes) && styles.buttonDisabled]}
             onPress={handleExtract}
-            disabled={extracting || notes.length === 0}
+            disabled={extracting || !hasNotes}
           >
             <Ionicons name="sparkles" size={20} color={Colors.textInverse} />
             <Text style={styles.extractButtonText}>{extracting ? 'Extracting...' : 'Extract Details'}</Text>

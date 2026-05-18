@@ -39,8 +39,9 @@ function generateReportText(
   lines.push(`Date: ${new Date(job.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`);
   lines.push('');
 
-  if (extractedWorkPerformed.length > 0 || notes.length > 0) {
+  if (job.roughNotes || extractedWorkPerformed.length > 0 || notes.length > 0) {
     lines.push('Work Performed:');
+    if (job.roughNotes) lines.push(`  ${job.roughNotes}`);
     extractedWorkPerformed.forEach(w => lines.push(`  • ${w}`));
     notes.forEach(n => lines.push(`  • ${n.content}`));
     lines.push('');
