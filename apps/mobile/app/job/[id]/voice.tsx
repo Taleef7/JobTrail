@@ -1,9 +1,17 @@
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
+import {
+  useAudioRecorder,
+  useAudioRecorderState,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  RecordingPresets,
+} from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
 import { v4 as uuidv4 } from 'uuid';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
@@ -23,14 +31,14 @@ export default function VoiceNoteScreen() {
   const userId = user?.uid ?? 'local_user';
 
   const [voiceNotes, setVoiceNotes] = useState<VoiceNote[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [recordingDuration, setRecordingDuration] = useState(0);
   const [transcript, setTranscript] = useState('');
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const [playbackPos, setPlaybackPos] = useState(0);
-  const [playbackDur, setPlaybackDur] = useState(0);
-  const soundRef = useRef<Audio.Sound | null>(null);
+
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(audioRecorder, 500);
+
+  const audioPlayer = useAudioPlayer(null);
+  const playerStatus = useAudioPlayerStatus(audioPlayer);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -40,7 +48,7 @@ export default function VoiceNoteScreen() {
     } catch (error) {
       console.error('Failed to load voice notes:', error);
     }
-}, [db, id]);
+  }, [db, id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,87 +56,60 @@ export default function VoiceNoteScreen() {
     }, [loadData])
   );
 
+  useEffect(() => {
+    return () => {
+      audioPlayer.pause();
+    };
+  }, [audioPlayer]);
+
+  useEffect(() => {
+    if (playerStatus.didJustFinish && playingId) {
+      setPlayingId(null);
+    }
+  }, [playerStatus.didJustFinish, playingId]);
+
   const handlePlayAudio = async (audioUri: string, noteId: string) => {
     try {
-      // If already playing this note, pause it
-      if (playingId === noteId && soundRef.current) {
-        await soundRef.current.pauseAsync();
-        setPlayingId(null);
+      if (playingId === noteId) {
+        if (playerStatus.playing) {
+          audioPlayer.pause();
+        } else {
+          audioPlayer.play();
+        }
         return;
       }
 
-      // Stop any existing playback
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-      }
-
-      // Check if file exists
       const fileInfo = await FileSystem.getInfoAsync(audioUri);
       if (!fileInfo.exists) {
         showAlert('File Missing', 'Audio file not found.');
         return;
       }
 
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: audioUri },
-        { shouldPlay: true },
-        onPlaybackStatusUpdate
-      );
-      soundRef.current = sound;
+      audioPlayer.replace(audioUri);
       setPlayingId(noteId);
+      audioPlayer.play();
     } catch (error) {
       console.error('Playback failed:', error);
       showAlert('Playback Error', 'Could not play audio file.');
     }
   };
 
-  const onPlaybackStatusUpdate = useCallback((status: any) => {
-    if (status.isLoaded) {
-      setPlaybackPos(status.positionMillis);
-      setPlaybackDur(status.durationMillis ?? 0);
-      if (status.didJustFinish) {
-        setPlayingId(null);
-        setPlaybackPos(0);
-      }
-    }
-  }, []);
-
-  // Cleanup sound on unmount
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
-      }
-    };
-  }, []);
-
   const startRecording = async () => {
     try {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
+      const permissions = await requestRecordingPermissionsAsync();
+      if (!permissions.granted) {
         showAlert('Permission Required', 'Microphone permission is needed to record voice notes.');
         return;
       }
 
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
       });
 
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
-      setRecording(recording);
-      setIsRecording(true);
-      setRecordingDuration(0);
-
-      // Track duration
-      const interval = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
-      }, 1000);
-      // Store interval ref on recording for cleanup
-      (recording as any)._durationInterval = interval;
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
+      setTranscript('');
     } catch (error) {
       console.error('Failed to start recording:', error);
       showAlert('Recording Error', 'Could not start recording. Please try again.');
@@ -136,46 +117,34 @@ export default function VoiceNoteScreen() {
   };
 
   const stopRecording = async () => {
-    if (!recording) return;
-
     try {
-      // Clear duration interval
-      const interval = (recording as any)._durationInterval;
-      if (interval) clearInterval(interval);
+      await audioRecorder.stop();
+      await setAudioModeAsync({ allowsRecording: false });
 
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: false });
-
-      setIsRecording(false);
-      setRecording(null);
-
+      const finalState = audioRecorder.getStatus();
+      const uri = finalState.url;
+      const durationMs = finalState.durationMillis || recorderState.durationMillis;
       if (uri) {
-        // Save the recording
-        await saveVoiceNote(uri, recordingDuration);
+        await saveVoiceNote(uri, Math.floor(durationMs / 1000));
       }
     } catch (error) {
       console.error('Failed to stop recording:', error);
-      setIsRecording(false);
-      setRecording(null);
+      showAlert('Recording Error', 'Could not save recording. Please try again.');
     }
   };
 
   const saveVoiceNote = async (audioUri: string, duration: number) => {
     if (!id) return;
     try {
-      // Ensure voice notes directory exists
       const dirInfo = await FileSystem.getInfoAsync(VOICE_DIR);
       if (!dirInfo.exists) {
         await FileSystem.makeDirectoryAsync(VOICE_DIR, { intermediates: true });
       }
 
-      // Copy recording to app storage
       const fileName = `${uuidv4()}.m4a`;
       const destUri = `${VOICE_DIR}${fileName}`;
       await FileSystem.copyAsync({ from: audioUri, to: destUri });
 
-      // Create voice note record
       await createVoiceNote(db, id, {
         localAudioUri: destUri,
         durationSeconds: duration,
@@ -184,7 +153,6 @@ export default function VoiceNoteScreen() {
       }, userId);
 
       setTranscript('');
-      setRecordingDuration(0);
       loadData();
     } catch (error) {
       console.error('Failed to save voice note:', error);
@@ -193,6 +161,10 @@ export default function VoiceNoteScreen() {
   };
 
   const handleDelete = (voiceNoteId: string) => {
+    if (playingId === voiceNoteId) {
+      audioPlayer.pause();
+      setPlayingId(null);
+    }
     Alert.alert('Delete Voice Note', 'Delete this voice note?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -208,9 +180,14 @@ export default function VoiceNoteScreen() {
 
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const secs = Math.floor(seconds) % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const isRecording = recorderState.isRecording;
+  const recordingDuration = Math.floor(recorderState.durationMillis / 1000);
+  const playbackPos = playerStatus.currentTime * 1000;
+  const playbackDur = playerStatus.duration > 0 ? playerStatus.duration * 1000 : 0;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
@@ -219,7 +196,6 @@ export default function VoiceNoteScreen() {
         <Text style={styles.headerTitle}>Voice Notes</Text>
       </View>
 
-      {/* Recording Controls */}
       <View style={styles.recordingSection}>
         {isRecording ? (
           <View style={styles.recordingActive}>
@@ -239,7 +215,6 @@ export default function VoiceNoteScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Transcript input */}
         <View style={styles.transcriptSection}>
           <Text style={styles.transcriptLabel}>Transcript (optional)</Text>
           <TextInput
@@ -255,54 +230,59 @@ export default function VoiceNoteScreen() {
         </View>
       </View>
 
-      {/* Existing Voice Notes */}
       {voiceNotes.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recorded Notes</Text>
-          {voiceNotes.map((vn) => (
-            <View key={vn.id} style={styles.noteCard}>
-              {/* Playback controls */}
-              {vn.localAudioUri ? (
-                <TouchableOpacity
-                  style={styles.playButton}
-                  onPress={() => handlePlayAudio(vn.localAudioUri!, vn.id)}
-                >
-                  <Ionicons
-                    name={playingId === vn.id ? 'pause' : 'play'}
-                    size={22}
-                    color={Colors.primary}
-                  />
-                </TouchableOpacity>
-              ) : null}
-              <View style={styles.noteContent}>
-                <View style={styles.noteHeader}>
-                  <Ionicons name="mic" size={16} color={Colors.primary} />
-                  <Text style={styles.noteDuration}>
-                    {vn.durationSeconds ? formatDuration(vn.durationSeconds) : 'Recording'}
-                  </Text>
-                  <Text style={styles.noteDate}>{formatDate(vn.createdAt)}</Text>
-                </View>
-                {/* Progress bar when playing this note */}
-                {playingId === vn.id && playbackDur > 0 && (
-                  <View style={styles.progressContainer}>
-                    <View style={[styles.progressBar, { width: `${Math.min((playbackPos / playbackDur) * 100, 100)}%` }]} />
-                    <Text style={styles.progressText}>
-                      {formatDuration(Math.floor(playbackPos / 1000))} / {formatDuration(Math.floor(playbackDur / 1000))}
+          {voiceNotes.map((vn) => {
+            const isThisLoaded = playingId === vn.id;
+            return (
+              <View key={vn.id} style={styles.noteCard}>
+                {vn.localAudioUri ? (
+                  <TouchableOpacity
+                    style={styles.playButton}
+                    onPress={() => handlePlayAudio(vn.localAudioUri!, vn.id)}
+                  >
+                    <Ionicons
+                      name={isThisLoaded && playerStatus.playing ? 'pause' : 'play'}
+                      size={22}
+                      color={Colors.primary}
+                    />
+                  </TouchableOpacity>
+                ) : null}
+                <View style={styles.noteContent}>
+                  <View style={styles.noteHeader}>
+                    <Ionicons name="mic" size={16} color={Colors.primary} />
+                    <Text style={styles.noteDuration}>
+                      {vn.durationSeconds ? formatDuration(vn.durationSeconds) : 'Recording'}
                     </Text>
+                    <Text style={styles.noteDate}>{formatDate(vn.createdAt)}</Text>
                   </View>
-                )}
-                {vn.transcript && (
-                  <Text style={styles.noteTranscript}>{vn.transcript}</Text>
-                )}
-                {vn.transcriptSource && (
-                  <Text style={styles.noteSource}>Source: {vn.transcriptSource}</Text>
-                )}
+                  {isThisLoaded && playbackDur > 0 && (
+                    <View style={styles.progressContainer}>
+                      <View
+                        style={[
+                          styles.progressBar,
+                          { width: `${Math.min((playbackPos / playbackDur) * 100, 100)}%` },
+                        ]}
+                      />
+                      <Text style={styles.progressText}>
+                        {formatDuration(playerStatus.currentTime)} / {formatDuration(playerStatus.duration)}
+                      </Text>
+                    </View>
+                  )}
+                  {vn.transcript && (
+                    <Text style={styles.noteTranscript}>{vn.transcript}</Text>
+                  )}
+                  {vn.transcriptSource && (
+                    <Text style={styles.noteSource}>Source: {vn.transcriptSource}</Text>
+                  )}
+                </View>
+                <TouchableOpacity onPress={() => handleDelete(vn.id)} style={styles.deleteButton}>
+                  <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => handleDelete(vn.id)} style={styles.deleteButton}>
-                <Ionicons name="trash-outline" size={18} color={Colors.danger} />
-              </TouchableOpacity>
-            </View>
-          ))}
+            );
+          })}
         </View>
       )}
 

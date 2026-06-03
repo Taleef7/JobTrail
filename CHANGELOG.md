@@ -20,9 +20,15 @@ adheres to [Semantic Versioning](https://semver.org/).
 - `LICENSE` (MIT) and `CHANGELOG.md`
 - EAS build configuration for preview + production mobile builds
 
+### Changed
+
+- **Voice notes migrated from `expo-av` to `expo-audio`** (#2). New hook-based
+  API (`useAudioRecorder`, `useAudioRecorderState`, `useAudioPlayer`,
+  `useAudioPlayerStatus`); no behavior change; `expo-av` removed from
+  dependencies
+
 ### Planned
 
-- `expo-av` → `expo-audio` migration (SDK 54 deprecation)
 - Cloud LLM extraction polish (Gemini prompt + Zod validation)
 - Local LLM proof-of-concept (Milestone D)
 - Speech-to-text for voice notes
