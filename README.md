@@ -4,6 +4,11 @@ Offline-first mobile field-work assistant for contractors, repair technicians, c
 
 Turn field notes, photos, time, materials, and customer sign-off into clean job records and report-ready summaries — even without internet.
 
+[![CI](https://github.com/Taleef7/JobTrail/actions/workflows/ci.yml/badge.svg)](https://github.com/Taleef7/JobTrail/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Expo SDK](https://img.shields.io/badge/Expo-SDK%2054-000020.svg)](https://expo.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)](https://www.typescriptlang.org)
+
 ## Tech Stack
 
 | Layer | Technology |

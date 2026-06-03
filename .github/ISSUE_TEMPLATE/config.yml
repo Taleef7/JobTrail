@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Taleef7/JobTrail/tree/main/docs
+    about: Read the architecture plan, agent handoff, and feature scope docs.
+  - name: Discussions
+    url: https://github.com/Taleef7/JobTrail/discussions
+    about: Ask questions, share ideas, or get help without filing a formal issue.

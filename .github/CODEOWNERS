@@ -1,0 +1,19 @@
+# CODEOWNERS
+# Each line is a file pattern followed by one or more owners.
+# Order matters — the last match wins.
+
+# Default owner
+* @Taleef7
+
+# Architecture / docs
+/docs/ @Taleef7
+/README.md @Taleef7
+/CHANGELOG.md @Taleef7
+/LICENSE @Taleef7
+
+# CI / tooling
+/.github/ @Taleef7
+/.gitignore @Taleef7
+
+# Mobile app
+/apps/mobile/ @Taleef7

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://docs.expo.dev/eas/schemas/eas-json.md",
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "base": {
+      "node": "22.11.0",
+      "env": {
+        "EXPO_PUBLIC_AI_MODE": "rule",
+        "EXPO_PUBLIC_ENABLE_LOCAL_LLM": "false",
+        "EXPO_PUBLIC_ENABLE_CLOUD_AI": "false"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "channel": "preview",
+      "ios": {
+        "simulator": false
+      }
+    },
+    "production": {
+      "extends": "base",
+      "channel": "production",
+      "autoIncrement": true,
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "REPLACE_WITH_APPLE_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "REPLACE_WITH_GOOGLE_PLAY_SERVICE_ACCOUNT_KEY_PATH",
+        "track": "internal"
+      }
+    }
+  },
+  "runtimeVersion": {
+    "policy": "appVersion"
+  }
+}
