@@ -24,11 +24,6 @@ on:
   push:
     tags:
       - "v*"
-  pull_request:
-    paths:
-      - "apps/mobile/**"
-      - "apps/mobile/eas.json"
-      - ".github/workflows/eas-build.yml"
 
 concurrency:
   group: eas-${{ github.ref }}
@@ -36,12 +31,11 @@ concurrency:
 
 jobs:
   build:
-    name: EAS Build (${{ inputs.profile || 'tag' }} / ${{ inputs.platform || 'tag' }})
+    name: EAS Build (${{ inputs.profile || 'production' }} / ${{ inputs.platform || 'all' }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
       contents: write
-      pull-requests: write
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       EXPO_PUBLIC_FIREBASE_API_KEY: ${{ vars.EXPO_PUBLIC_FIREBASE_API_KEY }}
@@ -73,36 +67,9 @@ jobs:
         working-directory: apps/mobile
         run: npm ci
 
-      - name: Determine profile
-        id: profile
-        run: |
-          if [ -n "${{ inputs.profile }}" ]; then
-            echo "name=${{ inputs.profile }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "name=production" >> "$GITHUB_OUTPUT"
-          else
-            echo "name=preview" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Determine platform
-        id: platform
-        run: |
-          if [ -n "${{ inputs.platform }}" ]; then
-            echo "name=${{ inputs.platform }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "name=all" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Run EAS Build
         working-directory: apps/mobile
-        run: eas build --non-interactive --platform ${{ steps.platform.outputs.name }} --profile ${{ steps.profile.outputs.name }}
-
-      - name: Comment on PR
-        if: github.event_name == 'pull_request' && steps.profile.outputs.name == 'preview'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: eas-preview-build
-          message: |
-            ✅ EAS preview build triggered.
-
-            See the latest build in the [Expo dashboard](https://expo.dev/accounts/${{ github.repository_owner }}/projects/jobtrail/builds).
+        env:
+          EAS_BUILD_PROFILE: ${{ inputs.profile || 'production' }}
+          EAS_BUILD_PLATFORM: ${{ inputs.platform || 'all' }}
+        run: eas build --non-interactive --platform "${EAS_BUILD_PLATFORM}" --profile "${EAS_BUILD_PROFILE}"
