@@ -1,0 +1,60 @@
+name: Docs task
+description: Improve, fix, or add documentation
+title: "[Docs]: "
+labels: ["documentation", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for improvements to `README.md`, `docs/`, code comments, or in-app help text.
+
+  - type: dropdown
+    id: doc-location
+    attributes:
+      label: Doc location
+      options:
+        - README.md
+        - docs/AGENT_HANDOFF.md
+        - docs/PLAN.md
+        - docs/ARCHITECTURE.md
+        - docs/DATA_MODEL.md
+        - docs/SYNC_STRATEGY.md
+        - docs/AI_STRATEGY.md
+        - docs/MVP_SCOPE.md
+        - docs/TESTING_STRATEGY.md
+        - docs/DECISIONS/
+        - CHANGELOG.md
+        - Code comments / JSDoc
+        - In-app strings
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current state
+      description: What does the doc say now? Quote the relevant passage if it's short.
+      value: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed change
+      description: What should it say instead?
+      value: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: "Why is this change needed? (e.g. confusing, outdated, missing, wrong)"
+      value: ""
+    validations:
+      required: true

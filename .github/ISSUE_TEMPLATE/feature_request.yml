@@ -1,0 +1,72 @@
+name: Feature request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem first, then the proposed solution. See `docs/PLAN.md` for the current roadmap.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: "What user pain does this address? Who is the user (e.g. solo contractor, multi-crew shop)?"
+      placeholder: |
+        As a <user type>, I want to <do X>, so I can <achieve Y>.
+      value: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed solution
+      description: How should this work? Sketch the user flow.
+      value: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: "What other approaches did you consider? Why is the proposed one better?"
+      value: ""
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: PLAN.md phase
+      description: Which phase of `docs/PLAN.md` does this belong to?
+      options:
+        - Phase 1 — App shell
+        - Phase 2 — Local DB
+        - Phase 3 — Job workflow
+        - Phase 4 — Media capture
+        - Phase 5 — AI extraction
+        - Phase 6 — Auth
+        - Phase 7 — Cloud sync
+        - Phase 8 — Media upload
+        - Phase 9 — Report export
+        - Phase 10 — Local LLM
+        - Post-MVP / future
+        - Not applicable
+      default: 11
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, related apps, prior art, etc.
+      value: ""
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Self-checks
+      options:
+        - label: I searched existing issues / feature requests
+        - label: This aligns with the offline-first + AI-assisted principles in `docs/PLAN.md`
