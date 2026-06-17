@@ -119,7 +119,7 @@ export default function ExtractScreen() {
         provider: providerName,
         inputText: combinedText,
         extractedJson: JSON.stringify(result),
-        confidence: result.confidence,
+        confidence: result.confidence ?? undefined,
       }, localUserId || 'local_user');
 
       setExtractionResult(result);
@@ -147,13 +147,13 @@ export default function ExtractScreen() {
           await createMaterial(db, id!, {
             name: mat.name,
             quantity: mat.quantity ?? 1,
-            unit: mat.unit,
-            unitCost: mat.estimatedCost,
+            unit: mat.unit ?? undefined,
+            unitCost: mat.estimatedCost ?? undefined,
           }, localUserId || 'local_user');
         }
       }
 
-      if (acceptDuration && extractionResult.durationMinutes !== undefined) {
+      if (acceptDuration && extractionResult.durationMinutes != null) {
         await createTimeEntry(db, id!, {
           durationMinutes: extractionResult.durationMinutes,
           description: 'AI extracted duration',
