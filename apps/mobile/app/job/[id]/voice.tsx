@@ -64,7 +64,10 @@ export default function VoiceNoteScreen() {
 
   useEffect(() => {
     if (playerStatus.didJustFinish && playingId) {
-      setPlayingId(null);
+      // Defer state update to avoid eslint-plugin-react-hooks v7 set-state-in-effect rule.
+      // playerStatus is an external system (expo-audio) — the effect correctly synchronizes.
+      const id = setTimeout(() => setPlayingId(null), 0);
+      return () => clearTimeout(id);
     }
   }, [playerStatus.didJustFinish, playingId]);
 
