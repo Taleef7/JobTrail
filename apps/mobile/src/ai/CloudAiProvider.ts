@@ -175,46 +175,146 @@ export class CloudAiProvider implements AiProvider {
   }
 
   async summarizeJob(input: JobSummaryInput): Promise<JobSummaryResult> {
-    const prompt = `Summarize this field service job in 2-3 sentences for the customer:
+    const totalMinutes = input.timeEntries.reduce(
+      (s, t) => s + (t.durationMinutes ?? 0),
+      0,
+    );
+    const prompt = [
+      'Summarize this field service job in 2-3 sentences for the customer.',
+      '',
+      `Title: ${input.job.title}`,
+      `Type: ${input.job.jobType || 'N/A'}`,
+      `Notes: ${input.notes.map((n) => n.content).join('; ') || 'none'}`,
+      `Materials: ${
+        input.materials
+          .map((m) => `${m.quantity ?? 1} ${m.unit ?? ''} ${m.name}`)
+          .join(', ') || 'none'
+      }`,
+      `Total time: ${totalMinutes} minutes`,
+      '',
+      'Return a JSON object: { "summary": string, "customerVisibleSummary": string }',
+    ].join('\n');
 
-Title: ${input.job.title}
-Type: ${input.job.jobType || 'N/A'}
-Notes: ${input.notes.map((n) => n.content).join('; ')}
-Materials: ${input.materials.map((m) => `${m.quantity} ${m.unit ?? ''} ${m.name}`).join(', ')}
-Time: ${input.timeEntries.reduce((s, t) => s + (t.durationMinutes ?? 0), 0)} minutes
-
-Return a JSON object: { "summary": string, "customerVisibleSummary": string }`;
-
-    try {
-      await waitForRateLimit();
-      const text = await fetchWithTimeout(this.model, prompt, GEMINI_TIMEOUT_MS);
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new AiParseError('No JSON in summary response');
-      let rawJson: unknown;
+    let lastError: Error | null = null;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
-        rawJson = JSON.parse(jsonMatch[0]);
+        await waitForRateLimit();
+        let text: string;
+        try {
+          text = await fetchWithTimeout(this.model, prompt, GEMINI_TIMEOUT_MS);
+        } catch {
+          text = await fetchWithTimeout(
+            this.fallbackModel,
+            prompt,
+            GEMINI_TIMEOUT_MS,
+          );
+        }
+        return this.parseSummaryResponse(text);
       } catch (err) {
-        throw new AiParseError('Gemini summary was not valid JSON', err);
+        lastError = err as Error;
+        if (attempt < MAX_RETRIES - 1) {
+          await sleep(Math.pow(2, attempt) * 1000);
+        }
       }
-      const parsed = JobSummaryResponseSchema.safeParse(rawJson);
-      if (!parsed.success) {
-        const issues = parsed.error.issues.map(
-          (i) => `${i.path.join('.')}: ${i.message}`,
-        ).join('; ');
-        throw new AiParseError(
-          `Gemini summary failed schema validation: ${issues}`,
-        );
-      }
-      return {
-        summary: parsed.data.summary,
-        customerVisibleSummary: parsed.data.customerVisibleSummary ?? parsed.data.summary,
-      };
-    } catch (error) {
-      throw error;
     }
+    throw lastError || new Error('Gemini summary failed after retries');
   }
 
-  async suggestMissingFields(input: MissingFieldInput): Promise<MissingFieldResult> {
-    return { missingFields: [], suggestions: {} };
+  private parseSummaryResponse(text: string): JobSummaryResult {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match)
+      throw new AiParseError('No JSON found in Gemini summary response');
+
+    let raw: unknown;
+    try {
+      raw = JSON.parse(match[0]);
+    } catch (err) {
+      throw new AiParseError('Gemini summary was not valid JSON', err);
+    }
+
+    const parsed = JobSummaryResponseSchema.safeParse(raw);
+    if (!parsed.success) {
+      const issues = parsed.error.issues
+        .map((i) => `${i.path.join('.')}: ${i.message}`)
+        .join('; ');
+      throw new AiParseError(
+        `Gemini summary failed schema validation: ${issues}`,
+      );
+    }
+
+    return {
+      summary: parsed.data.summary,
+      customerVisibleSummary:
+        parsed.data.customerVisibleSummary ?? parsed.data.summary,
+    };
+  }
+
+  async suggestMissingFields(
+    input: MissingFieldInput,
+  ): Promise<MissingFieldResult> {
+    const missing: string[] = [];
+    const suggestions: Record<string, string> = {};
+
+    // Detection (same logic as RuleBasedAiProvider)
+    if (input.materials.length === 0) {
+      missing.push('materials');
+      suggestions['materials'] =
+        'No materials recorded for this job yet.';
+    }
+    if (input.timeEntries.length === 0) {
+      missing.push('timeEntries');
+      suggestions['timeEntries'] =
+        'No labor time recorded for this job yet.';
+    }
+    if (!input.job.jobType) {
+      missing.push('jobType');
+      suggestions['jobType'] =
+        'No job type set. Add a type (e.g. plumbing, electrical).';
+    }
+    if (
+      !input.job.customerVisibleSummary &&
+      !input.job.structuredSummary
+    ) {
+      missing.push('summary');
+      suggestions['summary'] =
+        'No summary generated yet. Run "Generate Report" to create one.';
+    }
+
+    // Optionally enhance with Gemini suggestions when fields are missing
+    if (missing.length > 0) {
+      try {
+        await waitForRateLimit();
+        const prompt = [
+          'Suggest brief values for these missing job fields based on job context.',
+          '',
+          `Job title: ${input.job.title}`,
+          `Job type: ${input.job.jobType ?? 'unknown'}`,
+          `Existing notes: ${
+            input.notes.map((n) => n.content).join('; ') || 'none'
+          }`,
+          `Missing fields: ${missing.join(', ')}`,
+          '',
+          'Return JSON: { "suggestions": { "<field>": "<value>" } }',
+          'Only suggest values you can justify from the context. If unsure, omit the field.',
+        ].join('\n');
+
+        const text = await fetchWithTimeout(
+          this.model,
+          prompt,
+          GEMINI_TIMEOUT_MS,
+        );
+        const match = text.match(/\{[\s\S]*\}/);
+        if (match) {
+          const parsed = JSON.parse(match[0]);
+          if (parsed.suggestions && typeof parsed.suggestions === 'object') {
+            Object.assign(suggestions, parsed.suggestions);
+          }
+        }
+      } catch {
+        // Best-effort: keep the detection-only suggestions on any failure.
+      }
+    }
+
+    return { missingFields: missing, suggestions };
   }
 }
