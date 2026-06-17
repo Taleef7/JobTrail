@@ -108,21 +108,21 @@ export interface JobExtractionInput {
 
 export interface ExtractedMaterial {
   name: string;
-  quantity?: number;
-  unit?: string;
-  estimatedCost?: number;
+  quantity?: number | null;
+  unit?: string | null;
+  estimatedCost?: number | null;
 }
 
 export interface JobExtractionResult {
-  jobType?: string;
+  jobType?: string | null;
   workPerformed: string[];
   issuesFound: string[];
   materials: ExtractedMaterial[];
-  durationMinutes?: number;
-  customerApproved?: boolean;
+  durationMinutes?: number | null;
+  customerApproved?: boolean | null;
   followUpNotes: string[];
   missingFields: string[];
-  confidence?: number;
+  confidence?: number | null;
 }
 
 export interface JobSummaryInput {

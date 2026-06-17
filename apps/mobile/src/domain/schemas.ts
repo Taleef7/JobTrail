@@ -113,21 +113,21 @@ export const CreateTimeEntrySchema = z.object({
 
 export const ExtractedMaterialSchema = z.object({
   name: z.string(),
-  quantity: z.number().optional(),
-  unit: z.string().optional(),
-  estimatedCost: z.number().optional(),
+  quantity: z.number().nullable().optional(),
+  unit: z.string().nullable().optional(),
+  estimatedCost: z.number().nullable().optional(),
 });
 
 export const JobExtractionResultSchema = z.object({
-  jobType: z.string().optional(),
+  jobType: z.string().nullable().optional(),
   workPerformed: z.array(z.string()).default([]),
   issuesFound: z.array(z.string()).default([]),
   materials: z.array(ExtractedMaterialSchema).default([]),
-  durationMinutes: z.number().optional(),
-  customerApproved: z.boolean().optional(),
+  durationMinutes: z.number().nullable().optional(),
+  customerApproved: z.boolean().nullable().optional(),
   followUpNotes: z.array(z.string()).default([]),
   missingFields: z.array(z.string()).default([]),
-  confidence: z.number().min(0).max(1).optional(),
+  confidence: z.number().min(0).max(1).nullable().optional(),
 });
 
 export const AiExtractionResultSchema = z.object({
