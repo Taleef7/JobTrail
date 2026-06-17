@@ -2,12 +2,13 @@
 import '../src/utils/cryptoPolyfill';
 
 import { Stack, useSegments, useRouter } from 'expo-router';
-import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Text, AppState } from 'react-native';
 import { useEffect } from 'react';
 import { DatabaseProvider } from '../src/data/local/DatabaseProvider';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
 import { SyncProvider } from '../src/context/SyncContext';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { ModelManager } from '../src/ai/ModelManager';
 import { Colors, Spacing, Typography } from '../src/theme/colors';
 
 function AuthGate() {
@@ -25,6 +26,23 @@ function AuthGate() {
       router.replace('/');
     }
   }, [user, loading, segments, router]);
+
+  // Initialize ModelManager and wire AppState lifecycle
+  useEffect(() => {
+    const modelManager = ModelManager.getInstance();
+    modelManager.initialize();
+
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        // App came to foreground — model can be loaded on demand by LocalLlmAiProvider
+      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
+        // App went to background — release model to avoid iOS memory pressure
+        // LocalLlmAiProvider handles this via its unload method
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   if (loading) {
     return (

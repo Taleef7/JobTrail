@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDatabase } from '../../../src/data/local/DatabaseProvider';
@@ -11,14 +11,18 @@ import { getNotesByJobId } from '../../../src/data/local/noteRepository';
 import { createExtractionResult, acceptExtractionResult } from '../../../src/data/local/extractionRepository';
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
-import { RuleBasedAiProvider } from '../../../src/ai/RuleBasedAiProvider';
-import { CloudAiProvider, GEMINI_MODELS, AiError } from '../../../src/ai/CloudAiProvider';
+import { CascadeAiProvider, ModelManager, AiError } from '../../../src/ai';
 import type { Job, JobNote, JobExtractionResult } from '../../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
-type AiMode = 'rule' | 'cloud';
+const PROVIDER_LABELS: Record<string, string> = {
+  'apple-foundation': 'Apple Intelligence',
+  'local-llm': 'On-device AI',
+  'cloud': 'Cloud AI (Gemini)',
+  'rule-based': 'Rule-based',
+};
 
 function aiErrorToUserMessage(err: AiError): string {
   switch (err.kind) {
@@ -56,12 +60,19 @@ export default function ExtractScreen() {
   const [loading, setLoading] = useState(true);
   const [extracting, setExtracting] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [aiMode, setAiMode] = useState<AiMode>(GEMINI_API_KEY ? 'cloud' : 'rule');
+  const [providerUsed, setProviderUsed] = useState<string | null>(null);
 
   const [acceptMaterials, setAcceptMaterials] = useState(true);
   const [acceptDuration, setAcceptDuration] = useState(true);
   const [acceptFollowUp, setAcceptFollowUp] = useState(true);
   const [acceptJobType, setAcceptJobType] = useState(true);
+
+  const cascadeProvider = useMemo(() => {
+    return new CascadeAiProvider({
+      geminiApiKey: GEMINI_API_KEY || undefined,
+      modelManager: ModelManager.getInstance(),
+    });
+  }, []);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -92,26 +103,19 @@ export default function ExtractScreen() {
       return;
     }
 
-    if (aiMode === 'cloud' && !GEMINI_API_KEY) {
-      showAlert('API Key Missing', 'Set EXPO_PUBLIC_GEMINI_API_KEY in .env to use cloud AI.');
-      return;
-    }
-
     setExtracting(true);
     try {
-      const provider = aiMode === 'cloud'
-        ? new CloudAiProvider(GEMINI_API_KEY)
-        : new RuleBasedAiProvider();
       const parts: string[] = [];
       if (roughNotes) parts.push(roughNotes);
       parts.push(...notes.map((n) => n.content));
       const combinedText = parts.join('\n');
-      const result = await provider.extractJobFields({
+      const result = await cascadeProvider.extractJobFields({
         noteText: combinedText,
         jobId: id!,
       });
 
-      const providerName = aiMode === 'cloud' ? GEMINI_MODELS.PRIMARY : 'rule_based';
+      const providerName = cascadeProvider.getLastProviderUsed();
+      setProviderUsed(providerName);
 
       const saved = await createExtractionResult(db, {
         jobId: id!,
@@ -212,34 +216,9 @@ export default function ExtractScreen() {
 
           <Text style={styles.notePreview}>
 {notes.length > 0 || job?.roughNotes
-              ? 'Extract structured fields from your notes'
+              ? 'Extract structured fields from your notes using the best available AI engine'
               : 'Add a job description first'} 
           </Text>
-
-          {/* AI Provider Selector */}
-          {!extractionResult && (
-            <View style={styles.providerSection}>
-              <Text style={styles.providerLabel}>Extraction Engine</Text>
-              <View style={styles.providerRow}>
-                <TouchableOpacity
-                  style={[styles.providerChip, aiMode === 'rule' && styles.providerChipActive]}
-                  onPress={() => setAiMode('rule')}
-                >
-                  <Text style={[styles.providerChipText, aiMode === 'rule' && styles.providerChipTextActive]}>
-                    Rule-based
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.providerChip, aiMode === 'cloud' && styles.providerChipActive, !GEMINI_API_KEY && styles.providerChipDisabled]}
-                  onPress={() => GEMINI_API_KEY && setAiMode('cloud')}
-                >
-                  <Text style={[styles.providerChipText, aiMode === 'cloud' && styles.providerChipTextActive, !GEMINI_API_KEY && styles.providerChipTextDisabled]}>
-                    Cloud AI (Gemini)
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
 
           <TouchableOpacity
             style={[styles.extractButton, (extracting || !hasNotes) && styles.buttonDisabled]}
@@ -253,6 +232,15 @@ export default function ExtractScreen() {
       ) : (
         <View style={styles.resultsSection}>
           <Text style={styles.title}>Extraction Results</Text>
+
+          {providerUsed && (
+            <View style={styles.providerUsedRow}>
+              <Ionicons name="hardware-chip-outline" size={14} color={Colors.textSecondary} />
+              <Text style={styles.providerUsedText}>
+                Extracted with: {PROVIDER_LABELS[providerUsed] ?? providerUsed}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.confidenceRow}>
             <View style={styles.confidenceBarTrack}>
@@ -372,6 +360,7 @@ export default function ExtractScreen() {
             onPress={() => {
               setExtractionResult(null);
               setExtractionId(null);
+              setProviderUsed(null);
             }}
           >
             <Text style={styles.reRunButtonText}>Re-run Extraction</Text>
@@ -422,13 +411,15 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.6 },
   reRunButton: { marginTop: Spacing.md, padding: Spacing.md, alignItems: 'center' },
   reRunButtonText: { color: Colors.textSecondary, fontSize: Typography.fontSize.md },
-  providerSection: { marginBottom: Spacing.lg },
-  providerLabel: { fontSize: Typography.fontSize.sm, color: Colors.textSecondary, fontWeight: Typography.fontWeight.medium as any, marginBottom: Spacing.sm },
-  providerRow: { flexDirection: 'row', gap: Spacing.sm },
-  providerChip: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderRadius: BorderRadius.md, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface },
-  providerChipActive: { borderColor: Colors.primary, backgroundColor: Colors.primary },
-  providerChipDisabled: { opacity: 0.5 },
-  providerChipText: { fontSize: Typography.fontSize.sm, color: Colors.text },
-  providerChipTextActive: { color: Colors.textInverse },
-  providerChipTextDisabled: { color: Colors.textTertiary },
+  providerUsedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.md,
+  },
+  providerUsedText: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    fontWeight: Typography.fontWeight.medium as any,
+  },
 });
