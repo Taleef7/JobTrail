@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# GitHub is forcing Node 24 on actions starting June 16, 2026.
+# Opt in early so we hit problems on our schedule, not theirs.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   typecheck:
     name: TypeScript
@@ -38,6 +43,48 @@ jobs:
           cache-dependency-path: apps/mobile/package-lock.json
       - run: npm ci
       - run: npx eslint . --ext .ts,.tsx
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci
+      - name: Run tests with coverage
+        run: npx jest --ci --coverage --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: coverage
+          JEST_JUNIT_OUTPUT_NAME: junit.xml
+      - name: Upload coverage to Codecov
+        if: success() || failure()
+        uses: codecov/codecov-action@v5
+        with:
+          directory: apps/mobile/coverage
+          flags: unittests
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: apps/mobile/coverage
+          retention-days: 14
+      - name: Upload test results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-junit
+          path: apps/mobile/coverage/junit.xml
+          retention-days: 14
 
   build-check:
     name: Metro Bundle
