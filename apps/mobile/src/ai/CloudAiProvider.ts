@@ -23,6 +23,52 @@ class AiParseError extends Error {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Telemetry
+// ---------------------------------------------------------------------------
+
+type AiCallOutcome = 'ok' | 'parse_error' | 'network_error' | 'timeout';
+
+interface AiCallRecord {
+  method: 'extractJobFields' | 'summarizeJob' | 'suggestMissingFields';
+  model: string;
+  attempt: number;
+  outcome: AiCallOutcome;
+  durationMs: number;
+  errorMessage?: string;
+}
+
+function logAiCall(rec: AiCallRecord): void {
+  if (!__DEV__) return;
+  console.log(
+    `[JobTrail.AI] ${rec.method} model=${rec.model} attempt=${rec.attempt} ` +
+      `outcome=${rec.outcome} duration=${rec.durationMs}ms` +
+      (rec.errorMessage ? ` err=${rec.errorMessage}` : ''),
+  );
+}
+
+export class AiError extends Error {
+  constructor(
+    message: string,
+    public readonly kind: 'timeout' | 'rate_limit' | 'parse' | 'network' | 'auth' | 'unknown',
+    public readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = 'AiError';
+  }
+}
+
+function classifyError(err: Error | null): AiError['kind'] {
+  if (!err) return 'unknown';
+  const msg = err.message.toLowerCase();
+  if (err instanceof AiParseError) return 'parse';
+  if (msg.includes('timed out')) return 'timeout';
+  if (msg.includes('rate') || msg.includes('quota') || msg.includes('429')) return 'rate_limit';
+  if (msg.includes('api key') || msg.includes('401') || msg.includes('403')) return 'auth';
+  if (msg.includes('network') || msg.includes('fetch')) return 'network';
+  return 'unknown';
+}
+
 const GEMINI_TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
 const RATE_LIMIT_RPM = 55;
@@ -148,6 +194,7 @@ export class CloudAiProvider implements AiProvider {
   }
 
   async extractJobFields(input: JobExtractionInput): Promise<JobExtractionResult> {
+    const start = Date.now();
     const prompt = EXTRACTION_PROMPT.replace('{{input}}', input.noteText);
     let lastError: Error | null = null;
 
@@ -162,16 +209,32 @@ export class CloudAiProvider implements AiProvider {
           text = await fetchWithTimeout(this.fallbackModel, prompt, GEMINI_TIMEOUT_MS);
         }
 
-        return parseExtractionResponse(text);
+        const parsed = parseExtractionResponse(text);
+        logAiCall({ method: 'extractJobFields', model: 'primary', attempt, outcome: 'ok', durationMs: Date.now() - start });
+        return parsed;
       } catch (error: any) {
         lastError = error;
+        const isTimeout = error?.message?.toLowerCase().includes('timed out');
+        const isParse = error instanceof AiParseError;
+        logAiCall({
+          method: 'extractJobFields',
+          model: 'primary',
+          attempt,
+          outcome: isParse ? 'parse_error' : isTimeout ? 'timeout' : 'network_error',
+          durationMs: Date.now() - start,
+          errorMessage: error instanceof Error ? error.message : String(error),
+        });
         if (attempt < MAX_RETRIES - 1) {
           await sleep(Math.pow(2, attempt) * 1000);
         }
       }
     }
 
-    throw lastError || new Error('Gemini extraction failed after retries');
+    throw new AiError(
+      lastError?.message ?? 'Gemini extraction failed after retries',
+      classifyError(lastError),
+      lastError,
+    );
   }
 
   async summarizeJob(input: JobSummaryInput): Promise<JobSummaryResult> {
@@ -195,6 +258,7 @@ export class CloudAiProvider implements AiProvider {
       'Return a JSON object: { "summary": string, "customerVisibleSummary": string }',
     ].join('\n');
 
+    const start = Date.now();
     let lastError: Error | null = null;
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
@@ -209,15 +273,31 @@ export class CloudAiProvider implements AiProvider {
             GEMINI_TIMEOUT_MS,
           );
         }
-        return this.parseSummaryResponse(text);
+        const result = this.parseSummaryResponse(text);
+        logAiCall({ method: 'summarizeJob', model: 'primary', attempt, outcome: 'ok', durationMs: Date.now() - start });
+        return result;
       } catch (err) {
         lastError = err as Error;
+        const isTimeout = String(err).toLowerCase().includes('timed out');
+        const isParse = err instanceof AiParseError;
+        logAiCall({
+          method: 'summarizeJob',
+          model: 'primary',
+          attempt,
+          outcome: isParse ? 'parse_error' : isTimeout ? 'timeout' : 'network_error',
+          durationMs: Date.now() - start,
+          errorMessage: err instanceof Error ? err.message : String(err),
+        });
         if (attempt < MAX_RETRIES - 1) {
           await sleep(Math.pow(2, attempt) * 1000);
         }
       }
     }
-    throw lastError || new Error('Gemini summary failed after retries');
+    throw new AiError(
+      lastError?.message ?? 'Gemini summary failed after retries',
+      classifyError(lastError),
+      lastError,
+    );
   }
 
   private parseSummaryResponse(text: string): JobSummaryResult {
@@ -252,6 +332,7 @@ export class CloudAiProvider implements AiProvider {
   async suggestMissingFields(
     input: MissingFieldInput,
   ): Promise<MissingFieldResult> {
+    const start = Date.now();
     const missing: string[] = [];
     const suggestions: Record<string, string> = {};
 
@@ -315,6 +396,7 @@ export class CloudAiProvider implements AiProvider {
       }
     }
 
+    logAiCall({ method: 'suggestMissingFields', model: 'primary', attempt: 0, outcome: 'ok', durationMs: Date.now() - start });
     return { missingFields: missing, suggestions };
   }
 }

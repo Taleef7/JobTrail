@@ -12,13 +12,30 @@ import { createExtractionResult, acceptExtractionResult } from '../../../src/dat
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { RuleBasedAiProvider } from '../../../src/ai/RuleBasedAiProvider';
-import { CloudAiProvider, GEMINI_MODELS } from '../../../src/ai/CloudAiProvider';
+import { CloudAiProvider, GEMINI_MODELS, AiError } from '../../../src/ai/CloudAiProvider';
 import type { Job, JobNote, JobExtractionResult } from '../../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
 
 type AiMode = 'rule' | 'cloud';
+
+function aiErrorToUserMessage(err: AiError): string {
+  switch (err.kind) {
+    case 'timeout':
+      return 'The AI service took too long to respond. Check your connection and try again.';
+    case 'rate_limit':
+      return 'Too many requests in a short time. Wait a moment and try again.';
+    case 'parse':
+      return 'The AI returned an unexpected response. Please try again, or switch to Rule-based.';
+    case 'auth':
+      return 'The Gemini API key was rejected. Check EXPO_PUBLIC_GEMINI_API_KEY in .env.';
+    case 'network':
+      return 'Network error reaching the AI service. Check your connection.';
+    default:
+      return 'Extraction failed. Please try again.';
+  }
+}
 
 function confidenceColor(confidence: number): string {
   if (confidence >= 0.8) return Colors.secondary;
@@ -109,7 +126,11 @@ export default function ExtractScreen() {
       setExtractionId(saved.id);
     } catch (error) {
       console.error('Extraction failed:', error);
-      showAlert('Error', 'Extraction failed. Please try again.');
+      const message =
+        error instanceof AiError
+          ? aiErrorToUserMessage(error)
+          : 'Extraction failed. Please try again.';
+      showAlert('Extraction failed', message);
     } finally {
       setExtracting(false);
     }
