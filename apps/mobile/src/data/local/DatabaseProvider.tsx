@@ -203,7 +203,8 @@ function NativeDbBridge({ children }: { children: React.ReactNode }) {
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const [mockDb, setMockDb] = useState<MockSQLiteDatabase | null>(null);
-  const [ready, setReady] = useState(false);
+  // Native SQLite needs no async init — ready immediately. Web goes through initMockDb().
+  const [ready, setReady] = useState(Platform.OS !== 'web');
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -211,8 +212,6 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
         setMockDb(db);
         setReady(true);
       });
-    } else {
-      setReady(true);
     }
   }, []);
 
