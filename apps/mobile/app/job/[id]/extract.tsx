@@ -12,7 +12,7 @@ import { createExtractionResult, acceptExtractionResult } from '../../../src/dat
 import { createMaterial } from '../../../src/data/local/materialRepository';
 import { createTimeEntry } from '../../../src/data/local/timeEntryRepository';
 import { RuleBasedAiProvider } from '../../../src/ai/RuleBasedAiProvider';
-import { CloudAiProvider } from '../../../src/ai/CloudAiProvider';
+import { CloudAiProvider, GEMINI_MODELS } from '../../../src/ai/CloudAiProvider';
 import type { Job, JobNote, JobExtractionResult } from '../../../src/domain/types';
 import { Colors, Spacing, Typography, BorderRadius, Elevation } from '../../../src/theme/colors';
 
@@ -94,7 +94,7 @@ export default function ExtractScreen() {
         jobId: id!,
       });
 
-      const providerName = aiMode === 'cloud' ? 'gemini_3_flash' : 'rule_based';
+      const providerName = aiMode === 'cloud' ? GEMINI_MODELS.PRIMARY : 'rule_based';
 
       const saved = await createExtractionResult(db, {
         jobId: id!,

@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai';
+import { z } from 'zod';
+import { JobExtractionResultSchema } from '../domain/schemas';
 import type { AiProvider } from './AiProvider';
 import type {
   JobExtractionInput,
@@ -8,6 +10,18 @@ import type {
   MissingFieldInput,
   MissingFieldResult,
 } from '../domain/types';
+
+export const GEMINI_MODELS = {
+  PRIMARY: 'gemini-3.1-flash-lite',
+  FALLBACK: 'gemini-3.5-flash',
+} as const;
+
+class AiParseError extends Error {
+  constructor(message: string, public readonly cause?: unknown) {
+    super(message);
+    this.name = 'AiParseError';
+  }
+}
 
 const GEMINI_TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
@@ -91,43 +105,46 @@ async function fetchWithTimeout(
 function parseExtractionResponse(text: string): JobExtractionResult {
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error('No JSON found in Gemini response');
+    throw new AiParseError('No JSON found in Gemini response');
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let rawJson: unknown;
+  try {
+    rawJson = JSON.parse(jsonMatch[0]);
+  } catch (err) {
+    throw new AiParseError('Gemini response was not valid JSON', err);
+  }
 
-  return {
-    jobType: parsed.jobType || undefined,
-    workPerformed: Array.isArray(parsed.workPerformed) ? parsed.workPerformed : [],
-    issuesFound: Array.isArray(parsed.issuesFound) ? parsed.issuesFound : [],
-    materials: Array.isArray(parsed.materials)
-      ? parsed.materials.map((m: any) => ({
-          name: m.name || 'Unknown',
-          quantity: m.quantity ?? undefined,
-          unit: m.unit ?? undefined,
-          estimatedCost: m.estimatedCost ?? undefined,
-        }))
-      : [],
-    durationMinutes: parsed.durationMinutes ?? undefined,
-    customerApproved: parsed.customerApproved ?? undefined,
-    followUpNotes: Array.isArray(parsed.followUpNotes) ? parsed.followUpNotes : [],
-    missingFields: Array.isArray(parsed.missingFields) ? parsed.missingFields : [],
-    confidence: parsed.confidence ?? undefined,
-  };
+  const result = JobExtractionResultSchema.safeParse(rawJson);
+  if (!result.success) {
+    const issues = result.error.issues.map(
+      (i) => `${i.path.join('.')}: ${i.message}`,
+    ).join('; ');
+    throw new AiParseError(
+      `Gemini response failed schema validation: ${issues}`,
+    );
+  }
+
+  return result.data;
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const JobSummaryResponseSchema = z.object({
+  summary: z.string().default(''),
+  customerVisibleSummary: z.string().optional(),
+});
+
 export class CloudAiProvider implements AiProvider {
   private model: GenerativeModel;
   private fallbackModel: GenerativeModel;
 
-  constructor(apiKey: string, modelName = 'gemini-3.1-flash-lite') {
+  constructor(apiKey: string, modelName = GEMINI_MODELS.PRIMARY) {
     const genAI = new GoogleGenerativeAI(apiKey);
     this.model = genAI.getGenerativeModel({ model: modelName });
-    this.fallbackModel = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    this.fallbackModel = genAI.getGenerativeModel({ model: GEMINI_MODELS.FALLBACK });
   }
 
   async extractJobFields(input: JobExtractionInput): Promise<JobExtractionResult> {
@@ -172,11 +189,25 @@ Return a JSON object: { "summary": string, "customerVisibleSummary": string }`;
       await waitForRateLimit();
       const text = await fetchWithTimeout(this.model, prompt, GEMINI_TIMEOUT_MS);
       const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error('No JSON in summary response');
-      const parsed = JSON.parse(jsonMatch[0]);
+      if (!jsonMatch) throw new AiParseError('No JSON in summary response');
+      let rawJson: unknown;
+      try {
+        rawJson = JSON.parse(jsonMatch[0]);
+      } catch (err) {
+        throw new AiParseError('Gemini summary was not valid JSON', err);
+      }
+      const parsed = JobSummaryResponseSchema.safeParse(rawJson);
+      if (!parsed.success) {
+        const issues = parsed.error.issues.map(
+          (i) => `${i.path.join('.')}: ${i.message}`,
+        ).join('; ');
+        throw new AiParseError(
+          `Gemini summary failed schema validation: ${issues}`,
+        );
+      }
       return {
-        summary: parsed.summary || '',
-        customerVisibleSummary: parsed.customerVisibleSummary || parsed.summary || '',
+        summary: parsed.data.summary,
+        customerVisibleSummary: parsed.data.customerVisibleSummary ?? parsed.data.summary,
       };
     } catch (error) {
       throw error;
