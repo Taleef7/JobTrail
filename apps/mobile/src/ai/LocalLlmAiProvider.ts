@@ -107,7 +107,7 @@ async function runLocalInference(prompt: string, jsonSchema: object): Promise<st
   const completionPromise = context.completion({
     prompt,
     temperature: 0.1,
-    max_tokens: 256,
+    n_predict: 256,
     n_threads: 4,
     json_schema: JSON.stringify(jsonSchema),
   });

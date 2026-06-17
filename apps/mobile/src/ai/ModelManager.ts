@@ -63,7 +63,9 @@ export class ModelManager {
     this.notifyListeners();
 
     try {
-      await File.downloadFileAsync(modelUrl, modelsDir);
+      // Download to the exact target path so getModelPath() and isDownloaded() agree
+      const targetFile = new File(Paths.document, 'models', 'gemma-4-e2b-qat.gguf');
+      await File.downloadFileAsync(modelUrl, targetFile);
       this.status = 'ready';
       this.downloadProgress = 1;
       this.notifyListeners();

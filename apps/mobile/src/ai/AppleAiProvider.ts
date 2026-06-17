@@ -78,7 +78,7 @@ const JobSummaryResponseSchema = z.object({
  * Requires iOS 26+ and the native module to be linked.
  */
 function isAppleAiAvailable(): boolean {
-  if (!appleAI?.AppleFoundationModels) return false;
+  if (!appleAI?.apple) return false;
   if (Platform.OS !== 'ios') return false;
 
   const version = typeof Platform.Version === 'string'
@@ -87,7 +87,8 @@ function isAppleAiAvailable(): boolean {
   if (version < 26) return false;
 
   try {
-    return appleAI.AppleFoundationModels.isAvailable() === true;
+    // Use the documented apple SDK provider for availability check
+    return appleAI.apple.isAvailable() === true;
   } catch {
     return false;
   }
