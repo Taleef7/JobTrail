@@ -16,7 +16,7 @@ export const GEMINI_MODELS = {
   FALLBACK: 'gemini-3.5-flash',
 } as const;
 
-class AiParseError extends Error {
+export class AiParseError extends Error {
   constructor(message: string, public readonly cause?: unknown) {
     super(message);
     this.name = 'AiParseError';
@@ -38,7 +38,7 @@ interface AiCallRecord {
   errorMessage?: string;
 }
 
-function logAiCall(rec: AiCallRecord): void {
+export function logAiCall(rec: AiCallRecord): void {
   if (!__DEV__) return;
   console.log(
     `[JobTrail.AI] ${rec.method} model=${rec.model} attempt=${rec.attempt} ` +

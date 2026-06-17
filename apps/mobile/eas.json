@@ -6,7 +6,7 @@
   },
   "build": {
     "base": {
-      "node": "22.11.0",
+      "node": "22.15.0",
       "env": {
         "EXPO_PUBLIC_AI_MODE": "rule",
         "EXPO_PUBLIC_ENABLE_LOCAL_LLM": "false",
@@ -20,6 +20,9 @@
       "channel": "development",
       "ios": {
         "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_ENABLE_LOCAL_LLM": "true"
       }
     },
     "preview": {
@@ -28,6 +31,9 @@
       "channel": "preview",
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "EXPO_PUBLIC_ENABLE_LOCAL_LLM": "true"
       }
     },
     "production": {
