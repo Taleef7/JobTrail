@@ -4,6 +4,7 @@
 // legacyExtract() is a line-for-line port of RuleBasedAiProvider.extractJobFields
 // at legacy-v0 (blob LEGACY_BLOB); rules.test.ts proves it reproduces the
 // unmodified file's outputs (src/cli/legacy-rules-oracle.ts regenerates them).
+// The only change is a ReDoS guard on three regexes; see legacyPatterns().
 // toV2() only reshapes the result into schema v2; it never repairs values.
 //
 // Known failure modes (pinned in rules.test.ts, fixtures/baseline/notes.json):
@@ -35,6 +36,30 @@ export interface LegacyResult {
   followUpNotes: string[];
   confidence?: number;
   missingFields: string[];
+}
+
+/**
+ * The legacy material and duration regexes, fresh per call (global regexes carry
+ * lastIndex). One deliberate change: `(?<!\d)` before the three that start with an
+ * unanchored `(\d+)`. Without it a long digit run is rescanned from every start
+ * position — quadratic (50k digits: ~4 s; CodeQL js/polynomial-redos). The
+ * leftmost match of these patterns never starts mid-run (any such match implies
+ * an earlier one), and each ends in letters, so results are unchanged —
+ * rules.test.ts checks this against the original regexes as a property.
+ */
+export function legacyPatterns() {
+  return {
+    materials: [
+      /used\s+(?:(\d+)\s+)?([^.,\n]{3,40}?)(?:\s*,|\s*\.|\s*and|$)/gi,
+      /(?<!\d)(\d+)\s+([A-Za-z\s]{3,30}?\s(?:kit|piece|unit|pack|roll|box|bag|set|bottle|tube|can))/gi,
+    ],
+    duration: [
+      /took\s+(\d+)\s*(?:minutes?|mins?|min)/i,
+      /(?<!\d)(\d+)\s*(?:minutes?|mins?|min)\s*(?:of\s+)?(?:work|labor)/i,
+      /(?:spent|took|worked)\s+(?:about\s+)?(\d+)\s*(?:minutes?|mins?|min)/i,
+      /(?<!\d)(\d+)\s*(?:minutes?|mins?|min)/i,
+    ],
+  };
 }
 
 export function legacyExtract(noteText: string): LegacyResult {
@@ -79,10 +104,7 @@ export function legacyExtract(noteText: string): LegacyResult {
   }
 
   // --- Extract materials ---
-  const materialPatterns = [
-    /used\s+(?:(\d+)\s+)?([^.,\n]{3,40}?)(?:\s*,|\s*\.|\s*and|$)/gi,
-    /(\d+)\s+([A-Za-z\s]{3,30}?\s(?:kit|piece|unit|pack|roll|box|bag|set|bottle|tube|can))/gi,
-  ];
+  const { materials: materialPatterns, duration: durationPatterns } = legacyPatterns();
 
   for (const pattern of materialPatterns) {
     let match;
@@ -110,13 +132,6 @@ export function legacyExtract(noteText: string): LegacyResult {
   }
 
   // --- Extract duration ---
-  const durationPatterns = [
-    /took\s+(\d+)\s*(?:minutes?|mins?|min)/i,
-    /(\d+)\s*(?:minutes?|mins?|min)\s*(?:of\s+)?(?:work|labor)/i,
-    /(?:spent|took|worked)\s+(?:about\s+)?(\d+)\s*(?:minutes?|mins?|min)/i,
-    /(\d+)\s*(?:minutes?|mins?|min)/i,
-  ];
-
   for (const pattern of durationPatterns) {
     const match = pattern.exec(noteText);
     if (match) {

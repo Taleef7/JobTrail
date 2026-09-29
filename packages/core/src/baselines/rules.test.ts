@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { parseModelOutput } from "../parse.ts";
 import { JobRecordSchema, type JobRecord } from "../schema.ts";
-import { extractWithRules, LEGACY_BLOB, legacyExtract, toV2 } from "./rules.ts";
+import { extractWithRules, LEGACY_BLOB, legacyExtract, legacyPatterns, toV2 } from "./rules.ts";
 
 const fixtures = join(import.meta.dirname, "..", "..", "fixtures", "baseline");
 const notes = JSON.parse(readFileSync(join(fixtures, "notes.json"), "utf8")) as {
@@ -117,6 +118,55 @@ describe("extractWithRules (schema v2 shape)", () => {
 
   it("empty note → empty record", () => {
     expect(extractWithRules("")).toEqual(r({}));
+  });
+});
+
+// The regexes exactly as written at legacy-v0 (CodeQL js/polynomial-redos flags
+// the unanchored `(\d+)` ones: quadratic on long digit runs).
+const ORIGINAL = {
+  materials: [
+    /used\s+(?:(\d+)\s+)?([^.,\n]{3,40}?)(?:\s*,|\s*\.|\s*and|$)/gi,
+    /(\d+)\s+([A-Za-z\s]{3,30}?\s(?:kit|piece|unit|pack|roll|box|bag|set|bottle|tube|can))/gi,
+  ],
+  duration: [
+    /took\s+(\d+)\s*(?:minutes?|mins?|min)/i,
+    /(\d+)\s*(?:minutes?|mins?|min)\s*(?:of\s+)?(?:work|labor)/i,
+    /(?:spent|took|worked)\s+(?:about\s+)?(\d+)\s*(?:minutes?|mins?|min)/i,
+    /(\d+)\s*(?:minutes?|mins?|min)/i,
+  ],
+};
+
+/** Every match a global scan finds: index plus all capture groups. */
+const allMatches = (re: RegExp, s: string) =>
+  [...s.matchAll(new RegExp(re.source, re.flags.includes("g") ? re.flags : `${re.flags}g`))].map(
+    (m) => [m.index, ...m],
+  );
+
+describe("ReDoS hardening changes no result", () => {
+  it("stays fast on pathological input (50k-digit run)", () => {
+    for (const note of ["9".repeat(50_000), `9${" ".repeat(50_000)}x`, "9 ".repeat(25_000)]) {
+      const start = performance.now();
+      legacyExtract(note);
+      expect(performance.now() - start).toBeLessThan(250);
+    }
+  });
+
+  it("hardened regexes find exactly the legacy matches (property)", () => {
+    const token = fc.constantFrom(..."9 1 0 min mins minutes of work labor kit box can took spent used about and a s".split(" "), " ", "\n", ".", ","); // prettier-ignore
+    const patterns = legacyPatterns();
+    fc.assert(
+      fc.property(fc.array(token, { maxLength: 40 }), (tokens) => {
+        const s = tokens.join("");
+        for (const key of ["materials", "duration"] as const) {
+          ORIGINAL[key].forEach((original, i) => {
+            const hardened = patterns[key][i];
+            if (!hardened) throw new Error(`missing ${key}[${i}]`);
+            expect(allMatches(hardened, s)).toEqual(allMatches(original, s));
+          });
+        }
+      }),
+      { numRuns: 2000 },
+    );
   });
 });
 

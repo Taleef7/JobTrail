@@ -44,7 +44,7 @@ Fine-tuned models can emit short keys (`t w i m{n q u} l a f`) that `decodeCompa
 
 `extractWithRules(note)` is the legacy v0 regex extractor, ported **without improvement**. It is the floor every model must beat, and the app's fallback when no model is downloaded.
 
-- `legacyExtract()` is a line-for-line port. `src/baselines/rules.test.ts` requires it to reproduce, byte for byte, the outputs of the **unmodified** legacy file on 10 characterization notes (`fixtures/baseline/`). Regenerate those outputs with `pnpm --filter @jobtrail/core legacy-oracle`, which reads the file straight from the `legacy-v0` tag.
+- `legacyExtract()` is a line-for-line port. `src/baselines/rules.test.ts` requires it to reproduce, byte for byte, the outputs of the **unmodified** legacy file on 10 characterization notes (`fixtures/baseline/`). Regenerate those outputs with `pnpm --filter @jobtrail/core legacy-oracle`, which reads the file straight from the `legacy-v0` tag. The one change is a `(?<!\d)` guard on three regexes that were quadratic on long digit runs (CodeQL `js/polynomial-redos`). A property test checks that the guarded regexes find exactly the same matches as the originals.
 - `toV2()` only reshapes into schema v2. It renames fields, maps `undefined` to `null`, and maps legacy `inspection` to `general`. Values v2 rejects (for example 2000 labor minutes) are passed through, so the scorer counts them as schema failures.
 - Known failure modes, each pinned by a test: hours are never parsed, negations are missed, verbs are stripped from work items, units match by substring ("scanner" → `can`), unspoken quantities default to 1, and job type is the first keyword hit. The list is in the header of `src/baselines/rules.ts`.
 
