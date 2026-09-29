@@ -1,0 +1,206 @@
+{
+  "source": {
+    "tag": "legacy-v0",
+    "path": "apps/mobile/src/ai/RuleBasedAiProvider.ts",
+    "blob": "3d625ed573c25c6115e89ccc551bb0247424637d"
+  },
+  "outputs": [
+    {
+      "id": "rules-01",
+      "output": {
+        "workPerformed": [
+          "Kitchen sink P-trap"
+        ],
+        "issuesFound": [],
+        "materials": [
+          {
+            "name": "PVC kit",
+            "quantity": 1,
+            "unit": "kit"
+          }
+        ],
+        "followUpNotes": [
+          "Follow up if leak returns"
+        ],
+        "missingFields": [],
+        "jobType": "plumbing",
+        "durationMinutes": 55,
+        "customerApproved": true,
+        "confidence": 1
+      }
+    },
+    {
+      "id": "rules-02",
+      "output": {
+        "workPerformed": [
+          "Faulty wiring in outlet"
+        ],
+        "issuesFound": [],
+        "materials": [
+          {
+            "name": "New switch",
+            "quantity": 1
+          }
+        ],
+        "followUpNotes": [],
+        "missingFields": [
+          "durationMinutes",
+          "customerApproval"
+        ],
+        "jobType": "electrical",
+        "confidence": 0.7
+      }
+    },
+    {
+      "id": "rules-03",
+      "output": {
+        "workPerformed": [],
+        "issuesFound": [],
+        "materials": [
+          {
+            "name": "PVC kit",
+            "quantity": 1,
+            "unit": "kit"
+          }
+        ],
+        "followUpNotes": [],
+        "missingFields": [
+          "durationMinutes",
+          "customerApproval"
+        ],
+        "jobType": "plumbing",
+        "confidence": 0.5499999999999999
+      }
+    },
+    {
+      "id": "rules-04",
+      "output": {
+        "workPerformed": [
+          "The vents"
+        ],
+        "issuesFound": [],
+        "materials": [],
+        "followUpNotes": [],
+        "missingFields": [
+          "materials",
+          "durationMinutes"
+        ],
+        "jobType": "hvac",
+        "customerApproved": true,
+        "confidence": 0.6499999999999999
+      }
+    },
+    {
+      "id": "rules-05",
+      "output": {
+        "workPerformed": [
+          "The breaker panel cover"
+        ],
+        "issuesFound": [],
+        "materials": [
+          {
+            "name": "Wire nuts",
+            "quantity": 3
+          }
+        ],
+        "followUpNotes": [],
+        "missingFields": [
+          "durationMinutes",
+          "customerApproval"
+        ],
+        "jobType": "electrical",
+        "confidence": 0.7
+      }
+    },
+    {
+      "id": "rules-06",
+      "output": {
+        "workPerformed": [],
+        "issuesFound": [],
+        "materials": [],
+        "followUpNotes": [
+          "Check back next week"
+        ],
+        "missingFields": [
+          "materials",
+          "durationMinutes"
+        ],
+        "jobType": "hvac",
+        "customerApproved": true,
+        "confidence": 0.55
+      }
+    },
+    {
+      "id": "rules-07",
+      "output": {
+        "workPerformed": [],
+        "issuesFound": [],
+        "materials": [],
+        "followUpNotes": [],
+        "missingFields": [
+          "materials",
+          "durationMinutes",
+          "customerApproval"
+        ],
+        "jobType": "plumbing",
+        "confidence": 0.4
+      }
+    },
+    {
+      "id": "rules-08",
+      "output": {
+        "workPerformed": [
+          "The smoke detectors"
+        ],
+        "issuesFound": [],
+        "materials": [
+          {
+            "name": "A scanner",
+            "quantity": 1,
+            "unit": "can"
+          }
+        ],
+        "followUpNotes": [],
+        "missingFields": [
+          "durationMinutes",
+          "customerApproval"
+        ],
+        "jobType": "inspection",
+        "confidence": 0.7
+      }
+    },
+    {
+      "id": "rules-09",
+      "output": {
+        "workPerformed": [
+          "A light fixture"
+        ],
+        "issuesFound": [],
+        "materials": [],
+        "followUpNotes": [],
+        "missingFields": [
+          "materials",
+          "durationMinutes"
+        ],
+        "jobType": "electrical",
+        "customerApproved": true,
+        "confidence": 0.6499999999999999
+      }
+    },
+    {
+      "id": "rules-10",
+      "output": {
+        "workPerformed": [],
+        "issuesFound": [],
+        "materials": [],
+        "followUpNotes": [],
+        "missingFields": [
+          "materials",
+          "customerApproval"
+        ],
+        "durationMinutes": 2000,
+        "confidence": 0.44999999999999996
+      }
+    }
+  ]
+}

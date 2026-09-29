@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
-    "score": "node packages/core/src/cli/score.ts"
+    "score": "node packages/core/src/cli/score.ts",
+    "baseline": "node packages/core/src/cli/baseline.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

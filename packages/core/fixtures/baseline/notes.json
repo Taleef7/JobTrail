@@ -1,0 +1,52 @@
+[
+  {
+    "id": "rules-01",
+    "why": "legacy happy path: every field the rules know about",
+    "note": "Replaced kitchen sink P-trap, used one PVC kit, took 55 minutes, customer approved, follow up if leak returns"
+  },
+  {
+    "id": "rules-02",
+    "why": "legacy test note; spoken 'used new switch' becomes a material with a default quantity of 1",
+    "note": "Fixed faulty wiring in outlet, used new switch"
+  },
+  {
+    "id": "rules-03",
+    "why": "legacy test note: two materials, number word vs digit, unit words",
+    "note": "Used one PVC kit and 2 boxes of screws"
+  },
+  {
+    "id": "rules-04",
+    "why": "hours not parsed ('an hour and a half'); verb stripped from work items",
+    "note": "Swapped the thermostat and cleaned the vents. Took an hour and a half. Customer signed off."
+  },
+  {
+    "id": "rules-05",
+    "why": "hours not parsed ('2 hours'); digit quantity",
+    "note": "Replaced the breaker panel cover, 2 hours on site, used 3 wire nuts"
+  },
+  {
+    "id": "rules-06",
+    "why": "negation missed: 'not sure the customer approved' reads as approved",
+    "note": "Quoted a new water heater but not sure the customer approved it yet, will check back next week"
+  },
+  {
+    "id": "rules-07",
+    "why": "negation ('didn't approve') and an unknown verb ('patched'); 'pipe' substring inside 'repipe'",
+    "note": "Customer didn't approve the repipe, so just patched the leak"
+  },
+  {
+    "id": "rules-08",
+    "why": "substring unit ('scanner' contains 'can'); legacy 'inspection' type has no v2 equivalent",
+    "note": "Checked the smoke detectors, used a scanner and 4 AA batteries"
+  },
+  {
+    "id": "rules-09",
+    "why": "job-type keyword order: 'light' makes a painting job electrical",
+    "note": "Painted the hallway and installed a light fixture, customer ok with the colour"
+  },
+  {
+    "id": "rules-10",
+    "why": "output that violates schema v2 (laborMinutes > 1440) must pass through unrepaired",
+    "note": "Rewired the whole basement, took 2000 minutes over three days"
+  }
+]
