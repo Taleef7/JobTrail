@@ -85,7 +85,7 @@ h1 {
   font-size: 1.05rem;
 }
 
-section {
+main > section {
   margin-top: 40px;
 }
 
@@ -211,14 +211,26 @@ h2 {
   font-size: 1.05rem;
 }
 
+.release section + section {
+  margin-top: 14px;
+}
+
 .release h4 {
-  margin: 14px 0 4px;
+  margin: 0 0 4px;
   font-size: 0.9rem;
 }
 
 .release ul {
   margin: 0;
   padding-left: 20px;
+}
+
+.release code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.85em;
 }
 
 .release li + li {

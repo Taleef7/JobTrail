@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import changelogMarkdown from "../../../CHANGELOG.md?raw";
 import { parseChangelog } from "./changelog";
+import { inlineTokens } from "./inline";
 import { summarizeMilestones, type MilestoneRow } from "./milestones";
 
 const REPO = "https://github.com/Taleef7/JobTrail";
@@ -27,19 +28,20 @@ function useMilestones(): MilestoneState {
   return state;
 }
 
-function WithIssueLinks({ text }: { text: string }) {
-  const parts = text.split(/(#\d+\b)/g);
+function InlineText({ text }: { text: string }) {
   return (
     <>
-      {parts.map((part, i) =>
-        /^#\d+$/.test(part) ? (
-          <a key={i} href={`${REPO}/issues/${part.slice(1)}`}>
-            {part}
-          </a>
-        ) : (
-          <span key={i}>{part}</span>
-        ),
-      )}
+      {inlineTokens(text).map((token, i) => {
+        if (token.kind === "code") return <code key={i}>{token.value}</code>;
+        if (token.kind === "issue") {
+          return (
+            <a key={i} href={`${REPO}/issues/${token.number}`}>
+              {token.value}
+            </a>
+          );
+        }
+        return <span key={i}>{token.value}</span>;
+      })}
     </>
   );
 }
@@ -111,13 +113,15 @@ function Milestones() {
             <td>
               <span className={`status status-${m.status.replace(" ", "-")}`}>{m.status}</span>
             </td>
-            <td className="progress">
-              <div className="bar" role="img" aria-label={`${m.percent}% complete`}>
-                <span style={{ width: `${m.percent}%` }} />
+            <td>
+              <div className="progress">
+                <div className="bar" role="img" aria-label={`${m.percent}% complete`}>
+                  <span style={{ width: `${m.percent}%` }} />
+                </div>
+                <span className="count">
+                  {m.closed}/{m.open + m.closed}
+                </span>
               </div>
-              <span className="count">
-                {m.closed}/{m.open + m.closed}
-              </span>
             </td>
           </tr>
         ))}
@@ -142,7 +146,7 @@ function Shipped() {
               <ul>
                 {section.entries.map((entry, i) => (
                   <li key={i}>
-                    <WithIssueLinks text={entry.text} />
+                    <InlineText text={entry.text} />
                   </li>
                 ))}
               </ul>
