@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
@@ -21,9 +22,26 @@ const build = {
   builtAt: new Date().toISOString(),
 };
 
+// wllama's multi-threaded WASM needs cross-origin isolation. Production scopes
+// these headers to /spike/* (vercel.json); locally they apply to every page.
+const isolation = {
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+};
+
 export default defineConfig({
   plugins: [react()],
   define: {
     __BUILD__: JSON.stringify(build),
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(import.meta.dirname, "index.html"),
+        spike: resolve(import.meta.dirname, "spike/index.html"),
+      },
+    },
+  },
+  server: { headers: isolation },
+  preview: { headers: isolation },
 });

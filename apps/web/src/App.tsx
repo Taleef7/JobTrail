@@ -193,6 +193,7 @@ export function App() {
           Design doc
         </a>
         <a href={`${REPO}/blob/main/docs/WORKFLOW.md`}>How it&apos;s built</a>
+        <a href="/spike/">Browser benchmark</a>
         <a href={`${REPO}/tree/legacy-v0`}>Legacy v0</a>
       </footer>
     </main>

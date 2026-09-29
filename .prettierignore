@@ -3,3 +3,4 @@ pnpm-lock.yaml
 ml/.venv/**
 docs/superpowers/**
 CHANGELOG.md
+evidence/**/*.json
