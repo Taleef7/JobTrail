@@ -13,7 +13,9 @@
     "test": "vitest run",
     "build": "tsc -p tsconfig.json",
     "gen:schema": "vitest run src/schema-files.test.ts --mode update-schemas",
-    "score": "node src/cli/score.ts"
+    "score": "node src/cli/score.ts",
+    "baseline": "node src/cli/baseline.ts",
+    "legacy-oracle": "node src/cli/legacy-rules-oracle.ts"
   },
   "devDependencies": {
     "@types/node": "^24.19.0",

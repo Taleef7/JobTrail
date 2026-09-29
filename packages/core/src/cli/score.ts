@@ -1,37 +1,11 @@
 // pnpm score --gold <gold.jsonl> --pred <pred.jsonl> --out <report.json> [--run name] [--threshold 0.5]
 // Runs on Node 24's built-in TypeScript support (no build step, no tsx).
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { basename } from "node:path";
 import { parseArgs } from "node:util";
-import type { z } from "zod";
 import { ScoreReportSchema, type Metrics } from "../report.ts";
 import { GoldRecordSchema, PredictionRecordSchema, scoreRun } from "../score.ts";
-
-/** Parse and validate every line; errors name the file and the real line number. */
-function readJsonl<S extends z.ZodType>(path: string, schema: S): z.infer<S>[] {
-  const out: z.infer<S>[] = [];
-  readFileSync(path, "utf8")
-    .split(/\r?\n/)
-    .forEach((line, i) => {
-      if (line.trim() === "") return;
-      const where = `${path}:${i + 1}`;
-      let json: unknown;
-      try {
-        json = JSON.parse(line);
-      } catch {
-        throw new Error(`${where}: invalid JSON`);
-      }
-      const result = schema.safeParse(json);
-      if (!result.success) {
-        const issues = result.error.issues.map(
-          (e) => `${e.path.join(".") || "(root)"}: ${e.message}`,
-        );
-        throw new Error(`${where}: ${issues.join("; ")}`);
-      }
-      out.push(result.data);
-    });
-  return out;
-}
+import { readJsonl } from "./jsonl.ts";
 
 const pct = (v: number | null) => (v === null ? "  n/a" : `${(v * 100).toFixed(1).padStart(5)}%`);
 
