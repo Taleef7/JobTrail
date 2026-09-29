@@ -1,0 +1,56 @@
+fieldset {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+fieldset label {
+  display: block;
+  padding: 4px 0;
+}
+
+button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button + button {
+  margin-left: 8px;
+}
+
+#log {
+  max-height: 180px;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+
+#log:empty {
+  display: none;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+#results {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}

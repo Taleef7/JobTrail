@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>JobTrail · web runtime spike</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Spike #66 · measurement page, not the product</p>
+        <h1>In-browser llama.cpp (wllama) benchmark</h1>
+        <p class="lede">
+          Runs small GGUF models entirely in this browser tab and measures prefill and decode speed
+          with llama.cpp's own timings. Models download from Hugging Face on first run (242–397 MB
+          each) and are cached afterwards.
+        </p>
+      </header>
+
+      <section aria-labelledby="env-h">
+        <h2 id="env-h">This browser</h2>
+        <dl class="build" id="env"></dl>
+      </section>
+
+      <section aria-labelledby="cfg-h">
+        <h2 id="cfg-h">What to run</h2>
+        <fieldset id="models"><legend>Models</legend></fieldset>
+        <fieldset id="backends"><legend>Backends</legend></fieldset>
+        <p>
+          <button id="run" type="button">Run benchmark</button>
+          <button id="download" type="button" disabled>Download results JSON</button>
+        </p>
+        <pre id="log" aria-live="polite"></pre>
+      </section>
+
+      <section aria-labelledby="res-h">
+        <h2 id="res-h">Results</h2>
+        <div class="table-wrap"><table class="milestones" id="results"></table></div>
+      </section>
+
+      <footer><a href="/">← Live build</a></footer>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

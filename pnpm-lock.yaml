@@ -35,6 +35,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@wllama/wllama':
+        specifier: 3.6.1
+        version: 3.6.1
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -448,6 +451,9 @@ packages:
 
   '@vitest/spy@5.0.2':
     resolution: {integrity: sha512-Ijc7T1nT9efNb5LxvjaBrEqw3f/QwUv5EE0nKqZxgqsaV/FxAAZ8baGylA8X/Z2oS4Lp+K74Jr6dTJsDKxJDeg==}
+
+  '@wllama/wllama@3.6.1':
+    resolution: {integrity: sha512-v6cA0w6sHuaTLmUo9nSU37Sln+5YqZy/OGWp2dXWaR3ts26yLiMnKHGGbjdzQolPSPydPSKUlHHSKZgXK5Prkw==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1434,6 +1440,8 @@ snapshots:
       vite: 8.3.1(@types/node@24.19.0)
 
   '@vitest/spy@5.0.2': {}
+
+  '@wllama/wllama@3.6.1': {}
 
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:
