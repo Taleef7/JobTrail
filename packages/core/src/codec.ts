@@ -3,7 +3,7 @@
 // prompts. Keys: t=jobType w=workPerformed i=issuesFound m=materials
 // (n=name q=quantity u=unit) l=laborMinutes a=customerApproved f=followUps.
 import { z } from "zod";
-import { JOB_TYPES, type JobRecord } from "./schema";
+import { JOB_TYPES, type JobRecord } from "./schema.ts";
 
 const nonEmpty = z.string().min(1);
 

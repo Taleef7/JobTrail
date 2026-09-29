@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { JobRecordSchema } from "./schema";
+import { JobRecordSchema } from "./schema.ts";
 
 const dir = join(import.meta.dirname, "..", "fixtures", "schema");
 const load = (verdict: "valid" | "invalid") =>

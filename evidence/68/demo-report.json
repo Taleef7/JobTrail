@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "run": "demo",
+  "model": "demo",
+  "matcher": {
+    "method": "token-dice",
+    "threshold": 0.5,
+    "provisional": true
+  },
+  "overall": {
+    "n": 3,
+    "parseRate": 0.6666666666666666,
+    "schemaValidRate": 0.6666666666666666,
+    "zeroEditRate": 0.3333333333333333,
+    "jobTypeAccuracy": 0.6666666666666666,
+    "laborMinutesAccuracy": 0.6666666666666666,
+    "customerApprovedAccuracy": 0.3333333333333333,
+    "workPerformed": {
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "issuesFound": {
+      "precision": 1,
+      "recall": 1,
+      "f1": 1
+    },
+    "followUps": {
+      "precision": 1,
+      "recall": 1,
+      "f1": 1
+    },
+    "materials": {
+      "precision": 1,
+      "recall": 0.75,
+      "f1": 0.8571428571428571,
+      "quantityAccuracy": 0.6666666666666666
+    },
+    "hallucinationRate": 0.16666666666666666,
+    "latency": {
+      "p50WallMs": 1400,
+      "p90WallMs": 2100
+    }
+  },
+  "bySource": {
+    "role-played-owner": {
+      "n": 1,
+      "parseRate": 0,
+      "schemaValidRate": 0,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0,
+      "laborMinutesAccuracy": 0,
+      "customerApprovedAccuracy": 0,
+      "workPerformed": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0,
+        "quantityAccuracy": null
+      },
+      "hallucinationRate": null,
+      "latency": {
+        "p50WallMs": 350,
+        "p90WallMs": 350
+      }
+    },
+    "synthetic": {
+      "n": 2,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0.5,
+      "jobTypeAccuracy": 1,
+      "laborMinutesAccuracy": 1,
+      "customerApprovedAccuracy": 0.5,
+      "workPerformed": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "quantityAccuracy": 0.6666666666666666
+      },
+      "hallucinationRate": 0.16666666666666666,
+      "latency": {
+        "p50WallMs": 1400,
+        "p90WallMs": 2100
+      }
+    }
+  },
+  "byTag": {
+    "approval-absent": {
+      "n": 1,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 1,
+      "laborMinutesAccuracy": 1,
+      "customerApprovedAccuracy": 0,
+      "workPerformed": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "quantityAccuracy": 0.5
+      },
+      "hallucinationRate": 0.25,
+      "latency": {
+        "p50WallMs": 2100,
+        "p90WallMs": 2100
+      }
+    },
+    "hours-phrasing": {
+      "n": 1,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 1,
+      "jobTypeAccuracy": 1,
+      "laborMinutesAccuracy": 1,
+      "customerApprovedAccuracy": 1,
+      "workPerformed": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "quantityAccuracy": 1
+      },
+      "hallucinationRate": 0,
+      "latency": {
+        "p50WallMs": 1400,
+        "p90WallMs": 1400
+      }
+    },
+    "self-correction": {
+      "n": 1,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 1,
+      "laborMinutesAccuracy": 1,
+      "customerApprovedAccuracy": 0,
+      "workPerformed": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "quantityAccuracy": 0.5
+      },
+      "hallucinationRate": 0.25,
+      "latency": {
+        "p50WallMs": 2100,
+        "p90WallMs": 2100
+      }
+    }
+  },
+  "unmatchedPredictionIds": [],
+  "records": [
+    {
+      "id": "demo-1",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": true,
+      "wallMs": 1400
+    },
+    {
+      "id": "demo-2",
+      "source": "synthetic",
+      "tags": [
+        "self-correction",
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 2
+      },
+      "grounding": {
+        "checked": 4,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 2100
+    },
+    {
+      "id": "demo-3",
+      "source": "role-played-owner",
+      "tags": [],
+      "parse": "json",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 350
+    }
+  ]
+}

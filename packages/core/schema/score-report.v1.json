@@ -1,0 +1,1040 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "run": {
+      "type": "string"
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "matcher": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "const": "token-dice"
+        },
+        "threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "provisional": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "threshold",
+        "provisional"
+      ],
+      "additionalProperties": false
+    },
+    "overall": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "parseRate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schemaValidRate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "zeroEditRate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "jobTypeAccuracy": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "laborMinutesAccuracy": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "customerApprovedAccuracy": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workPerformed": {
+          "type": "object",
+          "properties": {
+            "precision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "recall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "f1": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "precision",
+            "recall",
+            "f1"
+          ],
+          "additionalProperties": false
+        },
+        "issuesFound": {
+          "type": "object",
+          "properties": {
+            "precision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "recall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "f1": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "precision",
+            "recall",
+            "f1"
+          ],
+          "additionalProperties": false
+        },
+        "followUps": {
+          "type": "object",
+          "properties": {
+            "precision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "recall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "f1": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "precision",
+            "recall",
+            "f1"
+          ],
+          "additionalProperties": false
+        },
+        "materials": {
+          "type": "object",
+          "properties": {
+            "precision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "recall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "f1": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "quantityAccuracy": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "precision",
+            "recall",
+            "f1",
+            "quantityAccuracy"
+          ],
+          "additionalProperties": false
+        },
+        "hallucinationRate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latency": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "p50WallMs": {
+                  "type": "number"
+                },
+                "p90WallMs": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "p50WallMs",
+                "p90WallMs"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "n",
+        "parseRate",
+        "schemaValidRate",
+        "zeroEditRate",
+        "jobTypeAccuracy",
+        "laborMinutesAccuracy",
+        "customerApprovedAccuracy",
+        "workPerformed",
+        "issuesFound",
+        "followUps",
+        "materials",
+        "hallucinationRate",
+        "latency"
+      ],
+      "additionalProperties": false
+    },
+    "bySource": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "parseRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schemaValidRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "zeroEditRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jobTypeAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "laborMinutesAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "customerApprovedAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "workPerformed": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "issuesFound": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "followUps": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "materials": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "quantityAccuracy": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1",
+              "quantityAccuracy"
+            ],
+            "additionalProperties": false
+          },
+          "hallucinationRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latency": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "p50WallMs": {
+                    "type": "number"
+                  },
+                  "p90WallMs": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "p50WallMs",
+                  "p90WallMs"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "n",
+          "parseRate",
+          "schemaValidRate",
+          "zeroEditRate",
+          "jobTypeAccuracy",
+          "laborMinutesAccuracy",
+          "customerApprovedAccuracy",
+          "workPerformed",
+          "issuesFound",
+          "followUps",
+          "materials",
+          "hallucinationRate",
+          "latency"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "byTag": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "parseRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schemaValidRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "zeroEditRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jobTypeAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "laborMinutesAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "customerApprovedAccuracy": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "workPerformed": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "issuesFound": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "followUps": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1"
+            ],
+            "additionalProperties": false
+          },
+          "materials": {
+            "type": "object",
+            "properties": {
+              "precision": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recall": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "f1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "quantityAccuracy": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "precision",
+              "recall",
+              "f1",
+              "quantityAccuracy"
+            ],
+            "additionalProperties": false
+          },
+          "hallucinationRate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latency": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "p50WallMs": {
+                    "type": "number"
+                  },
+                  "p90WallMs": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "p50WallMs",
+                  "p90WallMs"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "n",
+          "parseRate",
+          "schemaValidRate",
+          "zeroEditRate",
+          "jobTypeAccuracy",
+          "laborMinutesAccuracy",
+          "customerApprovedAccuracy",
+          "workPerformed",
+          "issuesFound",
+          "followUps",
+          "materials",
+          "hallucinationRate",
+          "latency"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "unmatchedPredictionIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parse": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "json",
+              "schema",
+              "missing"
+            ]
+          },
+          "scalars": {
+            "type": "object",
+            "properties": {
+              "jobType": {
+                "type": "boolean"
+              },
+              "laborMinutes": {
+                "type": "boolean"
+              },
+              "customerApproved": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "jobType",
+              "laborMinutes",
+              "customerApproved"
+            ],
+            "additionalProperties": false
+          },
+          "lists": {
+            "type": "object",
+            "properties": {
+              "workPerformed": {
+                "type": "object",
+                "properties": {
+                  "tp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fn": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "tp",
+                  "fp",
+                  "fn"
+                ],
+                "additionalProperties": false
+              },
+              "issuesFound": {
+                "type": "object",
+                "properties": {
+                  "tp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fn": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "tp",
+                  "fp",
+                  "fn"
+                ],
+                "additionalProperties": false
+              },
+              "followUps": {
+                "type": "object",
+                "properties": {
+                  "tp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fp": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "fn": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "tp",
+                  "fp",
+                  "fn"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "workPerformed",
+              "issuesFound",
+              "followUps"
+            ],
+            "additionalProperties": false
+          },
+          "materials": {
+            "type": "object",
+            "properties": {
+              "tp": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "fp": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "fn": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "quantityCorrect": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "unitCorrect": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "tp",
+              "fp",
+              "fn",
+              "quantityCorrect",
+              "unitCorrect"
+            ],
+            "additionalProperties": false
+          },
+          "grounding": {
+            "type": "object",
+            "properties": {
+              "checked": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "ungrounded": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "checked",
+              "ungrounded"
+            ],
+            "additionalProperties": false
+          },
+          "zeroEdit": {
+            "type": "boolean"
+          },
+          "wallMs": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "tags",
+          "parse",
+          "scalars",
+          "lists",
+          "materials",
+          "grounding",
+          "zeroEdit",
+          "wallMs"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "run",
+    "model",
+    "matcher",
+    "overall",
+    "bySource",
+    "byTag",
+    "unmatchedPredictionIds",
+    "records"
+  ],
+  "additionalProperties": false
+}

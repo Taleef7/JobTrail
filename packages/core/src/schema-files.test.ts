@@ -5,13 +5,15 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { CompactRecordSchema } from "./codec";
-import { JobRecordSchema } from "./schema";
+import { CompactRecordSchema } from "./codec.ts";
+import { ScoreReportSchema } from "./report.ts";
+import { JobRecordSchema } from "./schema.ts";
 
 const outDir = join(import.meta.dirname, "..", "schema");
 const files = {
   "schema.v2.json": JobRecordSchema,
   "schema.v2.compact.json": CompactRecordSchema,
+  "score-report.v1.json": ScoreReportSchema,
 };
 
 const render = (schema: z.ZodType) =>
