@@ -12,6 +12,7 @@ import {
   parseModelJson,
   validateSpikeExtraction,
 } from "../src/spike/extraction";
+import { effectiveBackend, isComplete, type Backend } from "../src/spike/result";
 
 interface ModelSpec {
   id: string;
@@ -41,7 +42,6 @@ const MODELS: ModelSpec[] = [
   },
 ];
 
-type Backend = "webgpu" | "wasm-mt" | "wasm-st";
 const BACKENDS: { id: Backend; label: string; defaultOn: boolean }[] = [
   { id: "webgpu", label: "WebGPU (all layers)", defaultOn: true },
   { id: "wasm-mt", label: "WASM multi-thread", defaultOn: true },
@@ -68,7 +68,9 @@ interface RunRecord {
 
 interface LoadRecord {
   model: string;
+  /** What actually ran (wasm-mt that fell back to one thread is recorded as wasm-st). */
   backend: Backend;
+  requestedBackend: Backend;
   loadMs: number;
   /** Download-progress events seen while loading; > 1 means bytes came over the network (not cache). */
   downloadEvents: number;
@@ -178,8 +180,12 @@ const FAULT = new URLSearchParams(location.search).get("fail");
 
 async function runBenchmark() {
   const runButton = $<HTMLButtonElement>("run");
-  runButton.disabled = true;
   $("log").textContent = "";
+  if (checked("model").length === 0 || checked("backend").length === 0) {
+    log("Select at least one model and one backend.");
+    return;
+  }
+  runButton.disabled = true;
   const env = await environment();
   const runs: RunRecord[] = [];
   const loads: LoadRecord[] = [];
@@ -195,6 +201,7 @@ async function runBenchmark() {
           loads.push({
             model: model.id,
             backend,
+            requestedBackend: backend,
             loadMs: 0,
             downloadEvents: 0,
             downloadObserved: false,
@@ -227,6 +234,7 @@ async function runBenchmark() {
           loads.push({
             model: model.id,
             backend,
+            requestedBackend: backend,
             loadMs: performance.now() - t0,
             downloadEvents,
             downloadObserved: downloadEvents > 1,
@@ -239,9 +247,11 @@ async function runBenchmark() {
           continue;
         }
         const loadMs = performance.now() - t0;
+        const ran = effectiveBackend(backend, wllama.isMultithread());
         loads.push({
           model: model.id,
-          backend,
+          backend: ran,
+          requestedBackend: backend,
           loadMs,
           downloadEvents,
           downloadObserved: downloadEvents > 1,
@@ -251,6 +261,11 @@ async function runBenchmark() {
         log(
           `  loaded in ${(loadMs / 1000).toFixed(1)}s (${downloadEvents > 1 ? "downloaded" : "from cache"}), multithread=${wllama.isMultithread()}`,
         );
+        if (ran !== backend) {
+          log(
+            `  note: requested ${backend} but wllama is running ${ran} (page not cross-origin isolated?)`,
+          );
+        }
         $("run").textContent = "Running…";
         const loadRecord = loads[loads.length - 1];
 
@@ -299,7 +314,7 @@ async function runBenchmark() {
                 const parsed = parseModelJson(output);
                 runs.push({
                   model: model.id,
-                  backend,
+                  backend: ran,
                   note: noteIndex,
                   shape,
                   constrained,
@@ -340,7 +355,7 @@ async function runBenchmark() {
     spike: "#66",
     startedAt,
     finishedAt: new Date().toISOString(),
-    complete: fatal === undefined && loads.every((l) => !l.inferenceError && l.status !== "error"),
+    complete: isComplete({ loads, runs, ...(fatal ? { fatal } : {}) }),
     ...(fatal ? { fatal } : {}),
     env,
     loads,
