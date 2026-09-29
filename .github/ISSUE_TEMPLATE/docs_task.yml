@@ -1,7 +1,7 @@
 name: Docs task
 description: Improve, fix, or add documentation
 title: "[Docs]: "
-labels: ["documentation", "triage"]
+labels: ["documentation"]
 assignees: []
 body:
   - type: markdown
@@ -15,15 +15,12 @@ body:
       label: Doc location
       options:
         - README.md
-        - docs/AGENT_HANDOFF.md
-        - docs/PLAN.md
-        - docs/ARCHITECTURE.md
-        - docs/DATA_MODEL.md
-        - docs/SYNC_STRATEGY.md
-        - docs/AI_STRATEGY.md
-        - docs/MVP_SCOPE.md
-        - docs/TESTING_STRATEGY.md
-        - docs/DECISIONS/
+        - docs/WORKFLOW.md
+        - docs/superpowers/specs/ (design)
+        - docs/RESULTS.md
+        - docs/MODEL_CARD.md / DATA_CARD.md
+        - docs/TEST_PROTOCOL.md
+        - docs/adr/
         - CHANGELOG.md
         - Code comments / JSDoc
         - In-app strings

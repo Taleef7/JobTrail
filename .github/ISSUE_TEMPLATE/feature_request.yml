@@ -1,19 +1,19 @@
 name: Feature request
 description: Suggest a new feature or enhancement
 title: "[Feature]: "
-labels: ["enhancement", "triage"]
+labels: ["enhancement"]
 assignees: []
 body:
   - type: markdown
     attributes:
       value: |
-        Describe the problem first, then the proposed solution. See `docs/PLAN.md` for the current roadmap.
+        Describe the problem first, then the proposed solution. See the [design doc](https://github.com/Taleef7/JobTrail/blob/main/docs/superpowers/specs/2026-09-28-jobtrail-rebuild-design.md) for scope and non-goals.
 
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: "What user pain does this address? Who is the user (e.g. solo contractor, multi-crew shop)?"
+      description: "What pain does this address for a solo tradesperson (or for the ML evidence)?"
       placeholder: |
         As a <user type>, I want to <do X>, so I can <achieve Y>.
       value: ""
@@ -37,24 +37,28 @@ body:
       value: ""
 
   - type: dropdown
-    id: phase
+    id: milestone
     attributes:
-      label: PLAN.md phase
-      description: Which phase of `docs/PLAN.md` does this belong to?
+      label: Milestone
       options:
-        - Phase 1 — App shell
-        - Phase 2 — Local DB
-        - Phase 3 — Job workflow
-        - Phase 4 — Media capture
-        - Phase 5 — AI extraction
-        - Phase 6 — Auth
-        - Phase 7 — Cloud sync
-        - Phase 8 — Media upload
-        - Phase 9 — Report export
-        - Phase 10 — Local LLM
-        - Post-MVP / future
-        - Not applicable
-      default: 11
+        - M0 Reset & de-risk
+        - M1 Eval foundation
+        - M2 Model
+        - M3 Mobile MVP
+        - M4 Web demo & evidence
+        - M5 Launch
+        - Post-launch / future
+      default: 6
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (observable)
+      description: What will be visible in the live web app or release APK when this is done?
+      value: |
+        - [ ]
+    validations:
+      required: true
 
   - type: textarea
     id: context
@@ -69,4 +73,4 @@ body:
       label: Self-checks
       options:
         - label: I searched existing issues / feature requests
-        - label: This aligns with the offline-first + AI-assisted principles in `docs/PLAN.md`
+        - label: It fits the v2 non-goals (no accounts, no cloud sync, nothing leaves the device unless the user shares it)

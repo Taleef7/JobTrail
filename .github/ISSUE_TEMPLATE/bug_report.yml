@@ -1,7 +1,7 @@
 name: Bug report
 description: Report a bug or unexpected behavior in JobTrail
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["bug"]
 assignees: []
 body:
   - type: markdown
@@ -24,11 +24,13 @@ body:
       label: Platform
       description: Where did the bug happen?
       options:
-        - iOS (Expo Go)
-        - iOS (Dev Client / EAS Build)
-        - Android (Expo Go)
-        - Android (Dev Client / EAS Build)
-        - Web
+        - Android — release APK (Redmi Note 9S)
+        - Android — release APK (other device)
+        - Android — dev build
+        - iOS — dev build (iPhone 16 Pro)
+        - Web — live site
+        - Web — local dev
+        - ML pipeline / eval
         - CI
         - Other / not sure
       default: 0
@@ -41,9 +43,9 @@ body:
       label: Steps to reproduce
       description: Numbered steps. The more specific, the better.
       placeholder: |
-        1. Open the app
-        2. Create a job titled "..."
-        3. Tap "Add note"...
+        1. Open the app (build / commit: ...)
+        2. Record note: "..."
+        3. Tap "Review"...
       value: ""
     validations:
       required: true
@@ -70,7 +72,7 @@ body:
     id: logs
     attributes:
       label: Relevant logs / screenshots
-      description: Paste Metro / device / CI logs, or attach a screenshot.
+      description: Paste device / console / CI logs, or attach a screenshot or screen recording.
       value: ""
 
   - type: checkboxes

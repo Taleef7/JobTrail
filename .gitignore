@@ -1,59 +1,52 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# Secrets — never commit (ml/.env holds the Gemini key)
+.env
+.env.*
+!.env.example
 
-# Expo
+# Node / pnpm
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+dist/
+.vercel/
+
+# Expo / React Native
 .expo/
+expo-env.d.ts
+web-build/
+/apps/mobile/ios/
+/apps/mobile/android/
 *.jks
+*.keystore
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.orig.*
-web-build/
-dist/
-expo-env.d.ts
-metro-health-check*
 
-# Native builds
-/ios
-/android
-.kotlin/
+# Python (ml/)
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
 
-# Typescript
-*.tsbuildinfo
-
-# Build
-*.jsbundle
-
-# Environment
-.env
-.env.local
-.env.production
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Playwright test artifacts
-.playwright-mcp/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Model weights & large run artifacts (published to Hugging Face, not git)
+*.gguf
+*.safetensors
+*.bin
+ml/checkpoints/
+ml/runs/tmp/
 
 # Testing
 coverage/
 
-# Temporary
-.tmp/
-temp/
+# Local tooling
+.opencode/
+.playwright-mcp/
+.idea/
+.vscode/
+*.swp
+.DS_Store
 
-# Screenshots
-*.png
+# Logs
+*.log

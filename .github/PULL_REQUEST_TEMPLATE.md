@@ -1,49 +1,25 @@
-## Summary
+<!-- Every PR follows docs/WORKFLOW.md. Keep it to one issue. -->
 
-<!-- Brief 1–3 sentence description of what this PR changes. -->
-
-## Type of change
-
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
-- [ ] Refactor (no behavior change)
-- [ ] Documentation only
-- [ ] CI / tooling
-- [ ] Dependencies
-
-## Linked issues
-
-<!-- Link issues with `Closes #123` or `Refs #123`. Delete if N/A. -->
+Closes #
 
 ## What changed
 
-<!-- Bullet list of notable changes. Keep it short. -->
+<!-- One or two sentences. -->
 
--
+## Workflow checklist
 
-## Testing
+- [ ] **Pre-flight** comment posted on the issue (plan, test plan, "done looks like"): <!-- link -->
+- [ ] **Before snapshot** captured: <!-- link to comment / evidence/<issue#>/before -->
+- [ ] Tests written first for new logic; all suites pass locally
+- [ ] Typecheck + lint pass locally
+- [ ] CHANGELOG updated if behavior changed
 
-- [ ] `npm run typecheck` passes locally
-- [ ] `npm run lint` passes locally
-- [ ] `npm test` passes locally (`__tests__/`)
-- [ ] New tests added for new behavior (where practical)
-- [ ] Manually verified on Expo Go / web (describe what you did)
+## After merge (don't close the issue until done)
 
-## Screenshots / recordings
+- [ ] Verified on the **live surface** — live web URL and/or release APK on the Note 9S (not a dev build)
+- [ ] **After snapshot** + evidence linked; each acceptance criterion ticked with its evidence
+- [ ] Verification comment posted on the issue (before vs after, anything unexpected)
 
-<!-- Required for UI changes. Optional otherwise. Delete this section if not applicable. -->
+## Notes / known gaps
 
-## Documentation
-
-- [ ] `README.md` updated (if user-facing)
-- [ ] `docs/AGENT_HANDOFF.md` updated (if architecture, scope, or status changed)
-- [ ] `docs/PLAN.md` updated (if phase scope changed)
-
-## Checklist
-
-- [ ] No secrets, tokens, or `.env` values are committed
-- [ ] No unrelated refactors or formatting churn
-- [ ] Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`, `ci:`)
-- [ ] Branch is up to date with `main` (rebased or merge-target clean)
-- [ ] CI checks are green
+<!-- Anything skipped, failing, or deferred — stated plainly, with a follow-up issue if needed. -->

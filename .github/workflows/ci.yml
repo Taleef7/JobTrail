@@ -1,113 +1,38 @@
 name: CI
 
+# Minimal docs-only CI while the repo is reset (#62).
+# The monorepo CI (core, ml, web, mobile) replaces this in #63.
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
-# GitHub is forcing Node 24 on actions starting June 16, 2026.
-# Opt in early so we hit problems on our schedule, not theirs.
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+permissions:
+  contents: read
 
 jobs:
-  typecheck:
-    name: TypeScript
+  docs:
+    name: Docs check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
-      - run: npx tsc --noEmit
-
-  lint:
-    name: ESLint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
-      - run: npx eslint . --ext .ts,.tsx
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
-      - name: Run tests with coverage
-        run: npx jest --ci --coverage --reporters=default --reporters=jest-junit
-        env:
-          JEST_JUNIT_OUTPUT_DIR: coverage
-          JEST_JUNIT_OUTPUT_NAME: junit.xml
-      - name: Upload coverage to Codecov
-        if: success() || failure()
-        uses: codecov/codecov-action@v5
-        with:
-          directory: apps/mobile/coverage
-          flags: unittests
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Upload coverage artifact
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: apps/mobile/coverage
-          retention-days: 14
-      - name: Upload test results
-        if: success() || failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jest-junit
-          path: apps/mobile/coverage/junit.xml
-          retention-days: 14
-
-  build-check:
-    name: Metro Bundle
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/mobile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
-      - run: npm ci
-      # Export for iOS (creates JS bundle, works on Linux).
-      # Skips web export because expo-sqlite WASM is not available in CI.
-      - run: npx expo export --platform ios --output-dir dist
-        env:
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ vars.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ vars.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_APP_ID }}
-          EXPO_PUBLIC_GEMINI_API_KEY: ${{ vars.EXPO_PUBLIC_GEMINI_API_KEY }}
+      - name: No workflow or config references removed legacy paths
+        run: |
+          if grep -rn --exclude=ci.yml "apps/mobile" .github; then
+            echo "::error::.github still references the removed legacy app"
+            exit 1
+          fi
+      - name: Relative markdown links resolve
+        run: |
+          status=0
+          while IFS= read -r file; do
+            dir=$(dirname "$file")
+            grep -oE '\]\([^)#]+' "$file" | sed 's/^](//' | grep -vE '^(https?:|mailto:)' | while IFS= read -r link; do
+              if [ ! -e "$dir/$link" ]; then
+                echo "::error file=$file::broken link: $link"
+                echo broken >> /tmp/broken
+              fi
+            done
+          done < <(git ls-files '*.md')
+          [ ! -f /tmp/broken ] || status=1
+          exit $status
