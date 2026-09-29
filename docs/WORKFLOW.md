@@ -28,7 +28,7 @@ Capture the current state so the change can be proven:
 
 ## 4. Verify locally
 
-- `pnpm -r typecheck && pnpm -r lint && pnpm -r test` (+ `uv run pytest` for `ml/`).
+- `pnpm verify` (root script: typecheck, lint, format check, tests, build — the same steps as CI) and, for `ml/`, `uv run ruff check . && uv run pytest`. Don't use `pnpm -r lint`: ESLint is configured at the root, so the recursive form silently skips it.
 - Run the affected app (web dev server / Android dev build on the Note 9S) and walk through "Done looks like".
 
 ## 5. Ship
