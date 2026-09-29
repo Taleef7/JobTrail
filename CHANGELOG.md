@@ -5,6 +5,9 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 
 ## [Unreleased]
 
+### Fixed
+- `/spike/` returned 404 in production (Vercel doesn't map the directory URL to `spike/index.html`); explicit rewrites added — found by live verification (#66).
+
 ### Changed
 - Workflow: PRs reference issues with `Refs #N`; issues are closed manually after live verification (#63, lesson from #62).
 
