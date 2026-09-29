@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "jobType": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "plumbing",
+            "electrical",
+            "hvac",
+            "carpentry",
+            "appliance",
+            "cleaning",
+            "painting",
+            "roofing",
+            "general"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workPerformed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "issuesFound": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "quantity",
+          "unit"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "laborMinutes": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "customerApproved": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "followUps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "jobType",
+    "workPerformed",
+    "issuesFound",
+    "materials",
+    "laborMinutes",
+    "customerApproved",
+    "followUps"
+  ],
+  "additionalProperties": false
+}

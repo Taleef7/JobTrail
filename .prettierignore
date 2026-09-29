@@ -4,3 +4,5 @@ ml/.venv/**
 docs/superpowers/**
 CHANGELOG.md
 evidence/**/*.json
+# Generated from Zod (packages/core); formatting is owned by the generator.
+packages/core/schema/*.json

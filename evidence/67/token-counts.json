@@ -1,0 +1,46 @@
+{
+  "model": "gemma-3-270m-it-Q8_0.gguf",
+  "llamaCpp": "version: 9837 (b3fed31b9)",
+  "summary": {
+    "totalFull": 339,
+    "totalCompact": 306,
+    "savedPct": 9.7
+  },
+  "fixtures": [
+    {
+      "fixture": "customer-declined",
+      "fullTokens": 80,
+      "compactTokens": 73,
+      "saved": 7,
+      "savedPct": 8.8
+    },
+    {
+      "fixture": "empty-lists",
+      "fullTokens": 34,
+      "compactTokens": 28,
+      "saved": 6,
+      "savedPct": 17.6
+    },
+    {
+      "fixture": "fractional-quantity",
+      "fullTokens": 65,
+      "compactTokens": 59,
+      "saved": 6,
+      "savedPct": 9.2
+    },
+    {
+      "fixture": "full-record",
+      "fullTokens": 81,
+      "compactTokens": 74,
+      "saved": 7,
+      "savedPct": 8.6
+    },
+    {
+      "fixture": "nulls-for-unknowns",
+      "fullTokens": 79,
+      "compactTokens": 72,
+      "saved": 7,
+      "savedPct": 8.9
+    }
+  ]
+}

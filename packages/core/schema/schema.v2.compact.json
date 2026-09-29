@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "t": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "plumbing",
+            "electrical",
+            "hvac",
+            "carpentry",
+            "appliance",
+            "cleaning",
+            "painting",
+            "roofing",
+            "general"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "w": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "i": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "m": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "n": {
+            "type": "string",
+            "minLength": 1
+          },
+          "q": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "u": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "n",
+          "q",
+          "u"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "l": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "a": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "f": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "t",
+    "w",
+    "i",
+    "m",
+    "l",
+    "a",
+    "f"
+  ],
+  "additionalProperties": false
+}
