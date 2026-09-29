@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Documentation
-    url: https://github.com/Taleef7/JobTrail/tree/main/docs
-    about: Read the architecture plan, agent handoff, and feature scope docs.
-  - name: Discussions
-    url: https://github.com/Taleef7/JobTrail/discussions
-    about: Ask questions, share ideas, or get help without filing a formal issue.
+  - name: Design doc
+    url: https://github.com/Taleef7/JobTrail/blob/main/docs/superpowers/specs/2026-09-28-jobtrail-rebuild-design.md
+    about: What JobTrail v2 is, and why.
+  - name: Workflow
+    url: https://github.com/Taleef7/JobTrail/blob/main/docs/WORKFLOW.md
+    about: How every issue is pre-flighted, verified and closed.
