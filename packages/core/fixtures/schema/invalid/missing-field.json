@@ -1,0 +1,19 @@
+{
+  "jobType": "plumbing",
+  "workPerformed": ["Replaced kitchen sink P-trap"],
+  "issuesFound": ["Corroded slip nut"],
+  "materials": [
+    {
+      "name": "PVC trap kit",
+      "quantity": 1,
+      "unit": "kit"
+    },
+    {
+      "name": "Plumber's tape",
+      "quantity": null,
+      "unit": null
+    }
+  ],
+  "laborMinutes": 90,
+  "customerApproved": true
+}

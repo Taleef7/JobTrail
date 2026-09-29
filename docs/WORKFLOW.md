@@ -42,7 +42,7 @@ Capture the current state so the change can be proven:
 - Compare with the before snapshot; run the relevant `TEST_PROTOCOL.md` scenarios.
 - Tick each acceptance criterion **with a link to its evidence**. Evidence for device claims lives in `evidence/<issue#>/after/` (benchmark JSON + short recording/screenshot).
 - Post a **Verification comment** (before vs after, anything unexpected), then close the issue **manually**.
-- `main` is protected, so after-evidence files (screenshots, benchmark JSON) are committed through a small follow-up PR titled `evidence: #N` touching only `evidence/<issue#>/`; the verification comment links them.
+- `main` is protected, so after-evidence files (screenshots, benchmark JSON) for issue N are committed **in the next issue's PR** (in `evidence/<N>/` only) rather than a separate PR — every new PR triggers a Codex review, whose usage is limited. Post the verification comment with the live results first, then close N once its evidence lands. If there is no next PR soon, a standalone `evidence: #N` PR is fine.
 - Visual checks use `agent-browser` (headless Chrome): screenshot the live URL at desktop (1280px) and phone (375px) widths and look at them — text-only checks missed three layout bugs in #63.
 - If anything doesn't match "Done looks like": don't close — fix, or file a follow-up issue and state the gap explicitly.
 

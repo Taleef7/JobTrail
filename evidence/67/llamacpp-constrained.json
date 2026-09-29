@@ -1,0 +1,56 @@
+{
+  "model": "gemma-3-270m-it-Q8_0.gguf",
+  "llamaCpp": "version: 9837 (b3fed31b9)",
+  "runs": [
+    {
+      "format": "full",
+      "note": 0,
+      "exitCode": 0,
+      "schemaValid": true,
+      "errors": [],
+      "output": "{\n  \"jobType\": \"general\",\n  \"workPerformed\": [\n    \"Swapped out the P-trap under the kitchen sink\",\n    \"Used one PVC trap kit and some plumber's tape\"\n  ],\n  \"issuesFound\": [\n    \"Labor Minutes\",\n    \"Customer signed off\"\n  ],\n  \"materials\": [\n    {\n      \"name\": \"PVC Trap Kit\",\n      \"quantity\": 1,\n      \"unit\": \"pieces\"\n    },\n    {\n      \"name\": \"Plumber's Tape\",\n      \"quantity\": 1,\n      \"unit\": \"pieces\"\n    }\n  ],\n  \"laborMinutes\": 1,\n  \"customerApproved\": true,\n  \"followUps\": [\n    \"Come back next week to check for leaks\"\n  ]\n}"
+    },
+    {
+      "format": "full",
+      "note": 1,
+      "exitCode": 0,
+      "schemaValid": false,
+      "errors": [
+        "0 is not valid under any of the given schemas"
+      ],
+      "output": "{\n  \"jobType\": \"general\",\n  \"workPerformed\": [\n    \"Heating and Cooling\",\n    \"HVAC System\",\n    \"Electrical System\"\n  ],\n  \"issuesFound\": [\n    \"Upstairs Furnace\",\n    \"Two\",\n    \"No Three\"\n  ],\n  \"materials\": [\n    {\n      \"name\": \"Thermostat\",\n      \"quantity\": 2,\n      \"unit\": \"minutes\"\n    },\n    {\n      \"name\": \"Wire Nuts\",\n      \"quantity\": 0,\n      \"unit\": \"nuts\"\n    }\n  ],\n  \"laborMinutes\": 240,\n  \"customerApproved\": false,\n  \"followUps\": []\n}"
+    },
+    {
+      "format": "full",
+      "note": 2,
+      "exitCode": 0,
+      "schemaValid": true,
+      "errors": [],
+      "output": "{\n  \"jobType\": \"cleaning\",\n  \"workPerformed\": [\n    \"Cleaning the dryer vent\",\n    \"Replacing 8 feet of foil duct with rigid duct\"\n  ],\n  \"issuesFound\": [\n    \"Labor Minutes\",\n    \"Total Labor in Minutes\"\n  ],\n  \"materials\": [\n    {\n      \"name\": \"Foil Duct\",\n      \"quantity\": 8,\n      \"unit\": \"feet\"\n    }\n  ],\n  \"laborMinutes\": 45,\n  \"customerApproved\": true,\n  \"followUps\": [\n    \"Cleaned out the dryer vent\",\n    \"Replaced 8 feet of foil duct with rigid duct\"\n  ]\n}"
+    },
+    {
+      "format": "compact",
+      "note": 0,
+      "exitCode": 0,
+      "schemaValid": true,
+      "errors": [],
+      "output": "{\n  \"t\": \"hvac\",\n  \"w\": [\"kitchen sink\"],\n  \"i\": [\"PVC trap kit\"],\n  \"m\": [],\n  \"l\": 1,\n  \"a\": null,\n  \"f\": [\"followUps\"]\n}"
+    },
+    {
+      "format": "compact",
+      "note": 1,
+      "exitCode": 0,
+      "schemaValid": true,
+      "errors": [],
+      "output": "{\n  \"t\": \"hvac\",\n  \"w\": [\"furnace\"],\n  \"i\": [\"2\"],\n  \"m\": [],\n  \"l\": 2,\n  \"a\": null,\n  \"f\": [\"2\"]\n}"
+    },
+    {
+      "format": "compact",
+      "note": 2,
+      "exitCode": 0,
+      "schemaValid": true,
+      "errors": [],
+      "output": "{\n  \"t\": \"cleaning\",\n  \"w\": [\"dryer vent\"],\n  \"i\": [\"8 feet of foil duct\"],\n  \"m\": [],\n  \"l\": 45,\n  \"a\": null,\n  \"f\": [\"rigid duct\"]\n}"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "jobType": "plumbing",
+  "workPerformed": ["Replaced kitchen sink P-trap"],
+  "issuesFound": ["Corroded slip nut"],
+  "materials": [
+    {
+      "name": "Primer",
+      "quantity": 0.5,
+      "unit": "gallon"
+    }
+  ],
+  "laborMinutes": 90,
+  "customerApproved": true,
+  "followUps": ["Check for leaks next week"]
+}

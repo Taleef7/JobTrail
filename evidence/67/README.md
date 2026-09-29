@@ -1,0 +1,8 @@
+# Evidence — #67 schema v2
+
+Produced by `uv run python scripts/check_constrained.py models/gemma-3-270m-it-Q8_0.gguf` (from `ml/`) with llama.cpp b9837 on Windows (Ryzen 9 8940HX, CPU). Model: `gemma-3-270m-it-Q8_0.gguf`, sha256 `d156a515…9698` (matches Hugging Face).
+
+| File                        | What                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `llamacpp-constrained.json` | 6 runs: 3 notes × {full, compact} schema passed to `llama-completion -jf`. **5/6 schema-valid.** The failure is `"quantity": 0` — the grammar doesn't enforce `exclusiveMinimum`, so output must always be re-validated (Zod). Contents are untuned zero-shot output and mostly wrong on facts; this checks grammar compatibility only. |
+| `token-counts.json`         | Minified full vs compact encodings of the 5 valid fixtures, counted with `llama-tokenize` (Gemma 3 tokenizer): **339 → 306 tokens, 9.7 % saved.**                                                                                                                                                                                       |
