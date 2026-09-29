@@ -1,0 +1,263 @@
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --text: #1c1f1e;
+  --muted: #5f6763;
+  --border: #e3e1da;
+  --accent: #1f6f5c;
+  --accent-soft: #e2f0eb;
+  --warn-soft: #fbf0d9;
+  --warn: #8a5a00;
+  --radius: 12px;
+  color-scheme: light;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  line-height: 1.55;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111413;
+    --surface: #181c1b;
+    --text: #e8ebe9;
+    --muted: #9aa39f;
+    --border: #2a302e;
+    --accent: #5cc3a6;
+    --accent-soft: #173029;
+    --warn-soft: #2e2512;
+    --warn: #e2b456;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 16px 64px;
+}
+
+a {
+  color: var(--accent);
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+main > section {
+  margin-top: 40px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.build {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.build > div {
+  padding: 14px 16px;
+  background: var(--surface);
+}
+
+.build dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.build dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.pill,
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--border);
+}
+
+.pill-production,
+.status-done {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pill-preview,
+.status-in-progress {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.milestones {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.milestones th,
+.milestones td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.milestones th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.milestones tr:last-child td {
+  border-bottom: 0;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar {
+  flex: 1;
+  min-width: 60px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.release {
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.release h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.release section + section {
+  margin-top: 14px;
+}
+
+.release h4 {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.release ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.release code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.85em;
+}
+
+.release li + li {
+  margin-top: 4px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding-top: 32px;
+  }
+
+  .milestones th:nth-child(2),
+  .milestones td:nth-child(2) {
+    display: none;
+  }
+}

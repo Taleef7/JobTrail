@@ -1,6 +1,7 @@
 <!-- Every PR follows docs/WORKFLOW.md. Keep it to one issue. -->
 
-Closes #
+Refs #
+<!-- Use "Refs", not "Closes": the issue is closed manually after live verification (docs/WORKFLOW.md step 6). -->
 
 ## What changed
 

@@ -3,6 +3,8 @@
 > **Status: rebuild in progress.** Nothing below is shipped yet — this README only claims what exists.
 > The previous version is archived at tag [`legacy-v0`](https://github.com/Taleef7/JobTrail/tree/legacy-v0).
 
+**Live build:** https://jobtrail-drab.vercel.app — shows exactly which commit is deployed, live milestone progress, and what has shipped.
+
 **JobTrail v2** is an offline capture tool for solo tradespeople, and an on-device ML project.
 
 Talk for 30 seconds at the truck after a job. A small language model **running entirely on your phone** — no signal, no account, nothing uploaded — turns the note into a structured job record, prices it from your own price list, flags billable items you forgot, and exports it to whatever you already invoice with.
@@ -11,14 +13,14 @@ The ML goal: distill structured extraction from a cloud model into a fine-tuned,
 
 ## Where things stand
 
-| Milestone | Status |
-|---|---|
-| M0 Reset & de-risk | in progress — [issues](https://github.com/Taleef7/JobTrail/milestone/3) |
-| M1 Eval foundation | not started |
-| M2 Model | not started |
-| M3 Mobile MVP | not started |
-| M4 Web demo & evidence | not started |
-| M5 Launch | not started |
+| Milestone              | Status                                                                  |
+| ---------------------- | ----------------------------------------------------------------------- |
+| M0 Reset & de-risk     | in progress — [issues](https://github.com/Taleef7/JobTrail/milestone/3) |
+| M1 Eval foundation     | not started                                                             |
+| M2 Model               | not started                                                             |
+| M3 Mobile MVP          | not started                                                             |
+| M4 Web demo & evidence | not started                                                             |
+| M5 Launch              | not started                                                             |
 
 ## Read more
 
