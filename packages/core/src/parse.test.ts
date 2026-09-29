@@ -67,6 +67,37 @@ describe("parseModelOutput", () => {
     expect(performance.now() - start).toBeLessThan(250);
   });
 
+  it("ignores braces in trailing prose after the record", () => {
+    const raw = `${JSON.stringify(full)}
+Note: fields use {curly} placeholders.`;
+    expect(parseModelOutput(raw)).toEqual({ ok: true, value: full });
+  });
+
+  it("skips a balanced-but-invalid brace span in leading prose", () => {
+    const raw = `Here is {the} record: ${JSON.stringify(full)}`;
+    expect(parseModelOutput(raw)).toEqual({ ok: true, value: full });
+  });
+
+  it("skips an unclosed brace in leading prose", () => {
+    const raw = `Output { ${JSON.stringify(full)}`;
+    expect(parseModelOutput(raw)).toEqual({ ok: true, value: full });
+  });
+
+  it("does not count braces inside JSON strings", () => {
+    const tricky = { ...full, workPerformed: ["Fixed the } bracket", "Set {mode} to auto"] };
+    expect(parseModelOutput(`${JSON.stringify(tricky)} trailing }`)).toEqual({
+      ok: true,
+      value: tricky,
+    });
+  });
+
+  it("stays fast on many unmatched opening braces", () => {
+    const hostile = "{".repeat(20_000) + JSON.stringify(full);
+    const start = performance.now();
+    parseModelOutput(hostile);
+    expect(performance.now() - start).toBeLessThan(250);
+  });
+
   it("rejects full-format keys when compact is expected", () => {
     expect(parseModelOutput(JSON.stringify(full), { format: "compact" })).toMatchObject({
       ok: false,
