@@ -72,25 +72,37 @@ describe("validateSpikeExtraction", () => {
   });
 
   it("rejects a non-object", () => {
-    expect(validateSpikeExtraction("nope")).toEqual(["root: expected object"]);
+    expect(validateSpikeExtraction("nope")).not.toEqual([]);
   });
 
-  it("reports missing fields, wrong types and unknown job types", () => {
+  it("reports wrong types, unknown job types and missing fields by path", () => {
+    const withoutFollowUps = Object.fromEntries(
+      Object.entries(valid).filter(([key]) => key !== "followUps"),
+    );
     const errors = validateSpikeExtraction({
-      ...valid,
+      ...withoutFollowUps,
       jobType: "astronaut",
       laborMinutes: "55",
       materials: [{ name: 3, quantity: 1, unit: null }],
-      followUps: undefined,
     });
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        "jobType: not an allowed value",
-        "laborMinutes: expected number or null",
-        "materials[0].name: expected string",
-        "followUps: expected array of strings",
-      ]),
+    const paths = errors.map((e) => e.split(":")[0]);
+    expect(paths).toEqual(
+      expect.arrayContaining(["/jobType", "/laborMinutes", "/materials/0/name", "(root)"]),
     );
+    expect(errors.join(" ")).toContain("followUps");
+  });
+
+  it("rejects fractional laborMinutes (schema says integer)", () => {
+    expect(validateSpikeExtraction({ ...valid, laborMinutes: 1.5 })).not.toEqual([]);
+  });
+
+  it("rejects extra top-level properties (additionalProperties: false)", () => {
+    expect(validateSpikeExtraction({ ...valid, confidence: 0.9 })).not.toEqual([]);
+  });
+
+  it("rejects extra properties inside materials", () => {
+    const materials = [{ name: "PVC trap kit", quantity: 1, unit: "kit", cost: 12 }];
+    expect(validateSpikeExtraction({ ...valid, materials })).not.toEqual([]);
   });
 
   it("the JSON Schema lists exactly the fields the validator checks", () => {

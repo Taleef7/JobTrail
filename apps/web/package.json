@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@wllama/wllama": "3.6.1",
+    "ajv": "^8.20.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

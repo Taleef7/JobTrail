@@ -76,6 +76,8 @@ interface LoadRecord {
   multithread: boolean;
   status: "ok" | "skipped" | "error";
   reason?: string;
+  /** Set when the model loaded but warm-up/inference failed (e.g. OOM, GPU device lost). */
+  inferenceError?: string;
 }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -161,14 +163,18 @@ function renderResults(runs: RunRecord[], loads: LoadRecord[]) {
     )
     .join("");
   const skipped = loads
-    .filter((l) => l.status !== "ok")
+    .filter((l) => l.status !== "ok" || l.inferenceError)
     .map(
       (l) =>
-        `<tr><td>${l.model}</td><td>${l.backend}</td><td colspan="8">${l.status}: ${l.reason ?? ""}</td></tr>`,
+        `<tr><td>${l.model}</td><td>${l.backend}</td><td colspan="8">${l.inferenceError ? `inference error: ${l.inferenceError}` : `${l.status}: ${l.reason ?? ""}`}</td></tr>`,
     )
     .join("");
   $("results").innerHTML = head + `<tbody>${body}${skipped}</tbody>`;
 }
+
+// Test hook: /spike/?fail=inference throws after the first timed run, to verify
+// the page recovers and keeps partial results (review feedback on #99).
+const FAULT = new URLSearchParams(location.search).get("fail");
 
 async function runBenchmark() {
   const runButton = $<HTMLButtonElement>("run");
@@ -178,147 +184,164 @@ async function runBenchmark() {
   const runs: RunRecord[] = [];
   const loads: LoadRecord[] = [];
   const startedAt = new Date().toISOString();
+  let fatal: string | undefined;
 
-  for (const model of MODELS.filter((m) => checked("model").includes(m.id))) {
-    for (const backend of BACKENDS.filter((b) => checked("backend").includes(b.id)).map(
-      (b) => b.id,
-    )) {
-      if (backend === "webgpu" && !env.webgpu) {
-        loads.push({
-          model: model.id,
-          backend,
-          loadMs: 0,
-          downloadEvents: 0,
-          downloadObserved: false,
-          multithread: false,
-          status: "skipped",
-          reason: "WebGPU not available in this browser",
-        });
-        log(`skip ${model.id} ${backend}: no WebGPU`);
-        continue;
-      }
-      const wllama = new Wllama({ default: wasmUrl }, { suppressNativeLog: true });
-      let downloadEvents = 0;
-      log(`load ${model.id} on ${backend}…`);
-      const t0 = performance.now();
-      try {
-        await wllama.loadModelFromHF(
-          { repo: model.repo, file: model.file },
-          {
-            n_ctx: 2048,
-            n_gpu_layers: backend === "webgpu" ? 999 : 0,
-            ...(backend === "wasm-st" ? { n_threads: 1 } : {}),
-            progressCallback: ({ loaded, total }: { loaded: number; total: number }) => {
-              downloadEvents += 1;
-              if (total)
-                $("run").textContent = `Downloading ${Math.round((loaded / total) * 100)}%`;
+  try {
+    for (const model of MODELS.filter((m) => checked("model").includes(m.id))) {
+      for (const backend of BACKENDS.filter((b) => checked("backend").includes(b.id)).map(
+        (b) => b.id,
+      )) {
+        if (backend === "webgpu" && !env.webgpu) {
+          loads.push({
+            model: model.id,
+            backend,
+            loadMs: 0,
+            downloadEvents: 0,
+            downloadObserved: false,
+            multithread: false,
+            status: "skipped",
+            reason: "WebGPU not available in this browser",
+          });
+          log(`skip ${model.id} ${backend}: no WebGPU`);
+          continue;
+        }
+        const wllama = new Wllama({ default: wasmUrl }, { suppressNativeLog: true });
+        let downloadEvents = 0;
+        log(`load ${model.id} on ${backend}…`);
+        const t0 = performance.now();
+        try {
+          await wllama.loadModelFromHF(
+            { repo: model.repo, file: model.file },
+            {
+              n_ctx: 2048,
+              n_gpu_layers: backend === "webgpu" ? 999 : 0,
+              ...(backend === "wasm-st" ? { n_threads: 1 } : {}),
+              progressCallback: ({ loaded, total }: { loaded: number; total: number }) => {
+                downloadEvents += 1;
+                if (total)
+                  $("run").textContent = `Downloading ${Math.round((loaded / total) * 100)}%`;
+              },
             },
-          },
-        );
-      } catch (e) {
+          );
+        } catch (e) {
+          loads.push({
+            model: model.id,
+            backend,
+            loadMs: performance.now() - t0,
+            downloadEvents,
+            downloadObserved: downloadEvents > 1,
+            multithread: false,
+            status: "error",
+            reason: String(e),
+          });
+          log(`  error: ${String(e)}`);
+          await wllama.exit().catch(() => undefined);
+          continue;
+        }
+        const loadMs = performance.now() - t0;
         loads.push({
           model: model.id,
           backend,
-          loadMs: performance.now() - t0,
+          loadMs,
           downloadEvents,
           downloadObserved: downloadEvents > 1,
-          multithread: false,
-          status: "error",
-          reason: String(e),
+          multithread: wllama.isMultithread(),
+          status: "ok",
         });
-        log(`  error: ${String(e)}`);
-        await wllama.exit().catch(() => undefined);
-        continue;
-      }
-      const loadMs = performance.now() - t0;
-      loads.push({
-        model: model.id,
-        backend,
-        loadMs,
-        downloadEvents,
-        downloadObserved: downloadEvents > 1,
-        multithread: wllama.isMultithread(),
-        status: "ok",
-      });
-      log(
-        `  loaded in ${(loadMs / 1000).toFixed(1)}s (${downloadEvents > 1 ? "downloaded" : "from cache"}), multithread=${wllama.isMultithread()}`,
-      );
-      $("run").textContent = "Running…";
+        log(
+          `  loaded in ${(loadMs / 1000).toFixed(1)}s (${downloadEvents > 1 ? "downloaded" : "from cache"}), multithread=${wllama.isMultithread()}`,
+        );
+        $("run").textContent = "Running…";
+        const loadRecord = loads[loads.length - 1];
 
-      // Warm-up so one-time graph setup doesn't pollute the first timed run.
-      await wllama.createChatCompletion({
-        messages: [{ role: "user", content: "hi" }],
-        max_tokens: 1,
-        temperature: 0,
-      });
+        try {
+          // Warm-up so one-time graph setup doesn't pollute the first timed run.
+          await wllama.createChatCompletion({
+            messages: [{ role: "user", content: "hi" }],
+            max_tokens: 1,
+            temperature: 0,
+          });
 
-      for (const [noteIndex, note] of SPIKE_NOTES.entries()) {
-        for (const shape of ["long", "short"] as const) {
-          for (const constrained of [true, false]) {
-            // Streaming: the first content chunk gives a real TTFT, and llama.cpp's
-            // timings arrive on the chunks (non-streamed responses don't type them).
-            const t1 = performance.now();
-            const stream = await wllama.createChatCompletion({
-              messages: buildMessages(note, shape),
-              stream: true,
-              temperature: 0,
-              max_tokens: 256,
-              cache_prompt: false,
-              chat_template_kwargs: { enable_thinking: false },
-              ...(constrained
-                ? {
-                    response_format: {
-                      type: "json_schema" as const,
-                      json_schema: { name: "job", schema: SPIKE_SCHEMA, strict: true },
-                    },
-                  }
-                : {}),
-            });
-            let output = "";
-            let ttftMs: number | null = null;
-            let t: ResultTimings | undefined;
-            let promptTokens: number | null = null;
-            for await (const chunk of stream) {
-              const delta = chunk.choices[0]?.delta?.content ?? "";
-              if (delta && ttftMs === null) ttftMs = performance.now() - t1;
-              output += delta;
-              if (chunk.timings) t = chunk.timings;
-              if (chunk.usage?.prompt_tokens) promptTokens = chunk.usage.prompt_tokens;
+          for (const [noteIndex, note] of SPIKE_NOTES.entries()) {
+            for (const shape of ["long", "short"] as const) {
+              for (const constrained of [true, false]) {
+                // Streaming: the first content chunk gives a real TTFT, and llama.cpp's
+                // timings arrive on the chunks (non-streamed responses don't type them).
+                const t1 = performance.now();
+                const stream = await wllama.createChatCompletion({
+                  messages: buildMessages(note, shape),
+                  stream: true,
+                  temperature: 0,
+                  max_tokens: 256,
+                  cache_prompt: false,
+                  chat_template_kwargs: { enable_thinking: false },
+                  ...(constrained
+                    ? {
+                        response_format: {
+                          type: "json_schema" as const,
+                          json_schema: { name: "job", schema: SPIKE_SCHEMA, strict: true },
+                        },
+                      }
+                    : {}),
+                });
+                let output = "";
+                let ttftMs: number | null = null;
+                let t: ResultTimings | undefined;
+                let promptTokens: number | null = null;
+                for await (const chunk of stream) {
+                  const delta = chunk.choices[0]?.delta?.content ?? "";
+                  if (delta && ttftMs === null) ttftMs = performance.now() - t1;
+                  output += delta;
+                  if (chunk.timings) t = chunk.timings;
+                  if (chunk.usage?.prompt_tokens) promptTokens = chunk.usage.prompt_tokens;
+                }
+                const wallMs = performance.now() - t1;
+                const parsed = parseModelJson(output);
+                runs.push({
+                  model: model.id,
+                  backend,
+                  note: noteIndex,
+                  shape,
+                  constrained,
+                  promptTokens: promptTokens ?? t?.prompt_n ?? null,
+                  ttftMs,
+                  prefillMs: t?.prompt_ms ?? null,
+                  prefillTokPerSec: t?.prompt_per_second ?? null,
+                  decodeTokens: t?.predicted_n ?? null,
+                  decodeTokPerSec: t?.predicted_per_second ?? null,
+                  wallMs,
+                  jsonOk: parsed.ok,
+                  schemaErrors: parsed.ok ? validateSpikeExtraction(parsed.value) : [],
+                  output,
+                });
+                renderResults(runs, loads);
+                log(
+                  `  note ${noteIndex} ${shape} constrained=${constrained}: ${(wallMs / 1000).toFixed(1)}s`,
+                );
+                if (FAULT === "inference")
+                  throw new Error("injected inference failure (?fail=inference)");
+              }
             }
-            const wallMs = performance.now() - t1;
-            const parsed = parseModelJson(output);
-            runs.push({
-              model: model.id,
-              backend,
-              note: noteIndex,
-              shape,
-              constrained,
-              promptTokens: promptTokens ?? t?.prompt_n ?? null,
-              ttftMs,
-              prefillMs: t?.prompt_ms ?? null,
-              prefillTokPerSec: t?.prompt_per_second ?? null,
-              decodeTokens: t?.predicted_n ?? null,
-              decodeTokPerSec: t?.predicted_per_second ?? null,
-              wallMs,
-              jsonOk: parsed.ok,
-              schemaErrors: parsed.ok ? validateSpikeExtraction(parsed.value) : [],
-              output,
-            });
-            renderResults(runs, loads);
-            log(
-              `  note ${noteIndex} ${shape} constrained=${constrained}: ${(wallMs / 1000).toFixed(1)}s`,
-            );
           }
+        } catch (e) {
+          if (loadRecord) loadRecord.inferenceError = String(e);
+          log(`  inference error: ${String(e)} — keeping ${runs.length} completed runs`);
+        } finally {
+          await wllama.exit().catch(() => undefined);
         }
       }
-      await wllama.exit();
     }
+  } catch (e) {
+    fatal = String(e);
+    log(`fatal: ${fatal}`);
   }
 
   const result = {
     spike: "#66",
     startedAt,
     finishedAt: new Date().toISOString(),
+    complete: fatal === undefined && loads.every((l) => !l.inferenceError && l.status !== "error"),
+    ...(fatal ? { fatal } : {}),
     env,
     loads,
     runs,

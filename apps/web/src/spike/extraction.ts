@@ -1,6 +1,7 @@
 // Spike-local extraction contract for the web-runtime benchmark (#66).
 // The real schema v2 lives in packages/core from #67; this is intentionally
 // minimal and disposable.
+import Ajv from "ajv";
 
 export const JOB_TYPES = [
   "plumbing",
@@ -87,47 +88,16 @@ export function parseModelJson(text: string): ParseResult {
   }
 }
 
-const isStringArray = (v: unknown) => Array.isArray(v) && v.every((x) => typeof x === "string");
-const isNullableType = (v: unknown, type: "string" | "number" | "boolean") =>
-  v === null || typeof v === type;
+// Validate against the *declared* schema (integer, additionalProperties, required…)
+// so the validator can never drift from what the model was constrained to.
+const ajv = new Ajv({ allErrors: true, strict: false });
+const validateSchema = ajv.compile(SPIKE_SCHEMA);
 
 export function validateSpikeExtraction(value: unknown): string[] {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    return ["root: expected object"];
-  }
-  const v = value as Record<string, unknown>;
-  const errors: string[] = [];
-
-  if (v.jobType !== null && !JOB_TYPES.includes(v.jobType as (typeof JOB_TYPES)[number])) {
-    errors.push("jobType: not an allowed value");
-  }
-  for (const key of ["workPerformed", "issuesFound", "followUps"] as const) {
-    if (!isStringArray(v[key])) errors.push(`${key}: expected array of strings`);
-  }
-  if (!isNullableType(v.laborMinutes, "number"))
-    errors.push("laborMinutes: expected number or null");
-  if (!isNullableType(v.customerApproved, "boolean")) {
-    errors.push("customerApproved: expected boolean or null");
-  }
-  if (!Array.isArray(v.materials)) {
-    errors.push("materials: expected array");
-  } else {
-    v.materials.forEach((m: unknown, i) => {
-      if (typeof m !== "object" || m === null) {
-        errors.push(`materials[${i}]: expected object`);
-        return;
-      }
-      const item = m as Record<string, unknown>;
-      if (typeof item.name !== "string") errors.push(`materials[${i}].name: expected string`);
-      if (!isNullableType(item.quantity, "number")) {
-        errors.push(`materials[${i}].quantity: expected number or null`);
-      }
-      if (!isNullableType(item.unit, "string")) {
-        errors.push(`materials[${i}].unit: expected string or null`);
-      }
-    });
-  }
-  return errors;
+  if (validateSchema(value)) return [];
+  return (validateSchema.errors ?? []).map(
+    (e) => `${e.instancePath || "(root)"}: ${e.message ?? "invalid"}`,
+  );
 }
 
 /** Hard-case notes: hours phrasing, negation, self-correction, supply-house trip. */
