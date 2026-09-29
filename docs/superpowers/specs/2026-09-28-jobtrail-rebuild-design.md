@@ -79,7 +79,7 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
 
 ### Data
 - **Scenario matrix:** trades × note style (terse, rambling, spoken with fillers) × hard cases (hours as "hour and a half", negations "didn't sign", self-corrections "two, no three", multiple materials, no materials, supply-house trips, mentions of extra labor).
-- **Test set (~200, frozen, never trained or tuned on):** ~150 synthetic (teacher-drafted, **human-verified** labels) + ~50 real spoken notes (outreach tradespeople + role-played), transcribed by the app's STT, labeled. Real vs role-played vs synthetic reported **separately**.
+- **Test set (~200, frozen, never trained or tuned on):** ~150 synthetic (teacher-drafted, **human-verified** labels) + ~50 spoken notes role-played by the owner (see §10), transcribed by the app's STT on the Note 9S, labeled. Spoken vs synthetic reported **separately**.
 - **Dev set (~100):** for prompt/model iteration and error analysis.
 - **Train set (3–5k synthetic):** teacher-generated notes + labels; kept only if schema-valid and two independent teacher labelings agree; n-gram leakage check against test/dev; published to HF Datasets.
 
