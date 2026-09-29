@@ -1,7 +1,7 @@
 # JobTrail v2 — Issue Drafts
 
 Source design: `docs/superpowers/specs/2026-09-28-jobtrail-rebuild-design.md`
-Status: **draft — not yet created on GitHub.**
+Status: **historical draft.** Created as GitHub issues #62–#93 (draft #N = issue #N+61) on 2026-09-29; **the GitHub issues are the source of truth** (several were revised after creation — e.g. #91 outreach → owner test protocol).
 
 ## Conventions
 

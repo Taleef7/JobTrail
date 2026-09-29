@@ -122,7 +122,7 @@ Fine-tuned winner(s) exported at F16, Q8_0, Q6_K, Q4_K_M, Q4_0; constrained deco
 
 **Backup:** explicit export/restore of a backup file + OS backup; limits documented in-app.
 
-**Distribution:** Android APK for direct testers; Google Play closed testing (12 testers × 14 days, required for new personal accounts) → production. iOS dev build; TestFlight if an Apple developer account is available.
+**Distribution:** Signed release APK on GitHub Releases each mobile milestone, installed on the Note 9S from that release for verification. Public Play release is out of scope (needs a 12-tester closed test); Play internal testing optional. iOS dev build on the iPhone 16 Pro; TestFlight only if an Apple developer account exists.
 
 ## 8. Web app (demo + evidence, not the product)
 
@@ -145,11 +145,14 @@ Rationale: iOS Safari may evict PWA storage after weeks of non-use and web apps 
 
 Deliverables: live URL, 90-second airplane-mode phone video, APK/Play link, HF model + dataset, write-up ("Can a 270M model replace an API call?"), resume bullet with real numbers.
 
-## 10. Outreach (owner-led, parallel)
+## 10. Testing without outreach (revised 2026-09-29)
 
-Reddit trade subs (check self-promo rules), local trade Facebook groups, Nextdoor, trade-school instructors. Ask: 15-minute Mom-Test interview about last week's paperwork; 5 consented voice notes about past jobs (no customer PII); join Play closed testing. Success test: *does it beat Notes-app dictation, and are flagged missed items real dollars?*
+Outreach to tradespeople was dropped — the owner can't reliably reach them. The owner tests in depth instead (issue #91, `docs/TEST_PROTOCOL.md`): 6 trade personas × 5 scripted scenarios, a condition matrix (noise, airplane mode, low storage, backgrounding), on the Note 9S, iPhone 16 Pro and a laptop browser. The spoken-note eval slice is role-played and labeled as such. Portfolio framing: *"built for solo tradespeople, grounded in their documented pain points; tested by the developer through scripted role-play on a 2020 budget phone."* Never "used by".
 
 ## 11. Verification rules (lessons from legacy)
+
+Every issue follows [`docs/WORKFLOW.md`](../../WORKFLOW.md): pre-flight review → before snapshot → test-first implementation → local verification → ship to the live surface → after snapshot and evidence-backed close. A walking-skeleton web app is live from M0 (#63) so every change is observable.
+
 
 - No ✅ without evidence. Device claims require a committed benchmark JSON + screen recording from the named device.
 - Evals before app polish. Numbers in README/web must come from committed results files.
@@ -159,12 +162,12 @@ Reddit trade subs (check self-promo rules), local trade Facebook groups, Nextdoo
 
 | Days | Milestone |
 |---|---|
-| 1–2 | **M0 Reset & de-risk:** archive legacy, scaffold monorepo, device/STT/web runtime spikes. Outreach starts. |
+| 1–2 | **M0 Reset & de-risk:** archive legacy, scaffold monorepo + live walking skeleton, device/STT/web runtime spikes. |
 | 3–7 | **M1 Eval foundation:** schema, scorer, rules baseline, test/dev sets labeled, baseline ladder + RESULTS v0. |
 | 6–12 | **M2 Model:** training data, fine-tune, quantization ladder, HF publish, on-device finalists. |
-| 6–16 | **M3 Mobile MVP:** capture → review → price → flags → export; model catalog; backup; benchmark screen. Play closed test starts by ~day 10. |
+| 6–16 | **M3 Mobile MVP:** capture → review → price → flags → export; model catalog; backup; benchmark screen. Release APK per milestone. |
 | 13–18 | **M4 Web demo & evidence.** |
-| 16–21 | **M5 Launch:** real-voice slice, write-up, video, README; outreach trials. |
+| 16–21 | **M5 Launch:** role-played spoken-note slice, write-up, video, README; full scripted test session. |
 
 ## 13. Resources & budget
 
