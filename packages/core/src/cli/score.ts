@@ -3,20 +3,34 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 import { parseArgs } from "node:util";
+import type { z } from "zod";
 import { ScoreReportSchema, type Metrics } from "../report.ts";
-import { scoreRun, type GoldRecord, type PredictionRecord } from "../score.ts";
+import { GoldRecordSchema, PredictionRecordSchema, scoreRun } from "../score.ts";
 
-function readJsonl<T>(path: string): T[] {
-  return readFileSync(path, "utf8")
+/** Parse and validate every line; errors name the file and the real line number. */
+function readJsonl<S extends z.ZodType>(path: string, schema: S): z.infer<S>[] {
+  const out: z.infer<S>[] = [];
+  readFileSync(path, "utf8")
     .split(/\r?\n/)
-    .filter((line) => line.trim() !== "")
-    .map((line, i) => {
+    .forEach((line, i) => {
+      if (line.trim() === "") return;
+      const where = `${path}:${i + 1}`;
+      let json: unknown;
       try {
-        return JSON.parse(line) as T;
+        json = JSON.parse(line);
       } catch {
-        throw new Error(`${path}:${i + 1}: invalid JSON line`);
+        throw new Error(`${where}: invalid JSON`);
       }
+      const result = schema.safeParse(json);
+      if (!result.success) {
+        const issues = result.error.issues.map(
+          (e) => `${e.path.join(".") || "(root)"}: ${e.message}`,
+        );
+        throw new Error(`${where}: ${issues.join("; ")}`);
+      }
+      out.push(result.data);
     });
+  return out;
 }
 
 const pct = (v: number | null) => (v === null ? "  n/a" : `${(v * 100).toFixed(1).padStart(5)}%`);
@@ -49,8 +63,8 @@ export function main(argv: string[]): number {
     return 2;
   }
   const report = scoreRun(
-    readJsonl<GoldRecord>(values.gold),
-    readJsonl<PredictionRecord>(values.pred),
+    readJsonl(values.gold, GoldRecordSchema),
+    readJsonl(values.pred, PredictionRecordSchema),
     {
       run: values.run ?? basename(values.pred, ".jsonl"),
       ...(values.threshold ? { threshold: Number(values.threshold) } : {}),

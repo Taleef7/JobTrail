@@ -1,30 +1,37 @@
 // The single scorer: every metric in README/web/mobile comes from here.
 // Definitions and conventions are documented in SCORING.md.
+import { z } from "zod";
 import { MATCH_THRESHOLD, matchOneToOne, normalizeTokens } from "./match.ts";
 import { parseModelOutput } from "./parse.ts";
 import type { Metrics, RecordScore, ScoreReport } from "./report.ts";
-import type { JobRecord } from "./schema.ts";
+import { JobRecordSchema, type JobRecord } from "./schema.ts";
 
-export interface GoldRecord {
-  id: string;
-  note: string;
-  gold: JobRecord;
-  source: string;
-  tags: string[];
-}
+/** One gold line (data/README.md). The nested record must satisfy schema v2. */
+export const GoldRecordSchema = z.object({
+  id: z.string().min(1),
+  note: z.string(),
+  gold: JobRecordSchema,
+  source: z.string().min(1),
+  tags: z.array(z.string()),
+  verified: z.boolean().optional(),
+});
 
-export interface PredictionRecord {
-  id: string;
-  raw: string;
-  format?: "full" | "compact";
-  model?: string;
-  timings?: {
-    wallMs?: number;
-    ttftMs?: number;
-    prefillTokPerSec?: number;
-    decodeTokPerSec?: number;
-  };
-}
+const ms = z.number().nonnegative().optional();
+
+/** One prediction line; `raw` is the model's text exactly as generated. */
+export const PredictionRecordSchema = z.object({
+  id: z.string().min(1),
+  raw: z.string(),
+  format: z.enum(["full", "compact"]).optional(),
+  model: z.string().optional(),
+  timings: z
+    .object({ wallMs: ms, ttftMs: ms, prefillTokPerSec: ms, decodeTokPerSec: ms })
+    .optional(),
+});
+
+export type GoldRecord = z.infer<typeof GoldRecordSchema>;
+export type PredictionRecord = z.infer<typeof PredictionRecordSchema>;
+export type { JobRecord };
 
 export interface ScoreOptions {
   run: string;
@@ -254,6 +261,19 @@ export function scoreRun(
   options: ScoreOptions,
 ): ScoreReport {
   const threshold = options.threshold ?? MATCH_THRESHOLD;
+  // Dice is in [0, 1]; 0 would pair everything and > 1 nothing — both silently corrupt scores.
+  if (!(threshold > 0 && threshold <= 1)) {
+    throw new Error(`matcher threshold must be in (0, 1], got ${threshold}`);
+  }
+  const dupes = (ids: string[]) => [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+  const dupGold = dupes(golds.map((g) => g.id));
+  if (dupGold.length > 0) throw new Error(`duplicate gold id(s): ${dupGold.join(", ")}`);
+  const dupPred = dupes(preds.map((p) => p.id));
+  if (dupPred.length > 0) {
+    throw new Error(
+      `duplicate prediction id(s): ${dupPred.join(", ")} (e.g. a resumed run appended retries)`,
+    );
+  }
   const byId = new Map(preds.map((p) => [p.id, p]));
   const goldIds = new Set(golds.map((g) => g.id));
   const records = golds.map((g) => scoreRecord(g, byId.get(g.id), threshold));

@@ -61,7 +61,7 @@ export const ScoreReportSchema = z.strictObject({
   model: z.string().nullable(),
   matcher: z.strictObject({
     method: z.literal("token-dice"),
-    threshold: z.number(),
+    threshold: z.number().gt(0).max(1),
     provisional: z.boolean(),
   }),
   overall: MetricsSchema,

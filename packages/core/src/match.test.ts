@@ -15,6 +15,17 @@ describe("normalizeTokens", () => {
     ]);
   });
 
+  it("keeps the e of words that end in -e (fuses → fuse), strips -es after x/z/ch/sh/ss", () => {
+    expect(normalizeTokens("fuses hoses cases")).toEqual(["fuse", "hose", "case"]);
+    expect(normalizeTokens("boxes brushes batches glasses")).toEqual([
+      "box",
+      "brush",
+      "batch",
+      "glass",
+    ]);
+    expect(similarity("fuse", "fuses")).toBe(1);
+  });
+
   it("drops possessive 's instead of leaving a stray 's' token", () => {
     expect(normalizeTokens("plumber's tape")).toEqual(["plumber", "tape"]);
     expect(normalizeTokens("customer’s sink")).toEqual(["customer", "sink"]);

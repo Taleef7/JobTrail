@@ -174,4 +174,27 @@ describe("scoreRun", () => {
     expect(report.overall.n).toBe(1);
     expect(report.unmatchedPredictionIds).toEqual(["stray"]);
   });
+
+  it("rejects matcher thresholds outside (0, 1]", () => {
+    for (const threshold of [0, -0.1, 1.5, Number.NaN]) {
+      expect(() => scoreRun([gold()], [pred(goldRecord)], { run: "unit", threshold })).toThrow(
+        /threshold/,
+      );
+    }
+    expect(() =>
+      scoreRun([gold()], [pred(goldRecord)], { run: "unit", threshold: 1 }),
+    ).not.toThrow();
+  });
+
+  it("rejects duplicate prediction ids instead of silently keeping the last", () => {
+    expect(() => scoreRun([gold()], [pred(goldRecord), pred(goldRecord)], { run: "unit" })).toThrow(
+      /duplicate prediction id.*g1/,
+    );
+  });
+
+  it("rejects duplicate gold ids", () => {
+    expect(() => scoreRun([gold(), gold()], [pred(goldRecord)], { run: "unit" })).toThrow(
+      /duplicate gold id.*g1/,
+    );
+  });
 });

@@ -23,7 +23,9 @@
           "const": "token-dice"
         },
         "threshold": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
         },
         "provisional": {
           "type": "boolean"

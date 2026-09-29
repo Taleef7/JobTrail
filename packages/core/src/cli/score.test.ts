@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
@@ -29,6 +29,25 @@ describe("pnpm score CLI", () => {
   it("exits with usage (code 2) when inputs are missing", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     expect(main([])).toBe(2);
+    vi.restoreAllMocks();
+  });
+
+  it("rejects malformed JSONL records with file and line number", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jobtrail-score-"));
+    const goldPath = join(dir, "gold.jsonl");
+    const predPath = join(dir, "pred.jsonl");
+    const firstLine = readFileSync(join(fixtures, "gold.jsonl"), "utf8").split(/\r?\n/)[0] ?? "";
+    const good = JSON.parse(firstLine) as { gold: Record<string, unknown> };
+    // line 2: the nested gold record violates schema v2 (fractional laborMinutes)
+    const bad = { ...good, id: "x", gold: { ...good.gold, laborMinutes: 1.5 } };
+    writeFileSync(goldPath, `${firstLine}\n${JSON.stringify(bad)}\n`);
+    writeFileSync(predPath, `${JSON.stringify({ id: "demo-1" })}\n`); // missing raw
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+    expect(() => main(["--gold", goldPath, "--pred", predPath])).toThrow(
+      /gold\.jsonl:2[\s\S]*laborMinutes/,
+    );
+    writeFileSync(goldPath, `${firstLine}\n`);
+    expect(() => main(["--gold", goldPath, "--pred", predPath])).toThrow(/pred\.jsonl:1[\s\S]*raw/);
     vi.restoreAllMocks();
   });
 });

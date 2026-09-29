@@ -23,7 +23,8 @@ export const MATCH_THRESHOLD = 0.5;
 function singular(token: string): string {
   if (token.length <= 3 || token.endsWith("ss")) return token;
   if (token.endsWith("ies")) return `${token.slice(0, -3)}y`;
-  if (/(?:s|x|z|ch|sh)es$/.test(token)) return token.slice(0, -2);
+  // "boxes"/"brushes"/"glasses" drop -es; "fuses"/"hoses" only drop -s (silent e).
+  if (/(?:x|z|ch|sh|ss)es$/.test(token)) return token.slice(0, -2);
   if (token.endsWith("s")) return token.slice(0, -1);
   return token;
 }
