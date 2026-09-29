@@ -1,7 +1,36 @@
-# v2: only GitHub Actions until the monorepo lands (#63), which adds
-# the pnpm workspaces and the uv project here.
 version: 2
 updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+    groups:
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      vite-vitest:
+        patterns: ["vite", "vitest", "@vitejs/*"]
+      lint-format:
+        patterns:
+          ["eslint", "@eslint/*", "typescript-eslint", "eslint-plugin-*", "prettier", "globals"]
+    ignore:
+      # typescript-eslint supports TypeScript < 6.1; bump together deliberately.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: "uv"
+    directory: "/ml"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    labels: ["dependencies"]
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -9,5 +38,4 @@ updates:
       day: "monday"
       time: "06:00"
       timezone: "UTC"
-    labels:
-      - "dependencies"
+    labels: ["dependencies"]

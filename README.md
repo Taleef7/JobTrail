@@ -11,14 +11,14 @@ The ML goal: distill structured extraction from a cloud model into a fine-tuned,
 
 ## Where things stand
 
-| Milestone | Status |
-|---|---|
-| M0 Reset & de-risk | in progress — [issues](https://github.com/Taleef7/JobTrail/milestone/3) |
-| M1 Eval foundation | not started |
-| M2 Model | not started |
-| M3 Mobile MVP | not started |
-| M4 Web demo & evidence | not started |
-| M5 Launch | not started |
+| Milestone              | Status                                                                  |
+| ---------------------- | ----------------------------------------------------------------------- |
+| M0 Reset & de-risk     | in progress — [issues](https://github.com/Taleef7/JobTrail/milestone/3) |
+| M1 Eval foundation     | not started                                                             |
+| M2 Model               | not started                                                             |
+| M3 Mobile MVP          | not started                                                             |
+| M4 Web demo & evidence | not started                                                             |
+| M5 Launch              | not started                                                             |
 
 ## Read more
 

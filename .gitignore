@@ -50,3 +50,6 @@ coverage/
 
 # Logs
 *.log
+
+# Local agent/editor config
+.claude/
