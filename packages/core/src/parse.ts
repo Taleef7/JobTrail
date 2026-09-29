@@ -1,9 +1,9 @@
 // Raw model text → validated JobRecord. Validation is the Zod schema itself,
 // so it can never drift from the contract (lesson from #99's review).
 import type { z } from "zod";
-import { CompactRecordSchema, decodeCompact } from "./codec";
-import { JobRecordSchema, type JobRecord } from "./schema";
-import { balancedObjectSpans, stripThinkBlocks } from "./text";
+import { CompactRecordSchema, decodeCompact } from "./codec.ts";
+import { JobRecordSchema, type JobRecord } from "./schema.ts";
+import { balancedObjectSpans, stripThinkBlocks } from "./text.ts";
 
 export type ParseResult =
   { ok: true; value: JobRecord } | { ok: false; stage: "json" | "schema"; errors: string[] };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseModelOutput } from "./parse";
+import { parseModelOutput } from "./parse.ts";
 
 const full = {
   jobType: "plumbing",

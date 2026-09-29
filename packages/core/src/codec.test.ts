@@ -1,7 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { CompactRecordSchema, decodeCompact, encodeCompact } from "./codec";
-import { JOB_TYPES, JobRecordSchema, type JobRecord } from "./schema";
+import { CompactRecordSchema, decodeCompact, encodeCompact } from "./codec.ts";
+import { JOB_TYPES, JobRecordSchema, type JobRecord } from "./schema.ts";
 
 const text = fc.string({ minLength: 1, maxLength: 40 });
 const record: fc.Arbitrary<JobRecord> = fc.record({
