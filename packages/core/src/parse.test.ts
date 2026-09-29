@@ -55,6 +55,18 @@ describe("parseModelOutput", () => {
     }
   });
 
+  it("strips several <think> blocks and keeps text between them", () => {
+    const raw = `<think>a</think>x<think>b</think>${JSON.stringify(full)}`;
+    expect(parseModelOutput(raw)).toEqual({ ok: true, value: full });
+  });
+
+  it("stays linear-time on many unclosed <think> tags (CodeQL ReDoS finding)", () => {
+    const hostile = "<think>".repeat(20_000) + JSON.stringify(full);
+    const start = performance.now();
+    parseModelOutput(hostile);
+    expect(performance.now() - start).toBeLessThan(250);
+  });
+
   it("rejects full-format keys when compact is expected", () => {
     expect(parseModelOutput(JSON.stringify(full), { format: "compact" })).toMatchObject({
       ok: false,

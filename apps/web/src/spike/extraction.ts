@@ -1,6 +1,7 @@
 // Spike-local extraction contract for the web-runtime benchmark (#66).
 // The real schema v2 lives in packages/core from #67; this is intentionally
 // minimal and disposable.
+import { stripThinkBlocks } from "@jobtrail/core/text";
 import Ajv from "ajv";
 
 export const JOB_TYPES = [
@@ -77,7 +78,7 @@ export function buildMessages(note: string, shape: "long" | "short"): ChatMessag
 export type ParseResult = { ok: true; value: unknown } | { ok: false; error: string };
 
 export function parseModelJson(text: string): ParseResult {
-  const withoutThinking = text.replace(/<think>[\s\S]*?<\/think>/g, "");
+  const withoutThinking = stripThinkBlocks(text);
   const start = withoutThinking.indexOf("{");
   const end = withoutThinking.lastIndexOf("}");
   if (start === -1 || end < start) return { ok: false, error: "no JSON object found" };

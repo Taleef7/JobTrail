@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@jobtrail/core": "workspace:*",
     "@wllama/wllama": "3.6.1",
     "ajv": "^8.20.0",
     "react": "^19.3.0",

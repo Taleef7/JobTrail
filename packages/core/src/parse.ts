@@ -3,6 +3,7 @@
 import type { z } from "zod";
 import { CompactRecordSchema, decodeCompact } from "./codec";
 import { JobRecordSchema, type JobRecord } from "./schema";
+import { stripThinkBlocks } from "./text";
 
 export type ParseResult =
   { ok: true; value: JobRecord } | { ok: false; stage: "json" | "schema"; errors: string[] };
@@ -14,7 +15,7 @@ export interface ParseOptions {
 
 /** Pull the outermost {...} out of model text: drops <think> blocks, fences and prose. */
 function extractJsonObject(text: string): string | null {
-  const cleaned = text.replace(/<think>[\s\S]*?<\/think>/g, "");
+  const cleaned = stripThinkBlocks(text);
   const start = cleaned.indexOf("{");
   const end = cleaned.lastIndexOf("}");
   return start === -1 || end < start ? null : cleaned.slice(start, end + 1);

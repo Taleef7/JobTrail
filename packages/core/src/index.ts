@@ -3,3 +3,4 @@
 export * from "./codec";
 export * from "./parse";
 export * from "./schema";
+export * from "./text";
