@@ -21,6 +21,7 @@ import {
   pendingCells,
   recoverCrash,
   saveSession,
+  sessionKey,
   setStage,
   type CrashedLoad,
   type Session,
@@ -196,9 +197,11 @@ const store: Store = (() => {
     };
   }
 })();
-let session: Session = loadSession(store, new Date().toISOString());
+// Each set of URL overrides has its own saved session (review on #111).
+const SESSION_KEY_FOR_OPTIONS = sessionKey(OPTIONS);
+let session: Session = loadSession(store, new Date().toISOString(), SESSION_KEY_FOR_OPTIONS);
 const persist = () => {
-  if (!saveSession(store, session))
+  if (!saveSession(store, session, SESSION_KEY_FOR_OPTIONS))
     log("  warning: couldn't save progress (storage full or blocked)");
 };
 
@@ -517,8 +520,8 @@ void environment().then(renderEnv);
 $("run").addEventListener("click", () => void runBenchmark());
 $("clear").addEventListener("click", () => {
   if (running) return;
-  clearSession(store);
-  session = loadSession(store, new Date().toISOString());
+  clearSession(store, SESSION_KEY_FOR_OPTIONS);
+  session = loadSession(store, new Date().toISOString(), SESSION_KEY_FOR_OPTIONS);
   $("log").textContent = "Saved results cleared.\n";
   renderResults([], []);
   refreshDownload();

@@ -9,6 +9,7 @@ import {
   pendingCells,
   recoverCrash,
   saveSession,
+  sessionKey,
   setStage,
   type Store,
 } from "./session";
@@ -147,5 +148,27 @@ describe("finer crash stages (#110)", () => {
     const { crashed } = recoverCrash(s);
     expect(crashed?.stage).toBe("run:3");
     expect(crashed?.reason).toContain("run:3");
+  });
+});
+
+describe("sessions are scoped by the URL overrides (review on #111)", () => {
+  it("default options keep the original key; each override set gets its own", () => {
+    const base = { compat: false, threads: null, ctx: 2048 };
+    expect(sessionKey(base)).toBe(SESSION_KEY);
+    const compat = sessionKey({ ...base, compat: true });
+    const single = sessionKey({ ...base, threads: 1 });
+    const small = sessionKey({ ...base, ctx: 512 });
+    expect(new Set([SESSION_KEY, compat, single, small]).size).toBe(4);
+  });
+
+  it("an A/B run under different overrides doesn't see the other's finished cells", () => {
+    const store = memoryStore();
+    const a = sessionKey({ compat: false, threads: null, ctx: 2048 });
+    const b = sessionKey({ compat: true, threads: null, ctx: 2048 });
+    saveSession(store, finishCell(beginCell(loadSession(store, T0, a), "m", "wasm-st", T0)), a);
+    expect(loadSession(store, T0, a).done).toEqual([cellKey("m", "wasm-st")]);
+    expect(loadSession(store, T0, b).done).toEqual([]);
+    clearSession(store, b);
+    expect(loadSession(store, T0, a).done).toHaveLength(1);
   });
 });
