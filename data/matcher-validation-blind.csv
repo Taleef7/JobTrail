@@ -1,0 +1,59 @@
+id,kind,predicted,gold,same,votes,source
+bv-01,material,closet bolts,wax ring,n,3/3,t-0083
+bv-02,material,shelf brackets,drywall anchor,n,3/3,t-0042
+bv-03,material,cover plates,electrical tape,n,3/3,t-0043
+bv-04,material,GFCI outlets,cover plate,n,3/3,t-0028
+bv-05,material,defrost timer,door gasket,n,3/3,t-0056
+bv-06,material,degreaser,microfiber cloth,n,3/3,t-0051
+bv-07,material,foil tape,rigid duct,n,3/3,t-0058
+bv-08,material,slip joint washers,PVC P-trap kit,n,3/3,t-0132
+bv-09,statement,Replaced cover plates,Installed GFCI outlets in bathroom,n,3/3,t-0043
+bv-10,statement,Old setup was totally shot,Thermostat wiring corroded,n,3/3,t-0070
+bv-11,statement,Installed GFCI outlets in bathroom,Replaced cracked cover plates,n,3/3,t-0136
+bv-12,statement,Picked up wax ring at the supply house,Reset toilet,n,3/3,t-0146
+bv-13,statement,Replaced blower motor capacitor,Cleared condensate drain line,n,3/3,t-0110
+bv-14,statement,Picked up 3 inch hinge screws at the supply house,Rehung sagging exterior door,n,3/3,t-0068
+bv-15,statement,Replaced cracked cover plates,Picked up electrical tape at the supply house,n,3/3,t-0136
+bv-16,material,melamine shelf boards,shelf bracket,n,3/3,t-0042
+bv-17,material,shelf brackets,melamine shelf board,n,3/3,t-0042
+bv-18,statement,Picked up wax ring at the supply house,Replaced toilet wax ring,n,3/3,t-0146
+bv-19,statement,Replaced water heater anode rod,Flushed water heater tank,n,3/3,t-0045
+bv-20,statement,Installed furnace filter,Replaced furnace thermostat,n,3/3,t-0121
+bv-21,statement,Cleaned dryer vent,Replaced dryer heating element,n,3/3,t-0048
+bv-22,statement,Rehung sagging exterior door,Replaced door weatherstripping,n,3/3,t-0037
+bv-23,statement,Changed furnace filter,Replaced furnace thermostat,n,3/3,t-0014
+bv-24,statement,Installed single pole switch,Added a new wall switch,y,3/3,t-0117
+bv-25,statement,Hid TV cables in wall,Mounted TV bracket,n,3/3,t-0008
+bv-26,statement,Cleared condensate drain line,Picked up condensate pan tablets at the supply house,n,3/3,t-0110
+bv-27,statement,Anchored wardrobe to the wall,Assembled flat-pack wardrobe,n,3/3,t-0111
+bv-28,statement,Sealed grout lines,Picked up grout sealer at the supply house,n,3/3,t-0130
+bv-29,statement,Replaced toilet wax ring,Picked up wax ring at the supply house,n,3/3,t-0146
+bv-30,statement,Cleaned dishwasher filter,Replaced dishwasher drain pump,n,3/3,t-0052
+bv-31,material,deck boards,5/4 deck board,y,3/3,t-0157
+bv-32,material,deck boards,deck screws,n,3/3,t-0157
+bv-33,material,deck stain,deck cleaner,n,3/3,t-0060
+bv-34,material,gutter hangers,gutter sealant,n,3/3,t-0123
+bv-35,statement,Rotted joist end,Rotted joist end under two boards,y,3/3,t-0105
+bv-36,statement,Swapped out tripping breaker,Replaced tripping breaker,y,3/3,t-0102
+bv-37,statement,Swapped out kitchen sink P-trap,Replaced kitchen sink P-trap,y,3/3,t-0163
+bv-38,statement,Replaced dryer heating element,Picked up dryer heating element at the supply house,n,3/3,t-0118
+bv-39,statement,Clogged furnace filter,Filter completely clogged,y,3/3,t-0025
+bv-40,statement,Secured gutters,Cleaned gutters,n,3/3,t-0120
+bv-41,statement,Swapped out plumbing vent boot,Replaced plumbing vent boot,y,3/3,t-0101
+bv-42,statement,Picked up dryer heating element at the supply house,Replaced dryer heating element,n,3/3,t-0118
+bv-43,statement,Swapped out furnace thermostat,Replaced furnace thermostat,y,3/3,t-0121
+bv-44,material,tube of thread sealant,thread sealant,y,3/3,t-0046
+bv-45,material,bottle of stainless steel polish,stainless steel polish,y,3/3,t-0051
+bv-46,material,roll of foil tape,foil tape,y,3/3,t-0048
+bv-47,material,tube of wood filler,wood filler,y,3/3,t-0054
+bv-48,statement,Picked up 2 gallons of deck stain at the supply house,Picked up deck stain at the supply house,y,3/3,t-0067
+bv-49,statement,Stud was offset from the center of the wall,Stud offset from the center of the wall,y,3/3,t-0063
+bv-50,statement,Do a second coat once the first cures,Second coat once the first cures,y,3/3,t-0007
+bv-51,statement,Filter was completely clogged,Filter completely clogged,y,3/3,t-0092
+bv-52,statement,Remind customer to stay off the deck for 48 hours,Customer to stay off the deck for 48 hours,y,3/3,t-0100
+bv-53,statement,Send quote for panel replacement,Recommend panel replacement quote,y,3/3,t-0084
+bv-54,statement,Heavily corroded trap arm,Corroded trap arm,y,3/3,t-0040
+bv-55,statement,Picked up 5 feet of 12 gauge wire at the supply house,Picked up 12 gauge wire at the supply house,y,3/3,t-0102
+bv-56,statement,Apply second coat once the first cures,Second coat once the first cures,y,3/3,t-0116
+bv-57,statement,Lifted shingles along the ridge line,Lifted shingles on the ridge,y,3/3,t-0001
+bv-58,statement,Add GFCI in the garage,Return to add GFCI in the garage,y,3/3,t-0043

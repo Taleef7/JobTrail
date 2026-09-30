@@ -1,46 +1,45 @@
-// Validates the matcher threshold against the owner's same/different labels in
-// data/matcher-validation.csv. Skipped (with a reason) until every row is labeled.
+// Validates the matcher against same/different labels (#114). Each set is a CSV in
+// data/ with columns id, kind (material | statement), predicted, gold, same (y/n)
+// and votes. Labels come from a blind model panel (data/README.md). A set is
+// skipped, with a reason, until every row is labeled.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { MATCH_THRESHOLD, similarity } from "./match.ts";
+import { parseCsv } from "./cli/csv.ts";
+import { isMatch, MATCH_THRESHOLD, type MatchKind } from "./match.ts";
 
-const csv = readFileSync(
-  join(import.meta.dirname, "..", "..", "..", "data", "matcher-validation.csv"),
-  "utf8",
-);
+const SETS = [
+  { file: "matcher-validation.csv", what: "hand-written pairs" },
+  { file: "matcher-validation-heldout.csv", what: "dev-split extractions" },
+  { file: "matcher-validation-blind.csv", what: "test-split extractions, blind" },
+];
 
-/** Minimal CSV parsing: quoted fields may contain commas. */
-function parseCsv(text: string): string[][] {
-  return text
-    .split(/\r?\n/)
-    .filter((l) => l.trim() !== "")
-    .map((line) =>
-      [...line.matchAll(/("(?:[^"]|"")*"|[^,]*)(,|$)/g)]
-        .slice(0, -1)
-        .map((m) => (m[1] ?? "").replace(/^"|"$/g, "").replace(/""/g, '"')),
-    );
-}
-
-const [header, ...rows] = parseCsv(csv);
-const col = (name: string) => header?.indexOf(name) ?? -1;
-const labeled = rows.filter((r) => /^[yn]/i.test(r[col("same")] ?? ""));
-
-describe("matcher vs human judgments", () => {
-  it("has ~50 pairs to judge", () => {
-    expect(rows.length).toBeGreaterThanOrEqual(50);
+for (const set of SETS) {
+  const csv = readFileSync(join(import.meta.dirname, "..", "..", "..", "data", set.file), "utf8");
+  const [header, ...rows] = parseCsv(csv);
+  const col = (name: string) => header?.indexOf(name) ?? -1;
+  const labeled = rows.filter((r) => /^[yn]/i.test(r[col("same")] ?? ""));
+  const disagreements = labeled.filter((r) => {
+    const panel = /^y/i.test(r[col("same")] ?? "");
+    const kind = r[col("kind")] as MatchKind;
+    return panel !== isMatch(r[col("predicted")] ?? "", r[col("gold")] ?? "", kind);
   });
 
-  it.skipIf(labeled.length < rows.length)(
-    `agrees with ≥ 90% of human labels at threshold ${MATCH_THRESHOLD} (${labeled.length}/${rows.length} labeled)`,
-    () => {
-      const agree = labeled.filter((r) => {
-        const human = /^y/i.test(r[col("same")] ?? "");
-        const machine =
-          similarity(r[col("predicted")] ?? "", r[col("gold")] ?? "") >= MATCH_THRESHOLD;
-        return human === machine;
-      }).length;
-      expect(agree / labeled.length).toBeGreaterThanOrEqual(0.9);
-    },
-  );
-});
+  describe(`matcher vs panel labels: ${set.file} (${set.what})`, () => {
+    it("has ≥ 50 pairs of a known kind", () => {
+      expect(rows.length).toBeGreaterThanOrEqual(50);
+      for (const r of rows) expect(["material", "statement"]).toContain(r[col("kind")]);
+    });
+
+    it.skipIf(labeled.length < rows.length)(
+      `agrees with ≥ 90% of labels at threshold ${MATCH_THRESHOLD} (${labeled.length}/${rows.length} labeled)`,
+      () => {
+        const agree = 1 - disagreements.length / labeled.length;
+        expect(
+          agree,
+          `disagrees on ${disagreements.map((r) => r[col("id")]).join(", ")}`,
+        ).toBeGreaterThanOrEqual(0.9);
+      },
+    );
+  });
+}

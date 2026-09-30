@@ -6,6 +6,7 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 ## [Unreleased]
 
 ### Fixed
+- Scorer: the fuzzy matcher agreed with only 80 % of same/different labels (target 90 %). It now has a short trade synonym table, a conflict rule (different rooms, surfaces or pipe materials don't match) and, for materials, a head-noun rule ("roofing cement" ≠ "roofing nail"). It agrees on 100 % / 100 % / 93.1 % of three labeled sets, the last one blind, so the threshold is no longer provisional. Labels come from a blind model panel, not a human; details in `packages/core/SCORING.md` (#114).
 - `/spike/` lost every result when iOS killed the tab during a model load (found on the owner's iPhone 16 Pro): results are now saved after each step, an interrupted cell is recorded as `crashed` with the stage it died in, Run resumes with the remaining cells, and the JSON can be downloaded at any time; `?fail=crash` simulates the kill (#108).
 - Scorer: a correct quantity of 1 said as "a"/"an" ("used a wax ring") counted as hallucinated. The article now grounds 1 only for the material it introduces (within 3 words, same clause), so invented 1s stay ungrounded; trade-off in `packages/core/SCORING.md` (#106).
 - `/spike/` returned 404 in production (Vercel doesn't map the directory URL to `spike/index.html`); explicit rewrites added — found by live verification (#66).

@@ -1,0 +1,61 @@
+id,kind,predicted,gold,same,votes,source
+hv-01,material,carpet deodorizer,enzyme stain remover,n,4/4,d-0033
+hv-02,material,run capacitor,condensate pan tablets,n,4/4,d-0017
+hv-03,material,carriage bolts,deck screws,n,4/4,d-0004
+hv-04,material,spackle,interior eggshell paint,n,4/4,d-0009
+hv-05,material,roofing cement,architectural shingle,n,4/4,d-0030
+hv-06,material,interior eggshell paint,painter's tape,n,4/4,d-0009
+hv-07,material,spackle,painter's tape,n,4/4,d-0009
+hv-08,material,painters tape,interior eggshell paint,n,4/4,d-0056
+hv-09,statement,Tightened loose neutral on bus bar,Replaced tripping breaker,n,4/4,d-0076
+hv-10,statement,Installed closet shelving,Picked up melamine shelf board at the supply house,n,4/4,d-0100
+hv-11,statement,Picked up 13 feet of 12 gauge wire at the supply house,Replaced tripping breaker,n,4/4,d-0076
+hv-12,statement,Replaced dryer heating element,Picked up foil tape at the supply house,n,4/4,d-0024
+hv-13,statement,Recharged AC refrigerant,Cleaned condenser coil,n,4/4,d-0018
+hv-14,statement,Replaced dishwasher drain pump,Picked up hose clamp at the supply house,n,4/4,d-0005
+hv-15,statement,Cleaned post-renovation dust from the bathroom,Sealed grout lines,n,4/4,d-0028
+hv-16,material,wire nuts,14 gauge wire,n,4/4,d-0078
+hv-17,material,deck screws,5/4 deck board,n,4/4,d-0047
+hv-18,material,5/4 deck boards,deck screws,n,4/4,d-0047
+hv-19,material,TV wall mount,in-wall cable kit,n,4/4,d-0031
+hv-20,material,in-wall cable kit,TV wall mount,n,4/4,d-0031
+hv-21,material,12 gauge wire,wire nut,n,4/4,d-0076
+hv-22,material,wire nuts,12 gauge wire,n,4/4,d-0076
+hv-23,material,14 gauge wire,wire nut,n,4/4,d-0078
+hv-24,statement,Replaced furnace thermostat,Changed furnace filter,n,4/4,d-0040
+hv-25,statement,Mounted the TV bracket,Hid TV cables in wall,n,4/4,d-0072
+hv-26,statement,Patched drywall hole,Picked up drywall patch kit at the supply house,n,4/4,d-0059
+hv-27,statement,Replaced tripping breaker,Picked up 20 amp breaker at the supply house,n,4/4,d-0084
+hv-28,statement,Picked up 1 GFCI outlet at the supply house,Installed GFCI outlets in bathroom,n,4/4,d-0068
+hv-29,statement,Replaced rotted deck boards,Picked up deck screws at the supply house,n,4/4,d-0004
+hv-30,statement,Applied tile cleaner,Picked up tile cleaner at the supply house,n,4/4,d-0097
+hv-31,material,deck cleaner,deck stain,n,4/4,d-0002
+hv-32,material,roofing cement,roofing nail,n,4/4,d-0030
+hv-33,material,furnace thermostat,furnace filter,n,4/4,d-0036
+hv-34,material,roofing nail,roofing cement,n,4/4,d-0030
+hv-35,material,roofing nails,roofing cement,n,4/4,d-0053
+hv-36,material,gutter sealant,gutter hanger,n,4/4,d-0058
+hv-37,material,carpet shampoo,carpet deodorizer,n,4/4,d-0033
+hv-38,material,carpet deodorizer,carpet shampoo,n,4/4,d-0033
+hv-39,statement,Old anode rod was completely eaten through,Anode rod eaten through,y,4/4,d-0049
+hv-40,statement,Cleaned out all the gutters,Cleaned gutters,y,4/4,d-0058
+hv-41,statement,Swapped furnace filter,Changed furnace filter,y,4/4,d-0040
+hv-42,statement,Put up closet shelving,Installed closet shelving,y,4/4,d-0037
+hv-43,statement,Sand peeling trim,Sanded peeling trim,y,4/4,d-0001
+hv-44,statement,Paint front door,Painted front door,y,4/4,d-0001
+hv-45,statement,Return to check for leaks,Check for leaks next week,y,4/4,d-0066
+hv-46,statement,Thermostat wiring was corroded,Thermostat wiring corroded,y,4/4,d-0036
+hv-47,statement,Picked up 2 no 1 drywall patch kit at the supply house,Picked up drywall patch kit at the supply house,y,4/4,d-0059
+hv-48,statement,Picked up 5 shelf brackets at the supply house,Picked up shelf bracket at the supply house,y,4/4,d-0079
+hv-49,statement,paint the patch,Return to paint the patch,y,4/4,d-0011
+hv-50,statement,Replace the jamb section,Return to replace the jamb section,y,4/4,d-0041
+hv-51,statement,replace a subfloor section,Return to replace subfloor section,y,4/4,d-0102
+hv-52,statement,Picked up 1 20 amp breaker at the supply house,Picked up 20 amp breaker at the supply house,y,4/4,d-0084
+hv-53,statement,Leaking slip nut on the old P-trap,Leaking slip nut on the P-trap,y,4/4,d-0066
+hv-54,statement,Installed GFCI outlets,Installed GFCI outlets in bathroom,y,4/4,d-0022
+hv-55,statement,Picked up 13 feet of 12 gauge wire at the supply house,Picked up 12 gauge wire at the supply house,y,4/4,d-0076
+hv-56,statement,heavy grease buildup inside the hood duct,Grease buildup inside the hood duct,y,4/4,d-0110
+hv-57,statement,Send over a quote for gutter guards,Quote gutter guards,y,4/4,d-0058
+hv-58,statement,Leaking slip nut on the P-trap under the sink,Leaking slip nut on the P-trap,y,4/4,d-0019
+hv-59,statement,Steam cleaned the carpet,Steam cleaned living room carpet,y,4/4,d-0060
+hv-60,statement,Replace subfloor section,Return to replace subfloor section,y,4/4,d-0021

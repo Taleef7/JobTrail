@@ -60,7 +60,8 @@ export const ScoreReportSchema = z.strictObject({
   run: z.string(),
   model: z.string().nullable(),
   matcher: z.strictObject({
-    method: z.literal("token-dice"),
+    // "token-dice": plain Dice (reports before #114); "token-dice-v2": + synonyms and rules.
+    method: z.enum(["token-dice", "token-dice-v2"]),
     threshold: z.number().gt(0).max(1),
     provisional: z.boolean(),
   }),
