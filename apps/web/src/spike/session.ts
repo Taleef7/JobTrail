@@ -19,7 +19,10 @@ export interface Store {
 
 export interface Attempt {
   model: string;
+  /** The backend requested for this cell (the matrix key). */
   backend: Backend;
+  /** What actually ran, once known after load (e.g. wasm-mt that fell back to wasm-st). */
+  ran?: Backend;
   stage: Stage;
   since: string;
 }
@@ -89,8 +92,10 @@ export function beginCell(s: Session, model: string, backend: Backend, now: stri
   return { ...s, attempt: { model, backend, stage: "load", since: now } };
 }
 
-export function setStage(s: Session, stage: Stage): Session {
-  return s.attempt ? { ...s, attempt: { ...s.attempt, stage } } : s;
+/** Move the open attempt to `stage`; pass `ran` once the effective backend is known. */
+export function setStage(s: Session, stage: Stage, ran?: Backend): Session {
+  if (!s.attempt) return s;
+  return { ...s, attempt: { ...s.attempt, stage, ...(ran ? { ran } : {}) } };
 }
 
 export function finishCell(s: Session): Session {
@@ -105,7 +110,7 @@ export function recoverCrash(s: Session): { session: Session; crashed: CrashedLo
   if (!a) return { session: s, crashed: null };
   const crashed: CrashedLoad = {
     model: a.model,
-    backend: a.backend,
+    backend: a.ran ?? a.backend,
     requestedBackend: a.backend,
     status: "crashed",
     stage: a.stage,

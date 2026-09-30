@@ -368,7 +368,7 @@ async function runCells() {
         status: "ok",
       };
       loads.push(loadRecord);
-      session = setStage(session, "inference");
+      session = setStage(session, "inference", ran);
       persist();
       log(
         `  loaded in ${(loadMs / 1000).toFixed(1)}s (${downloadEvents > 1 ? "downloaded" : "from cache"}), multithread=${wllama.isMultithread()}`,

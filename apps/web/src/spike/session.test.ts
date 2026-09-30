@@ -117,3 +117,23 @@ describe("spike session persistence (#108)", () => {
     expect(loadSession(store, T0).done).toEqual([]);
   });
 });
+
+describe("crash attribution (review on #109)", () => {
+  it("an inference crash is attributed to the backend that actually ran", () => {
+    // wasm-mt requested, but wllama fell back to one thread before the tab died
+    let s = beginCell(loadSession(memoryStore(), T0), "m", "wasm-mt", T0);
+    s = setStage(s, "inference", "wasm-st");
+    const { session, crashed } = recoverCrash(s);
+    expect(crashed).toMatchObject({ backend: "wasm-st", requestedBackend: "wasm-mt" });
+    // the matrix is keyed by what was requested, so Run still skips this cell
+    expect(session.done).toEqual([cellKey("m", "wasm-mt")]);
+  });
+
+  it("a load crash (effective backend not yet known) keeps the requested one", () => {
+    const s = beginCell(loadSession(memoryStore(), T0), "m", "wasm-mt", T0);
+    expect(recoverCrash(s).crashed).toMatchObject({
+      backend: "wasm-mt",
+      requestedBackend: "wasm-mt",
+    });
+  });
+});
