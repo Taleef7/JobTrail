@@ -61,3 +61,23 @@ File: `phone-iphone-16-pro-chrome-smollm2.json` (owner, 2026-09-30).
 - **The browser reports no JSPI and no Memory64,** so wllama **always** runs its 32-bit compat build on iOS; its constructor enables compat by default. `?compat=1` therefore changes nothing on iOS, and the "64-bit build" hypothesis is ruled out.
 - **Conclusion:** it's the tab's memory limit. In desktop WebKit, SmolLM2 needs about 0.5–0.6 GB and Gemma 270M about 0.9–1.0 GB, so the iOS limit for this page sits somewhere between those. Download buffers push SmolLM2 over it on the first run.
 - **Known gap in this file:** `env` describes the page that _started_ the session (`1f328e9`, with no `wasm` fields). The page kept the first environment it saw; the fix records the latest one.
+
+## Phone: iPhone 16 Pro, iOS 26.7 (Chrome): Download models only → reload → Run works, up to 380 MB (#110, #108)
+
+File: `phone-iphone-16-pro-chrome-lfm2-download-only.json` (owner, 2026-09-30, page `7d9824e`). Steps: tick LFM2-350M-Extract Q8_0 and SmolLM2-135M Q8_0 with WASM single-thread, press **Download models only**, reload, then press **Run**.
+
+- **LFM2-350M-Extract Q8_0 (380 MB), loaded from cache in 1.5 s, completed all 8 runs of its one cell (WASM single-thread):**
+  - prefill 25–30 tok/s and decode 17–22 tok/s, on one thread;
+  - a long note took 29–33 s end to end, a short one 6–15 s.
+  - This is the largest model to run on the iPhone so far, about 2.6× SmolLM2.
+- **Switching to SmolLM2-135M in the same tab crashed at `run:0`**, although SmolLM2 alone runs fine (the file above). Memory from the first model isn't returned to iOS, so one model fits per page load. The app and the web demo only ever load one.
+- **Crash recovery (#108) worked on the device:**
+  - the 8 finished runs survived the kill;
+  - the crashed cell is recorded as `crashed` with stage `run:0`;
+  - the page offered to continue with the remaining cells, and the JSON downloaded afterwards.
+- **`env.wasm` is recorded:** `jspi: false, mem64: false`, and `compatUsed: true` on every load, which confirms the 32-bit compat build.
+- **Zero-shot quality was poor**, as with every candidate:
+  - 1/8 outputs was schema-valid;
+  - failures included repetition loops ("painting", "painting", …) and made-up keys.
+  - Fine-tuning (M2) is required.
+- **Conclusion:** the iPhone web limit sits between LFM2-350M (0.5–0.8 GB in desktop WebKit, runs) and Gemma 270M (0.9–1.0 GB, killed). That limit is on **runtime memory, not file size**: Gemma's Q8 file is smaller (292 MB) than LFM2's (380 MB). A model qualifies for iOS web only by running here from cache, downloaded first.
