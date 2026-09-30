@@ -79,7 +79,7 @@ def coverage_markdown(
         "## Usage",
         "",
         f"{usage.get('calls', 0):,} API calls, {usage.get('total', 0):,} tokens in total "
-        "(free tier: $0).",
+        "(per-call counts in `usage.jsonl`; billing tier and cost are recorded in data/README).",
         "",
     ]
     return "\n".join(lines)

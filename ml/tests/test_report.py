@@ -35,3 +35,9 @@ def test_markdown_has_every_tag_flag_counts_and_usage():
     assert "1,234" in md
     # negation and hours-phrasing have < 12 test drafts: named against the target
     assert "Below 12:** hours-phrasing, negation" in md
+
+
+def test_usage_line_does_not_claim_a_cost():
+    """The drafts run used a paid Tier 1 key; the report can't know the billing tier."""
+    md = coverage_markdown(PLANS, DRAFTS, {"total": 10, "calls": 2}, min_test=12)
+    assert "$0" not in md and "free tier" not in md.lower()
