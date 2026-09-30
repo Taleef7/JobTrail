@@ -40,4 +40,8 @@ describe("isComplete", () => {
     ).toBe(false);
     expect(isComplete({ loads: [ok], runs: [run], fatal: "boom" })).toBe(false);
   });
+
+  it("is incomplete when a cell crashed the tab (#108)", () => {
+    expect(isComplete({ loads: [ok, { status: "crashed" as const }], runs: [run] })).toBe(false);
+  });
 });

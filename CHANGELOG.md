@@ -6,6 +6,7 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 ## [Unreleased]
 
 ### Fixed
+- `/spike/` lost every result when iOS killed the tab during a model load (found on the owner's iPhone 16 Pro): results are now saved after each step, an interrupted cell is recorded as `crashed` with the stage it died in, Run resumes with the remaining cells, and the JSON can be downloaded at any time; `?fail=crash` simulates the kill (#108).
 - `/spike/` returned 404 in production (Vercel doesn't map the directory URL to `spike/index.html`); explicit rewrites added — found by live verification (#66).
 
 ### Changed

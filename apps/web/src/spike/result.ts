@@ -12,7 +12,8 @@ export function effectiveBackend(requested: Backend, isMultithread: boolean): Ba
 }
 
 interface LoadOutcome {
-  status: "ok" | "skipped" | "error";
+  /** "crashed": the tab was killed mid-cell and the cell was recovered on reload (#108). */
+  status: "ok" | "skipped" | "error" | "crashed";
   inferenceError?: string;
 }
 
