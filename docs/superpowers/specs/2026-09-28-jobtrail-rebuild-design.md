@@ -87,6 +87,18 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
 1. **Floor:** legacy rule-based extractor (unchanged).
 2. **Zero/few-shot small general models:** ~270M–2B (e.g., Gemma 3 270M, Qwen3-0.6B, Llama 3.2 1B, one ~2B). Final list confirmed against llama.cpp support.
 3. **Fine-tuned:** Gemma 3 270M and Qwen3-0.6B (full FT or LoRA on free Colab/Kaggle GPU), trained with **no instruction prompt** (input = note only) and compact output. **Added 2026-09-30 (#110):** LFM2-350M-Extract (Liquid AI; pretrained for schema-guided extraction; hybrid conv/attention built for CPUs; 27% faster decode than Gemma 270M on a desktop CPU) and SmolLM2-135M (145 MB; about 2× Gemma's decode speed). All four were tried zero-shot on the scorer's demo notes and none was usable without fine-tuning; the fine-tune ladder picks the winner on accuracy, speed and size.
+   **Added 2026-09-30 (model survey):**
+   - **LFM2.5-350M** (Q8_0 379 MB, Q4_K_M 229 MB). It's the newer version of LFM2-350M-Extract. Liquid recommends it for data extraction and structured output, and it has no reasoning mode. Its card, which Liquid ran, reports IFEval 77.0 and CaseReportBench (extraction) 32.5, against 59.9 and 13.8 for Qwen3.5-0.8B with thinking off.
+   - **LFM2.5-230M** (Q8_0 247 MB, Q4_0 149 MB). Distilled from it, and built for extraction on the tightest memory budgets.
+
+   Both use the LFM2 architecture already running in wllama. The LFM Open License 1.0 allows commercial use below $10M annual revenue; we must ship the license and state our modifications.
+
+   **Rejected for the web and iPhone:**
+   - **MiniCPM5-1B:** Q4_K_M 688 MB. Apache-2.0, can think or not.
+   - **Qwen3.5-0.8B:** Q4_0 507 MB. Multimodal, thinking off by default, and its card warns of thinking loops at this size.
+
+   Both exceed the ~400 MB iPhone budget below and add nothing over Qwen3-0.6B, which stays the Android-only upper rung. Reasoning modes are a cost here: a phone that writes 5–20 tok/s pays for every thinking token, so fine-tuning targets direct JSON output.
+   **Measured budget (#110):** on iPhone 16 Pro web, LFM2-350M-Extract Q8_0 (380 MB) runs from cache, and one model fits per page load.
 4. **Ceiling:** cloud model with structured output (quality, $/note, latency).
 
 ### Quantization study
