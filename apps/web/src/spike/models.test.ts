@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MODELS } from "./models";
+import { MODELS, hfUrl } from "./models";
 
 describe("spike model catalogue (#110)", () => {
   it("has unique ids and GGUF files from Hugging Face repos", () => {
@@ -18,5 +18,14 @@ describe("spike model catalogue (#110)", () => {
     );
     const defaults = MODELS.filter((m) => m.defaultOn).map((m) => m.id);
     expect(defaults).toEqual(["gemma3-270m-q8_0", "lfm2-350m-extract-q8_0", "smollm2-135m-q8_0"]);
+  });
+});
+
+describe("hfUrl (#110 download-only)", () => {
+  it("matches the URL wllama's loadModelFromHF caches under, so a pre-download is a cache hit", () => {
+    const m = MODELS.find((x) => x.id === "smollm2-135m-q8_0");
+    expect(m && hfUrl(m)).toBe(
+      "https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q8_0.gguf",
+    );
   });
 });

@@ -16,6 +16,8 @@ Evaluation data for JobTrail v2. Training data (3–5k synthetic examples) is pu
 
 ## How the drafts are made (#70)
 
+> **Status:** the generator, plan and manifest are committed. `drafts/test.jsonl` and `drafts/dev.jsonl` arrive in a follow-up once the full run completes; the free tier allows 20 requests per model per day.
+
 **Record first, then prose.** `ml/jobtrail_ml/sampler.py` draws each gold record from a job template in `scenarios.yaml` (seeded), along with the note's style and hard-case tags. A teacher model then writes a note that must say exactly that record. The label is therefore the plan, not the teacher's reading of its own note. Each draft carries **fidelity flags** for the reviewer in #71:
 
 - rule checks: every material, quantity and time is actually in the note; hours-phrased notes don't leak the minutes;
