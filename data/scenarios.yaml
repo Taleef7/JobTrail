@@ -1,0 +1,274 @@
+# Scenario matrix for eval drafts (#70). The sampler (ml/jobtrail_ml/sampler.py)
+# builds each gold record from a job template below, then Gemini writes a note
+# that says exactly that record. Labeling rules: data/LABELING.md.
+#
+# materials: qty = [min, max] when a number is said; vague: true allows "some X"
+# (quantity null). unit is the word said with the quantity, or null for counts.
+version: 1
+
+styles:
+  terse: >-
+    Clipped fragments typed in a hurry: no filler, one to three short sentences.
+  rambling: >-
+    Conversational and long-winded: side comments about the house, the customer
+    or the drive, but every fact is still in there.
+  spoken-fillers: >-
+    A raw speech-to-text transcript of someone talking: "um", "uh", "so yeah",
+    false starts, loose punctuation.
+  run-on: >-
+    One long run-on sentence strung together with "and" and "then", barely any
+    punctuation.
+
+tags:
+  hours-phrasing:
+    conflicts: [extra-labor]
+  negation: {}
+  self-correction: {}
+  multiple-materials:
+    conflicts: [no-materials]
+  no-materials:
+    conflicts: [multiple-materials, supply-house-trip]
+  supply-house-trip:
+    conflicts: [no-materials]
+  extra-labor:
+    conflicts: [hours-phrasing]
+  approval-absent: {}
+
+# How often the untagged parts of a record vary.
+mix:
+  plain_share: 0.2 # notes with no hard-case tag
+  two_tags_share: 0.5 # of tagged notes, share with two tags
+  labor_missing: 0.08 # labor not mentioned (only on notes without labor tags)
+  issue: 0.5 # chance of one issue found
+  followup: 0.4 # chance of one follow-up
+  second_work: 0.35 # chance of a second work item from the template
+  vague_quantity: 0.3 # for vague materials, chance the number is not said
+
+hours_values: [30, 45, 60, 90, 120, 150, 180, 240]
+extra_labor_minutes: [15, 20, 25, 30, 40, 45]
+
+trades:
+  plumbing:
+    - work: [Replaced kitchen sink P-trap, Tightened supply line connections]
+      issues: [Leaking slip nut on the P-trap, Corroded trap arm]
+      materials:
+        - { name: PVC P-trap kit, unit: kit, qty: [1, 1] }
+        - { name: plumber's tape, unit: roll, qty: [1, 1], vague: true }
+        - { name: braided supply line, unit: null, qty: [1, 2] }
+        - { name: slip joint washer, unit: null, qty: [2, 4] }
+      followups: [Check for leaks next week]
+      labor: [30, 120]
+    - work: [Replaced toilet wax ring, Reset toilet]
+      issues: [Water damage under the toilet flange, Cracked closet bolt]
+      materials:
+        - { name: wax ring, unit: null, qty: [1, 1] }
+        - { name: closet bolt, unit: null, qty: [2, 2] }
+        - { name: toilet supply line, unit: null, qty: [1, 1] }
+      followups: [Return to replace subfloor section]
+      labor: [45, 150]
+    - work: [Replaced water heater anode rod, Flushed water heater tank]
+      issues: [Heavy sediment in the tank, Anode rod eaten through]
+      materials:
+        - { name: magnesium anode rod, unit: null, qty: [1, 1] }
+        - { name: thread sealant, unit: tube, qty: [1, 1], vague: true }
+      followups: [Quote a new water heater]
+      labor: [60, 180]
+
+  electrical:
+    - work: [Replaced tripping breaker, Tightened panel neutral connections]
+      issues: [Scorched breaker terminal, Loose neutral on the bus bar]
+      materials:
+        - { name: 20 amp breaker, unit: null, qty: [1, 2] }
+        - { name: wire nut, unit: null, qty: [3, 8] }
+        - { name: 12 gauge wire, unit: feet, qty: [5, 25] }
+      followups: [Recommend panel replacement quote]
+      labor: [45, 150]
+    - work: [Installed GFCI outlets in bathroom, Replaced cracked cover plates]
+      issues: [No GFCI protection near the sink, Backstabbed outlet connections]
+      materials:
+        - { name: GFCI outlet, unit: null, qty: [1, 3] }
+        - { name: cover plate, unit: null, qty: [1, 4] }
+        - { name: electrical tape, unit: roll, qty: [1, 1], vague: true }
+      followups: [Return to add GFCI in the garage]
+      labor: [30, 120]
+    - work: [Installed ceiling light fixture, Added a new wall switch]
+      issues: [Ceiling box not rated for the fixture]
+      materials:
+        - { name: fan-rated ceiling box, unit: null, qty: [1, 1] }
+        - { name: 14 gauge wire, unit: feet, qty: [10, 30] }
+        - { name: single pole switch, unit: null, qty: [1, 1] }
+        - { name: wire nut, unit: null, qty: [2, 6] }
+      followups: [Customer to pick a dimmer model]
+      labor: [60, 180]
+
+  hvac:
+    - work: [Replaced furnace thermostat, Changed furnace filter]
+      issues: [Thermostat wiring corroded, Filter completely clogged]
+      materials:
+        - { name: programmable thermostat, unit: null, qty: [1, 1] }
+        - { name: furnace filter, unit: null, qty: [1, 2] }
+        - { name: wire nut, unit: null, qty: [2, 5] }
+      followups: [Schedule fall tune-up]
+      labor: [30, 120]
+    - work: [Recharged AC refrigerant, Cleaned condenser coil]
+      issues: [Slow refrigerant leak at the service valve]
+      materials:
+        - { name: R-410A refrigerant, unit: pound, qty: [2, 4] }
+        - { name: coil cleaner, unit: can, qty: [1, 1], vague: true }
+      followups: [Return to leak-test the line set]
+      labor: [60, 180]
+    - work: [Replaced blower motor capacitor, Cleared condensate drain line]
+      issues: [Swollen run capacitor, Condensate line clogged with algae]
+      materials:
+        - { name: run capacitor, unit: null, qty: [1, 1] }
+        - { name: condensate pan tablets, unit: pack, qty: [1, 1] }
+      followups: [Check the blower motor amps next visit]
+      labor: [30, 90]
+
+  carpentry:
+    - work: [Rehung sagging exterior door, Replaced door weatherstripping]
+      issues: [Stripped hinge screw holes, Rotted door jamb bottom]
+      materials:
+        - { name: 3 inch hinge screw, unit: null, qty: [4, 9] }
+        - { name: weatherstripping, unit: feet, qty: [14, 20] }
+        - { name: wood filler, unit: tube, qty: [1, 1], vague: true }
+      followups: [Return to replace the jamb section]
+      labor: [60, 180]
+    - work: [Replaced rotted deck boards, Re-fastened loose railing post]
+      issues: [Rotted joist end under two boards]
+      materials:
+        - { name: 5/4 deck board, unit: null, qty: [3, 8] }
+        - { name: deck screws, unit: box, qty: [1, 2] }
+        - { name: carriage bolt, unit: null, qty: [2, 4] }
+      followups: [Quote sistering the joist]
+      labor: [90, 240]
+    - work: [Installed closet shelving, Patched old bracket holes]
+      issues: []
+      materials:
+        - { name: shelf bracket, unit: null, qty: [4, 8] }
+        - { name: melamine shelf board, unit: null, qty: [2, 4] }
+        - { name: drywall anchor, unit: null, qty: [6, 12] }
+      followups: []
+      labor: [45, 150]
+
+  appliance:
+    - work: [Replaced dryer heating element, Cleaned dryer vent]
+      issues: [Dryer vent packed with lint, Burnt-out heating element]
+      materials:
+        - { name: dryer heating element, unit: null, qty: [1, 1] }
+        - { name: rigid duct, unit: feet, qty: [4, 10] }
+        - { name: foil tape, unit: roll, qty: [1, 1], vague: true }
+      followups: [Recommend annual vent cleaning]
+      labor: [45, 120]
+    - work: [Replaced dishwasher drain pump, Cleaned dishwasher filter]
+      issues: [Glass shard jammed in the pump impeller]
+      materials:
+        - { name: dishwasher drain pump, unit: null, qty: [1, 1] }
+        - { name: hose clamp, unit: null, qty: [1, 2] }
+      followups: []
+      labor: [45, 120]
+    - work: [Replaced refrigerator defrost timer, Cleared frozen evaporator]
+      issues: [Evaporator coil iced over]
+      materials:
+        - { name: defrost timer, unit: null, qty: [1, 1] }
+        - { name: door gasket, unit: null, qty: [1, 1] }
+      followups: [Call back if the freezer ices again]
+      labor: [60, 150]
+
+  cleaning:
+    - work: [Deep cleaned kitchen, Degreased range hood filters]
+      issues: [Grease buildup inside the hood duct]
+      materials:
+        - { name: degreaser, unit: gallon, qty: [1, 2], vague: true }
+        - { name: microfiber cloth, unit: pack, qty: [1, 2] }
+        - { name: stainless steel polish, unit: bottle, qty: [1, 1] }
+      followups: [Book monthly kitchen clean]
+      labor: [90, 240]
+    - work: [Steam cleaned living room carpet, Treated pet stains]
+      issues: [Old pet stains in the hallway, Carpet pad soaked by the window]
+      materials:
+        - { name: enzyme stain remover, unit: bottle, qty: [1, 2] }
+        - { name: carpet shampoo, unit: gallon, qty: [1, 1], vague: true }
+        - { name: carpet deodorizer, unit: bottle, qty: [1, 1] }
+      followups: [Return to recheck the stains after drying]
+      labor: [60, 180]
+    - work: [Cleaned post-renovation dust from bathroom, Sealed grout lines]
+      issues: [Hazy grout residue on the tile]
+      materials:
+        - { name: grout sealer, unit: bottle, qty: [1, 1] }
+        - { name: tile cleaner, unit: bottle, qty: [1, 2], vague: true }
+      followups: []
+      labor: [60, 150]
+
+  painting:
+    - work: [Painted bedroom walls, Patched nail holes]
+      issues: [Water stain on the ceiling corner]
+      materials:
+        - { name: interior eggshell paint, unit: gallon, qty: [2, 3] }
+        - { name: spackle, unit: tub, qty: [1, 1], vague: true }
+        - { name: painter's tape, unit: roll, qty: [1, 3] }
+      followups: [Touch up after the furniture is back]
+      labor: [120, 240]
+    - work: [Painted front door, Sanded peeling trim]
+      issues: [Peeling paint on the door trim]
+      materials:
+        - { name: exterior satin paint, unit: quart, qty: [1, 2] }
+        - { name: sanding sponge, unit: null, qty: [2, 4] }
+      followups: [Second coat once the first cures]
+      labor: [60, 180]
+    - work: [Stained deck, Pressure washed deck]
+      issues: [Mildew on the north side boards]
+      materials:
+        - { name: deck stain, unit: gallon, qty: [2, 5] }
+        - { name: deck cleaner, unit: gallon, qty: [1, 1] }
+      followups: [Customer to stay off the deck for 48 hours]
+      labor: [150, 240]
+
+  roofing:
+    - work: [Replaced missing shingles, Resealed chimney flashing]
+      issues: [Cracked flashing sealant at the chimney, Lifted shingles on the ridge]
+      materials:
+        - { name: architectural shingle, unit: bundle, qty: [1, 2] }
+        - { name: roofing cement, unit: tube, qty: [1, 2], vague: true }
+        - { name: roofing nail, unit: pound, qty: [1, 2] }
+      followups: [Inspect again after the next storm]
+      labor: [90, 240]
+    - work: [Cleaned gutters, Reattached sagging gutter section]
+      issues: [Gutter hanger pulled out of the fascia]
+      materials:
+        - { name: gutter hanger, unit: null, qty: [3, 6] }
+        - { name: gutter sealant, unit: tube, qty: [1, 1] }
+      followups: [Quote gutter guards]
+      labor: [60, 180]
+    - work: [Replaced plumbing vent boot, Resealed exposed nail heads]
+      issues: [Cracked rubber vent boot leaking into the attic]
+      materials:
+        - { name: vent pipe boot, unit: null, qty: [1, 1] }
+        - { name: roofing nail, unit: null, qty: [6, 12] }
+      followups: [Check the attic for dampness next week]
+      labor: [45, 120]
+
+  general:
+    - work: [Mounted TV bracket, Hid TV cables in wall]
+      issues: [Stud offset from the center of the wall]
+      materials:
+        - { name: TV wall mount, unit: null, qty: [1, 1] }
+        - { name: in-wall cable kit, unit: kit, qty: [1, 1] }
+        - { name: lag bolt, unit: null, qty: [4, 4] }
+      followups: []
+      labor: [45, 120]
+    - work: [Patched drywall hole, Installed door stop]
+      issues: [Doorknob punched through the drywall]
+      materials:
+        - { name: drywall patch kit, unit: kit, qty: [1, 1] }
+        - { name: joint compound, unit: tub, qty: [1, 1], vague: true }
+        - { name: door stop, unit: null, qty: [1, 2] }
+      followups: [Return to paint the patch]
+      labor: [45, 150]
+    - work: [Assembled flat-pack wardrobe, Anchored wardrobe to wall]
+      issues: [Missing hardware bag in the box]
+      materials:
+        - { name: furniture anchor strap, unit: null, qty: [1, 2] }
+        - { name: wood screw, unit: null, qty: [4, 10] }
+      followups: [Return with the replacement hardware]
+      labor: [90, 240]

@@ -3,11 +3,14 @@ name = "jobtrail-ml"
 version = "0.0.0"
 description = "JobTrail v2 ML pipeline: data generation, fine-tuning, quantization, batch inference."
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+    "jsonschema>=4.26.0",
+    "pyyaml>=6.0.3",
+]
 
 [dependency-groups]
 dev = [
-    "jsonschema>=4.26.0",
     "pytest>=8",
     "ruff>=0.8",
 ]
@@ -24,3 +27,4 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
