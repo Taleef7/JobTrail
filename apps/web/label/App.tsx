@@ -24,7 +24,15 @@ import {
 } from "../src/label/label";
 
 const items = parseQueue(queueRaw);
-const storage = typeof localStorage === "undefined" ? null : localStorage;
+// Merely reading window.localStorage throws a SecurityError when storage is blocked;
+// the review then runs in memory and the reviewer downloads the decisions.
+const storage = (() => {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
+})();
 const saved = storage ? loadDecisions(storage) : {};
 // Saved decisions that no longer match the queue are kept in storage, never applied.
 const { decisions: initial, stale, orphaned } = matchDecisions(items, saved);
