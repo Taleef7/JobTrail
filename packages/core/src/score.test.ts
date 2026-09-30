@@ -198,3 +198,77 @@ describe("scoreRun", () => {
     );
   });
 });
+
+describe("grounding: quantity 1 said as an article", () => {
+  type Material = JobRecord["materials"][number];
+  const groundingFor = (note: string, materials: Material[]) =>
+    scoreRecord(gold({ note }), pred({ ...goldRecord, materials })).grounding;
+  const WAX_NOTE = "Pulled the toilet and set it back on a new wax ring. Took 40 minutes.";
+
+  it("grounds 1 when 'a' introduces the material", () => {
+    expect(groundingFor(WAX_NOTE, [{ name: "Wax ring", quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 0,
+    });
+  });
+
+  it("grounds 1 for 'an' too", () => {
+    const note = "Installed an outdoor GFCI outlet by the patio.";
+    expect(groundingFor(note, [{ name: "GFCI outlet", quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 0,
+    });
+  });
+
+  it("still flags an invented 1 for a material no article introduces", () => {
+    const materials = [
+      { name: "Wax ring", quantity: 1, unit: null },
+      { name: "Toilet bolts", quantity: 1, unit: null },
+    ];
+    // "toilet" is in the note (name grounded) but only "the toilet": the 1 is invented
+    expect(groundingFor(WAX_NOTE, materials)).toEqual({ checked: 4, ungrounded: 1 });
+  });
+
+  it("does not read 'a few' as 1", () => {
+    const note = "Swapped the light fixture using a few wire nuts.";
+    expect(groundingFor(note, [{ name: "Wire nuts", quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 1,
+    });
+  });
+
+  it("grounds 1 through the unit: 'a 50 foot roll of Romex'", () => {
+    const note = "Ran a 50 foot roll of Romex to the garage.";
+    expect(groundingFor(note, [{ name: "Romex", quantity: 1, unit: "roll" }])).toEqual({
+      checked: 2,
+      ungrounded: 0,
+    });
+  });
+
+  it("does not let an article reach across a comma", () => {
+    const note = "Checked a breaker, wire nuts were loose so I tightened them.";
+    expect(groundingFor(note, [{ name: "Wire nuts", quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 1,
+    });
+  });
+
+  it("does not stretch past three words after the article", () => {
+    const note = "Found a leak near the old copper supply pipe under the sink.";
+    expect(groundingFor(note, [{ name: "Supply pipe", quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 1,
+    });
+  });
+
+  it.each([
+    ["decimal point", "Installed a 1.5-inch PVC coupling under the sink.", "PVC coupling"],
+    ["abbreviation dots", "Installed an A.O. Smith water heater.", "Water heater"],
+    ["hyphenated size", "Put in a new 40-gallon water heater.", "Water heater"],
+  ])("counts reach in words, with no clause break inside a word (%s)", (_, note, name) => {
+    expect(groundingFor(note, [{ name, quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 0,
+    });
+  });
+});
