@@ -8,7 +8,8 @@ import type { Backend } from "./result";
 
 export const SESSION_KEY = "jobtrail-spike-session-v1";
 
-export type Stage = "load" | "inference";
+// "run:<n>" = the n-th timed run of the cell (#110), so a crash says exactly where.
+export type Stage = "load" | "warmup" | "inference" | `run:${number}`;
 
 /** The subset of Web Storage this module needs (localStorage in the page). */
 export interface Store {

@@ -17,6 +17,11 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
+- `/spike/` diagnoses the iPhone crash and measures small models (#110):
+  - URL overrides: `?compat=1` forces wllama's 32-bit build, plus `?threads=` and `?ctx=`;
+  - the results record JSPI and Memory64 support, which wllama build ran, and the exact crash stage (`load`, `warmup` or `run:<n>`);
+  - two small candidates: LFM2-350M-Extract and SmolLM2-135M.
+- Redmi Note 9S phone results in `evidence/66/`: reading the prompt dominates, and WebGPU gives no gain on Adreno 618. ADR 0003 records the iPhone WebKit investigation. The design doc's model ladder gains LFM2-350M-Extract and SmolLM2-135M.
 - Rule-based baseline (`extractWithRules`): the legacy v0 regex extractor ported without improvement, as the floor every model must beat and the no-download fallback. A differential test requires it to reproduce the unmodified legacy file's outputs; 10 characterization notes pin its known failure modes (hours, negations, substring units). `pnpm baseline` writes predictions for `pnpm score`; demo-fixture report in `results/rules.json` (#69).
 - Scorer (`@jobtrail/core`): per-field accuracy and P/R/F1, zero-edit rate, parse/schema-valid rates, hallucination (grounding) rate, latency, slices by source and tag; failures always count. `pnpm score` CLI runs on Node 24's native TypeScript. Definitions in `packages/core/SCORING.md` (#68).
 - Score report contract (`ScoreReportSchema` → `schema/score-report.v1.json`) for the web and phone apps (#68).

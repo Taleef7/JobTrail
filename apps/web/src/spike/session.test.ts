@@ -137,3 +137,15 @@ describe("crash attribution (review on #109)", () => {
     });
   });
 });
+
+describe("finer crash stages (#110)", () => {
+  it("records warmup and the run index a crash happened in", () => {
+    let s = beginCell(loadSession(memoryStore(), T0), "m", "wasm-mt", T0);
+    s = setStage(s, "warmup", "wasm-mt");
+    expect(recoverCrash(s).crashed?.stage).toBe("warmup");
+    s = setStage(s, "run:3");
+    const { crashed } = recoverCrash(s);
+    expect(crashed?.stage).toBe("run:3");
+    expect(crashed?.reason).toContain("run:3");
+  });
+});
