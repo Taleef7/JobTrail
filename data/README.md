@@ -16,7 +16,7 @@ Evaluation data for JobTrail v2. Training data (3–5k synthetic examples) is pu
 
 ## How the drafts are made (#70)
 
-> **Status:** the generator, plan and manifest are committed. `drafts/test.jsonl` and `drafts/dev.jsonl` arrive in a follow-up once the full run completes; the free tier allows 20 requests per model per day.
+> **Status:** all 275 drafts are committed (165 test, 110 dev), with `coverage.md`: every tag has ≥ 24 test drafts, and 209/275 are flag-free. They are **not gold** until verified in #71.
 
 **Record first, then prose.** `ml/jobtrail_ml/sampler.py` draws each gold record from a job template in `scenarios.yaml` (seeded), along with the note's style and hard-case tags. A teacher model then writes a note that must say exactly that record. The label is therefore the plan, not the teacher's reading of its own note. Each draft carries **fidelity flags** for the reviewer in #71:
 
@@ -40,6 +40,8 @@ uv run python scripts/gen_eval_notes.py report   # drafts/coverage.md
 | `pilot-1/` … `pilot-5/`     | Earlier runs kept as evidence for prompt changes; **not** part of eval |
 
 **Free-tier limits shape the run:** the Gemini API free tier allows 20 requests per model per day (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`). One writer call therefore drafts 20 notes, and one checker call extracts 20 (15 calls per model for all 275). A run that hits the quota stops cleanly and resumes the next day. The writer (`gemini-3.6-flash`) and checker (`gemini-3.1-flash-lite`) are different models. `gemini-3.8-flash` is kept out of generation so it can be the cloud ceiling in #73 without grading its own prose.
+
+**The committed run (2026-09-30)** used a paid Tier 1 key (the owner's second Gemini project), so it finished in one sitting: 28 calls, 150,688 tokens, about **$0.22** at list prices. Earlier attempts on the free tier are kept as `pilot-1/` … `pilot-5/`. The generator runs unchanged on either tier.
 
 ## JSONL record format
 
