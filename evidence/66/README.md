@@ -26,6 +26,36 @@ Gemma 3 270M Q8_0, both notes averaged. `complete: true`, `crossOriginIsolated: 
 
 Consistent with `bench-laptop.json` within the run-to-run variance noted in ADR 0003 (e.g. WebGPU long prefill 1,634 vs 1,808; WASM long 298 vs 391), and validity is identical. The raw JSON of this run is **not** committed: the HTTPS production page can't POST to a localhost receiver (browser blocks it) and the embedded browser can't save downloads. The table above was read directly from the page's result object.
 
-## Not measured yet
+## Phone: Redmi Note 9S, Chrome 153 (owner, 2026-09-30, page `1f328e9`)
 
-Phone browsers (Redmi Note 9S Chrome, iPhone 16 Pro Safari). To add: open `/spike/` on the phone, **Run benchmark**, **Download results JSON**, commit here.
+File: `phone-redmi-note-9s-chrome.json`. `complete: true`, `crossOriginIsolated: true`; WebGPU adapter: Qualcomm Adreno 6xx; 8 cores; `deviceMemory` 4 GB. Each WebGPU cell downloaded its model (70–97 s); each WASM cell loaded from cache (5.8–8.4 s).
+
+| Model             | Backend | Prompt | Constrained | Prefill tok/s | Decode tok/s | Wall s (median) | Schema-valid |
+| ----------------- | ------- | ------ | ----------- | ------------: | -----------: | --------------: | -----------: |
+| gemma3-270m-q8_0  | webgpu  | long   | yes         |         24–31 |      4.1–4.3 |              39 |          2/2 |
+| gemma3-270m-q8_0  | webgpu  | short  | yes         |         24–26 |      5.6–5.9 |              37 |          2/2 |
+| gemma3-270m-q8_0  | wasm-mt | long   | yes         |         25–30 |      3.8–3.9 |              38 |          2/2 |
+| gemma3-270m-q8_0  | wasm-mt | short  | yes         |         23–24 |      5.1–5.6 |              39 |          2/2 |
+| gemma3-270m-q4_0  | wasm-mt | long   | yes         |         17–18 |          3.5 |              43 |          2/2 |
+| gemma3-270m-q4_0  | wasm-mt | short  | yes         |         14–15 |      4.4–4.5 |              57 |          2/2 |
+| qwen3-0.6b-q4_k_m | wasm-mt | long   | yes         |             8 |      1.3–1.4 |             161 |          2/2 |
+| qwen3-0.6b-q4_k_m | wasm-mt | short  | yes         |             7 |      3.4–3.5 |              66 |          2/2 |
+
+The constrained rows are shown here; the JSON has all 48 runs. Unconstrained Gemma was never schema-valid, and unconstrained Qwen was valid only with the long prompt, the same as on the laptop.
+
+**What it shows:**
+
+- On the minimum-spec phone, reading a 400-token prompt takes 12–17 s (Gemma Q8) and about 50 s (Qwen 0.6B).
+- WebGPU gives this GPU no advantage: speeds match WASM, and so do the outputs.
+- Q8_0 beats Q4_0 here too.
+
+**One outlier:** Gemma Q4_0 / WASM / note 1 / short / unconstrained took 601 s at 0.43 tok/s. The screen probably locked or the tab went to the background during the run, so it is excluded from any conclusion.
+
+## Phone: iPhone 16 Pro, iOS 26.7 (Safari and Chrome, both WebKit): crashes
+
+Every cell loaded (about 2 s from cache) and then the tab was killed at the first inference:
+
+- Gemma Q8 and Q4;
+- WebGPU, WASM multi-thread and single-thread.
+
+The #108 recovery recorded each crash, but there is no JSON worth committing yet. No Jetsam event was logged. Investigation and hypotheses are in #110 and ADR 0003; that issue adds `?compat=1`, `?threads=`, `?ctx=`, finer crash stages and smaller models to diagnose it on the device.

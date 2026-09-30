@@ -86,7 +86,7 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
 ### Model ladder
 1. **Floor:** legacy rule-based extractor (unchanged).
 2. **Zero/few-shot small general models:** ~270M–2B (e.g., Gemma 3 270M, Qwen3-0.6B, Llama 3.2 1B, one ~2B). Final list confirmed against llama.cpp support.
-3. **Fine-tuned:** Gemma 3 270M and Qwen3-0.6B (full FT or LoRA on free Colab/Kaggle GPU), trained with **no instruction prompt** (input = note only) and compact output.
+3. **Fine-tuned:** Gemma 3 270M and Qwen3-0.6B (full FT or LoRA on free Colab/Kaggle GPU), trained with **no instruction prompt** (input = note only) and compact output. **Added 2026-09-30 (#110):** LFM2-350M-Extract (Liquid AI; pretrained for schema-guided extraction; hybrid conv/attention built for CPUs; 27% faster decode than Gemma 270M on a desktop CPU) and SmolLM2-135M (145 MB; about 2× Gemma's decode speed). All four were tried zero-shot on the scorer's demo notes and none was usable without fine-tuning; the fine-tune ladder picks the winner on accuracy, speed and size.
 4. **Ceiling:** cloud model with structured output (quality, $/note, latency).
 
 ### Quantization study

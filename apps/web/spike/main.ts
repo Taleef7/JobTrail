@@ -21,39 +21,23 @@ import {
   pendingCells,
   recoverCrash,
   saveSession,
+  sessionKey,
   setStage,
   type CrashedLoad,
   type Session,
   type Store,
 } from "../src/spike/session";
+import { MODELS } from "../src/spike/models";
+import { parseOptions, wasmCaps } from "../src/spike/options";
 
-interface ModelSpec {
-  id: string;
-  repo: string;
-  file: string;
-  sizeMB: number;
+// Read before ?compat=1 hides JSPI, so the result records what the browser really has.
+const OPTIONS = parseOptions(location.search);
+const WASM_CAPS = wasmCaps(WebAssembly);
+if (OPTIONS.compat) {
+  // wllama picks its 32-bit Asyncify "compat" build only when JSPI or Memory64 is missing;
+  // hiding JSPI forces it, to test whether iOS dies in the 64-bit build's code path (#110).
+  delete (WebAssembly as { Suspending?: unknown }).Suspending;
 }
-
-const MODELS: ModelSpec[] = [
-  {
-    id: "gemma3-270m-q8_0",
-    repo: "unsloth/gemma-3-270m-it-GGUF",
-    file: "gemma-3-270m-it-Q8_0.gguf",
-    sizeMB: 292,
-  },
-  {
-    id: "gemma3-270m-q4_0",
-    repo: "unsloth/gemma-3-270m-it-GGUF",
-    file: "gemma-3-270m-it-Q4_0.gguf",
-    sizeMB: 242,
-  },
-  {
-    id: "qwen3-0.6b-q4_k_m",
-    repo: "unsloth/Qwen3-0.6B-GGUF",
-    file: "Qwen3-0.6B-Q4_K_M.gguf",
-    sizeMB: 397,
-  },
-];
 
 const BACKENDS: { id: Backend; label: string; defaultOn: boolean }[] = [
   { id: "webgpu", label: "WebGPU (all layers)", defaultOn: true },
@@ -93,6 +77,10 @@ interface LoadRecord {
   reason?: string;
   /** Set when the model loaded but warm-up/inference failed (e.g. OOM, GPU device lost). */
   inferenceError?: string;
+  /** Which wllama build ran: the 32-bit Asyncify "compat" build or the default one (#110). */
+  compatUsed?: boolean;
+  threads?: number | null;
+  ctx?: number;
 }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -130,6 +118,9 @@ async function environment() {
     webgpu: "gpu" in navigator,
     gpuAdapter: await gpuAdapterInfo(),
     pageCommit: __BUILD__.sha,
+    // JSPI + Memory64 → wllama's default 64-bit build; otherwise its compat build (#110)
+    wasm: WASM_CAPS,
+    options: OPTIONS,
   };
 }
 
@@ -150,7 +141,7 @@ function renderChoices() {
     "beforeend",
     MODELS.map(
       (m) =>
-        `<label><input type="checkbox" name="model" value="${m.id}" checked /> ${m.file} <span class="muted">(${m.sizeMB} MB)</span></label>`,
+        `<label><input type="checkbox" name="model" value="${m.id}" ${m.defaultOn ? "checked" : ""} /> ${m.file} <span class="muted">(${m.sizeMB} MB)</span></label>`,
     ).join(""),
   );
   $("backends").insertAdjacentHTML(
@@ -206,9 +197,11 @@ const store: Store = (() => {
     };
   }
 })();
-let session: Session = loadSession(store, new Date().toISOString());
+// Each set of URL overrides has its own saved session (review on #111).
+const SESSION_KEY_FOR_OPTIONS = sessionKey(OPTIONS);
+let session: Session = loadSession(store, new Date().toISOString(), SESSION_KEY_FOR_OPTIONS);
 const persist = () => {
-  if (!saveSession(store, session))
+  if (!saveSession(store, session, SESSION_KEY_FOR_OPTIONS))
     log("  warning: couldn't save progress (storage full or blocked)");
 };
 
@@ -319,7 +312,21 @@ async function runCells() {
         location.reload();
         return;
       }
-      const wllama = new Wllama({ default: wasmUrl }, { suppressNativeLog: true });
+      // wllama announces the compat build in a warning; record what really ran (#110).
+      let compatUsed = false;
+      const logger = {
+        debug: console.debug,
+        log: console.log,
+        error: console.error,
+        warn: (...args: unknown[]) => {
+          if (args.some((a) => /compatibility mode is activated/i.test(String(a))))
+            compatUsed = true;
+          console.warn(...args);
+        },
+      };
+      const wllama = new Wllama({ default: wasmUrl }, { suppressNativeLog: true, logger });
+      if (OPTIONS.compat) wllama.setCompat("default");
+      const threads = backend === "wasm-st" ? 1 : OPTIONS.threads;
       let downloadEvents = 0;
       log(`load ${model.id} on ${backend}…`);
       const t0 = performance.now();
@@ -327,9 +334,9 @@ async function runCells() {
         await wllama.loadModelFromHF(
           { repo: model.repo, file: model.file },
           {
-            n_ctx: 2048,
+            n_ctx: OPTIONS.ctx,
             n_gpu_layers: backend === "webgpu" ? 999 : 0,
-            ...(backend === "wasm-st" ? { n_threads: 1 } : {}),
+            ...(threads ? { n_threads: threads } : {}),
             progressCallback: ({ loaded, total }: { loaded: number; total: number }) => {
               downloadEvents += 1;
               if (total)
@@ -366,14 +373,19 @@ async function runCells() {
         downloadObserved: downloadEvents > 1,
         multithread: wllama.isMultithread(),
         status: "ok",
+        compatUsed,
+        threads,
+        ctx: OPTIONS.ctx,
       };
       loads.push(loadRecord);
-      session = setStage(session, "inference", ran);
+      session = setStage(session, "warmup", ran);
       persist();
       log(
         `  loaded in ${(loadMs / 1000).toFixed(1)}s (${downloadEvents > 1 ? "downloaded" : "from cache"}), multithread=${wllama.isMultithread()}`,
       );
-      if (ran !== backend) {
+      if (ran !== backend && threads === 1) {
+        log(`  note: running single-threaded because threads=1 was requested`);
+      } else if (ran !== backend) {
         log(
           `  note: requested ${backend} but wllama is running ${ran} (page not cross-origin isolated?)`,
         );
@@ -388,9 +400,13 @@ async function runCells() {
           temperature: 0,
         });
 
+        let runIndex = 0;
         for (const [noteIndex, note] of SPIKE_NOTES.entries()) {
           for (const shape of ["long", "short"] as const) {
             for (const constrained of [true, false]) {
+              // Saved before each run, so a killed tab says exactly which run it died in.
+              session = setStage(session, `run:${runIndex++}`);
+              persist();
               // Streaming: the first content chunk gives a real TTFT, and llama.cpp's
               // timings arrive on the chunks (non-streamed responses don't type them).
               const t1 = performance.now();
@@ -473,12 +489,21 @@ async function runCells() {
 function startup() {
   const recovered = recoverCrash(session);
   session = recovered.session;
+  const overrides = [
+    OPTIONS.compat && "compat build",
+    OPTIONS.threads && `threads=${OPTIONS.threads}`,
+    OPTIONS.ctx !== 2048 && `ctx=${OPTIONS.ctx}`,
+  ].filter(Boolean);
+  log(
+    `Browser wasm: JSPI ${WASM_CAPS.jspi ? "yes" : "no"}, Memory64 ${WASM_CAPS.mem64 ? "yes" : "no"}` +
+      (overrides.length ? ` · overrides: ${overrides.join(", ")}` : ""),
+  );
   if (recovered.crashed) {
     const c = recovered.crashed;
     persist();
     log(
-      `The last run was cut off while ${c.stage === "load" ? "loading" : "running"} ${c.model} on ${c.backend} — ` +
-        "the browser most likely killed the tab for using too much memory. Recorded as crashed; " +
+      `The last run was cut off while ${c.stage === "load" ? "loading" : `running (${c.stage})`} ${c.model} on ${c.backend} — ` +
+        "the browser killed the tab (usually memory, possibly a browser crash). Recorded as crashed; " +
         "tap Run to continue with the remaining cells.",
     );
   } else if (session.loads.length > 0) {
@@ -495,8 +520,8 @@ void environment().then(renderEnv);
 $("run").addEventListener("click", () => void runBenchmark());
 $("clear").addEventListener("click", () => {
   if (running) return;
-  clearSession(store);
-  session = loadSession(store, new Date().toISOString());
+  clearSession(store, SESSION_KEY_FOR_OPTIONS);
+  session = loadSession(store, new Date().toISOString(), SESSION_KEY_FOR_OPTIONS);
   $("log").textContent = "Saved results cleared.\n";
   renderResults([], []);
   refreshDownload();

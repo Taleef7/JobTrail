@@ -39,6 +39,22 @@ Single-thread WASM (the fallback when a page isn't cross-origin isolated), Gemma
 7. **Cross-origin isolation is not optional.** Without COOP/COEP, wllama falls back to one thread and a constrained extraction takes ~22 s instead of ~2.8 s on the same machine (~8×).
 8. **Loads are fast once cached** (1.0–4.3 s in this run). First loads include the 242–397 MB download; that time depends on the connection and isn't captured in the committed evidence.
 
+## Phone findings (2026-09-30, #110)
+
+9. **Redmi Note 9S (Chrome, Adreno 618): it works, but it's slow, and WebGPU doesn't help.**
+   - WebGPU cells ran at the same speed as WASM multi-thread and produced identical outputs.
+   - Reading the prompt runs at 24–33 tok/s (Gemma 270M Q8), so the 400-token instruction prompt costs 12–17 s before the first token. Writing runs at 4–6 tok/s.
+   - Q8_0 is faster than Q4_0 on the phone too (prefill 24–30 vs 14–18 tok/s).
+   - Qwen3-0.6B is about 3× slower (prefill 7–9 tok/s, 2–2.7 min per long note), though it was the most accurate zero-shot.
+   - Evidence: `evidence/66/phone-redmi-note-9s-chrome.json`.
+10. **iPhone 16 Pro (iOS 26.7, Safari and Chrome): the tab dies at the first inference.** This happens for every model and backend, including Q4 single-thread. The model loads in about 2 s and no Jetsam event is logged. Reproduced with desktop WebKit 26.6 (Playwright), which does _not_ crash:
+    - WebKit uses about 0.9–1.0 GB of physical memory for Gemma Q8, against about 0.6 GB in Chromium;
+    - it reserves 4.5–5 GB of address space whether or not the page is isolated, WebKit's normal wasm reservation;
+    - physical memory scales with the model: SmolLM2-135M about 0.47–0.64 GB, LFM2-350M about 0.5–0.8 GB;
+    - threads, the 32-bit compat build and context size barely matter.
+
+    The two hypotheses: (a) WebKit's own per-tab memory limit; (b) a crash in WebKit's ARM64 compiler on the Memory64 build wllama picks when JSPI and Memory64 are present. The spike now takes `?compat=1` (the 32-bit build), `?threads=` and `?ctx=`, and records the exact crash stage (`load` / `warmup` / `run:<n>`), so the iPhone can tell the two apart.
+
 ## Decision
 
 - **Runtime: wllama** for the web. It runs the identical GGUF used by llama.rn on the phone and by llama.cpp in the eval harness, supports WebGPU with automatic WASM fallback, and exposes `response_format: json_schema` and llama.cpp timings.
@@ -51,4 +67,5 @@ Single-thread WASM (the fallback when a page isn't cross-origin isolated), Gemma
 
 - Pages running the model must be served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` (currently scoped to `/spike/*` in `apps/web/vercel.json`; #89 extends it).
 - Model files stay under wllama's 2 GB per-file limit (all candidates are ≤ 640 MB).
-- The same spike page is the measurement tool for phone browsers (Note 9S Chrome, iPhone 16 Pro Safari): run it, press **Download results JSON**, commit to `evidence/66/`. Until then, phone-browser performance is **not measured**.
+- **iOS web is unsupported until #110 finds a configuration that survives.** The native app (llama.rn, #64) is the iPhone path either way; the web demo must detect WebKit on iOS and offer the smallest model, or a "run on your phone's app" message.
+- The same spike page is the measurement tool for phone browsers (Note 9S Chrome, iPhone 16 Pro Safari): run it, press **Download results JSON**, commit to `evidence/66/`. The Redmi is measured; the iPhone is being diagnosed (#110).

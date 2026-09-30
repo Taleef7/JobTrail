@@ -8,7 +8,23 @@ import type { Backend } from "./result";
 
 export const SESSION_KEY = "jobtrail-spike-session-v1";
 
-export type Stage = "load" | "inference";
+/**
+ * One saved session per set of URL overrides (review on #111), so an A/B run such as
+ * default vs ?compat=1 never skips cells the other configuration finished, and each
+ * downloaded JSON describes one configuration. Defaults keep the original key.
+ */
+export function sessionKey(o: { compat: boolean; threads: number | null; ctx: number }): string {
+  const parts = [
+    o.compat && "compat",
+    o.threads && `threads=${o.threads}`,
+    o.ctx !== 2048 && `ctx=${o.ctx}`,
+  ];
+  const suffix = parts.filter(Boolean).join(",");
+  return suffix ? `${SESSION_KEY}|${suffix}` : SESSION_KEY;
+}
+
+// "run:<n>" = the n-th timed run of the cell (#110), so a crash says exactly where.
+export type Stage = "load" | "warmup" | "inference" | `run:${number}`;
 
 /** The subset of Web Storage this module needs (localStorage in the page). */
 export interface Store {
@@ -50,7 +66,7 @@ export interface Session {
 
 export const cellKey = (model: string, backend: Backend) => `${model}|${backend}`;
 
-export function loadSession(store: Store, now: string): Session {
+export function loadSession(store: Store, now: string, key = SESSION_KEY): Session {
   const empty: Session = {
     startedAt: now,
     env: null,
@@ -60,7 +76,7 @@ export function loadSession(store: Store, now: string): Session {
     attempt: null,
   };
   try {
-    const raw = store.getItem(SESSION_KEY);
+    const raw = store.getItem(key);
     if (!raw) return empty;
     const parsed = JSON.parse(raw) as Partial<Session>;
     if (!Array.isArray(parsed.loads) || !Array.isArray(parsed.runs)) return empty;
@@ -71,18 +87,18 @@ export function loadSession(store: Store, now: string): Session {
 }
 
 /** False when storage refuses the write (quota, private mode); the run continues in memory. */
-export function saveSession(store: Store, session: Session): boolean {
+export function saveSession(store: Store, session: Session, key = SESSION_KEY): boolean {
   try {
-    store.setItem(SESSION_KEY, JSON.stringify(session));
+    store.setItem(key, JSON.stringify(session));
     return true;
   } catch {
     return false;
   }
 }
 
-export function clearSession(store: Store): void {
+export function clearSession(store: Store, key = SESSION_KEY): void {
   try {
-    store.removeItem(SESSION_KEY);
+    store.removeItem(key);
   } catch {
     // nothing stored, nothing to clear
   }
