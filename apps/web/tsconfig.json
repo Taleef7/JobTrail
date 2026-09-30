@@ -5,5 +5,5 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "node"]
   },
-  "include": ["src", "spike", "vite.config.ts"]
+  "include": ["src", "spike", "label", "vite.config.ts"]
 }
