@@ -11,7 +11,7 @@ Evaluation data for JobTrail v2. Training data (3–5k synthetic examples) is pu
 | `drafts/`                 | Teacher-drafted notes + planned labels, **not yet human-verified** (see below)                 | #70        |
 | `test.jsonl`              | Frozen test set (~200), human-verified — never trained or tuned on                             | #71        |
 | `dev.jsonl`               | Dev set (~100) for iteration and error analysis                                                | #71        |
-| `matcher-validation*.csv` | Same/different labels for 168 predicted/gold pairs in 3 sets (validate the matcher; see below) | #68, #114  |
+| `matcher-validation*.csv` | Same/different labels for 161 predicted/gold pairs in 3 sets (validate the matcher; see below) | #68, #114  |
 | `FROZEN.md`               | SHA-256 of every frozen file; CI fails if a frozen file changes                                | #71        |
 
 ## How the drafts are made (#70)
@@ -73,7 +73,9 @@ Three CSVs (`id, kind, predicted, gold, same, votes[, source]`) check the scorer
 | File                             | Pairs | Where the pairs come from                                                                                                                | Labeled by                                                                            |
 | -------------------------------- | ----: | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `matcher-validation.csv`         |    50 | hand-written in #68                                                                                                                      | panel + #68 reference labels (4/4)                                                    |
-| `matcher-validation-heldout.csv` |    60 | `drafts/dev.jsonl`: the blind checker's extraction vs gold, sampled by `pnpm matcher-pairs` (seed 114, stratified by the old Dice score) | panel + reference (4/4)                                                               |
-| `matcher-validation-blind.csv`   |    58 | `drafts/test.jsonl`, same script, excluding pairs in the other two sets; ids renamed `bv-`                                               | panel only (3/3), labeled without the pairs being read by whoever changed the matcher |
+| `matcher-validation-heldout.csv` |    57 | `drafts/dev.jsonl`: the blind checker's extraction vs gold, sampled by `pnpm matcher-pairs` (seed 114, stratified by the old Dice score) | panel + reference (4/4)                                                               |
+| `matcher-validation-blind.csv`   |    54 | `drafts/test.jsonl`, same script, excluding pairs in the other two sets; ids renamed `bv-`                                               | panel only (3/3), labeled without the pairs being read by whoever changed the matcher |
+
+The sampled sets were drawn while the script still keyed pairs by direction; the 7 reversed repeats ("A vs B" and "B vs A") were then dropped, first occurrence kept in set order. The script now keys pairs symmetrically (so a re-run draws a different sample), and the validation test fails on any repeat.
 
 All three panelists are one model family, so they're a stand-in for a trade expert, not a substitute for one. Their judgments are correlated, and a real tradesperson may disagree on edge cases.

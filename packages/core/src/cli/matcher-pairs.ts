@@ -46,8 +46,9 @@ export function baseDice(a: string, b: string): number {
 
 const STATEMENT_FIELDS = ["workPerformed", "issuesFound", "followUps"] as const;
 
-const pairKey = (kind: string, p: string, g: string) =>
-  `${kind}|${p.toLowerCase()}|${g.toLowerCase()}`;
+/** Matching and the same/different judgment are symmetric, so "A vs B" is "B vs A". */
+export const pairKey = (kind: string, p: string, g: string) =>
+  `${kind}|${[p.toLowerCase(), g.toLowerCase()].sort().join("|")}`;
 
 /** Keys of the pairs already in other validation sets, so a new set never repeats them. */
 export function excludedKeys(csvs: string[]): Set<string> {

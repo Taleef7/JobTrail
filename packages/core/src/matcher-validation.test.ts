@@ -6,18 +6,38 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseCsv } from "./cli/csv.ts";
+import { pairKey } from "./cli/matcher-pairs.ts";
 import { isMatch, MATCH_THRESHOLD, type MatchKind } from "./match.ts";
 
 const SETS = [
   { file: "matcher-validation.csv", what: "hand-written pairs" },
   { file: "matcher-validation-heldout.csv", what: "dev-split extractions" },
   { file: "matcher-validation-blind.csv", what: "test-split extractions, blind" },
-];
-
-for (const set of SETS) {
+].map((set) => {
   const csv = readFileSync(join(import.meta.dirname, "..", "..", "..", "data", set.file), "utf8");
   const [header, ...rows] = parseCsv(csv);
   const col = (name: string) => header?.indexOf(name) ?? -1;
+  return { ...set, rows, col };
+});
+
+describe("matcher validation sets", () => {
+  it("never repeat a pair, in either direction, within or across sets", () => {
+    const seen = new Map<string, string>();
+    const repeats: string[] = [];
+    for (const { rows, col } of SETS) {
+      for (const r of rows) {
+        const key = pairKey(r[col("kind")] ?? "", r[col("predicted")] ?? "", r[col("gold")] ?? "");
+        const first = seen.get(key);
+        if (first) repeats.push(`${r[col("id")]} repeats ${first}`);
+        else seen.set(key, r[col("id")] ?? "");
+      }
+    }
+    expect(repeats).toEqual([]);
+  });
+});
+
+for (const set of SETS) {
+  const { rows, col } = set;
   const labeled = rows.filter((r) => /^[yn]/i.test(r[col("same")] ?? ""));
   const disagreements = labeled.filter((r) => {
     const panel = /^y/i.test(r[col("same")] ?? "");

@@ -68,12 +68,14 @@ Three additions (#114), each in `src/match.ts` and small enough to read in one s
 | Set                                   | Pairs | Source                                       | Before #114 |        Now |
 | ------------------------------------- | ----: | -------------------------------------------- | ----------: | ---------: |
 | `data/matcher-validation.csv`         |    50 | hand-written (#68)                           |      80.0 % |      100 % |
-| `data/matcher-validation-heldout.csv` |    60 | dev drafts: blind checker extraction vs gold |      86.7 % |      100 % |
-| `data/matcher-validation-blind.csv`   |    58 | test drafts, same way                        |      87.9 % | **93.1 %** |
+| `data/matcher-validation-heldout.csv` |    57 | dev drafts: blind checker extraction vs gold |      89.5 % |      100 % |
+| `data/matcher-validation-blind.csv`   |    54 | test drafts, same way                        |      90.7 % | **94.4 %** |
 
-The first two sets were used to design the additions, so their 100 % is expected. The third was labeled and frozen before the matcher was run on it, which happened once. Labels come from a model panel (Sonnet 5.5, Opus 5.5, Fable 5.1, each labeling blind; plus the #68 reference labels on the first two sets), which agreed on every pair of all three sets. It's one model family standing in for a trade expert, and the data README says so. `pnpm matcher-pairs` regenerates the sampled sets.
+The first two sets were used to design the additions, so their 100 % is expected. The third was labeled and frozen before the matcher was run on it. Note that the old matcher also clears 90 % there, narrowly; its clear failure is the hand-written set (80 %). Labels come from a model panel (Sonnet 5.5, Opus 5.5, Fable 5.1, each labeling blind; plus the #68 reference labels on the first two sets), which agreed on every pair of all three sets. It's one model family standing in for a trade expert, and the data README says so.
 
-**Known weakness, measured:** the same item with a different action still matches, since the item words dominate. All 4 misses on the blind set are this kind, plus a synonym the table lacks: "Replaced dryer heating element" vs "Picked up dryer heating element at the supply house" (both directions), "Secured gutters" vs "Cleaned gutters", and "Installed single pole switch" vs "Added a new wall switch" (a real match that's missed). The matcher still has no word order or negation. On the 110 dev drafts, the rules baseline and the checker's extractions score identically under the old and new matcher; the difference shows up on messier model output.
+A pair and its reverse count once: the validation test fails if any pair repeats, in either direction, within or across sets. The sampled sets were drawn by `pnpm matcher-pairs` when it still keyed pairs by direction; 7 reversed repeats were then dropped (the first occurrence kept, in set order), which is how the blind set's first reported run of 93.1 % on 58 pairs became 94.4 % on 54. The script now keys pairs symmetrically, so re-running it draws a different sample.
+
+**Known weakness, measured:** the same item with a different action still matches, since the item words dominate. The 3 misses on the blind set are two of this kind and a synonym the table lacks: "Replaced dryer heating element" vs "Picked up dryer heating element at the supply house", "Secured gutters" vs "Cleaned gutters", and "Installed single pole switch" vs "Added a new wall switch" (a real match that's missed). The matcher still has no word order or negation. On the 110 dev drafts, the rules baseline and the checker's extractions score identically under the old and new matcher; the difference shows up on messier model output.
 
 ## Report contract
 

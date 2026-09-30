@@ -54,6 +54,39 @@ describe("excludedKeys", () => {
   });
 });
 
+describe("pair identity is symmetric", () => {
+  it("treats a reversed pair as the same pair, within a set and across sets", () => {
+    const pairs = candidatePairs([
+      draft(
+        "d-1",
+        { materials: [{ name: "deck board" }] },
+        { materials: [{ name: "deck screws" }] },
+      ),
+      draft(
+        "d-2",
+        { materials: [{ name: "Deck Screws" }] },
+        { materials: [{ name: "deck board" }] },
+      ),
+    ]);
+    expect(pairs).toHaveLength(1);
+    const exclude = excludedKeys([
+      "id,kind,predicted,gold\nmv-01,material,deck board,deck screws\n",
+    ]);
+    expect(
+      candidatePairs(
+        [
+          draft(
+            "d-1",
+            { materials: [{ name: "deck board" }] },
+            { materials: [{ name: "deck screws" }] },
+          ),
+        ],
+        exclude,
+      ),
+    ).toEqual([]);
+  });
+});
+
 describe("samplePairs", () => {
   const pairs: Pair[] = Array.from({ length: 80 }, (_, i) => ({
     kind: i % 2 ? "material" : "statement",

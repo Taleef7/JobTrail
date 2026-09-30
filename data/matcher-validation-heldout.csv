@@ -18,7 +18,6 @@ hv-16,material,wire nuts,14 gauge wire,n,4/4,d-0078
 hv-17,material,deck screws,5/4 deck board,n,4/4,d-0047
 hv-18,material,5/4 deck boards,deck screws,n,4/4,d-0047
 hv-19,material,TV wall mount,in-wall cable kit,n,4/4,d-0031
-hv-20,material,in-wall cable kit,TV wall mount,n,4/4,d-0031
 hv-21,material,12 gauge wire,wire nut,n,4/4,d-0076
 hv-22,material,wire nuts,12 gauge wire,n,4/4,d-0076
 hv-23,material,14 gauge wire,wire nut,n,4/4,d-0078
@@ -32,11 +31,9 @@ hv-30,statement,Applied tile cleaner,Picked up tile cleaner at the supply house,
 hv-31,material,deck cleaner,deck stain,n,4/4,d-0002
 hv-32,material,roofing cement,roofing nail,n,4/4,d-0030
 hv-33,material,furnace thermostat,furnace filter,n,4/4,d-0036
-hv-34,material,roofing nail,roofing cement,n,4/4,d-0030
 hv-35,material,roofing nails,roofing cement,n,4/4,d-0053
 hv-36,material,gutter sealant,gutter hanger,n,4/4,d-0058
 hv-37,material,carpet shampoo,carpet deodorizer,n,4/4,d-0033
-hv-38,material,carpet deodorizer,carpet shampoo,n,4/4,d-0033
 hv-39,statement,Old anode rod was completely eaten through,Anode rod eaten through,y,4/4,d-0049
 hv-40,statement,Cleaned out all the gutters,Cleaned gutters,y,4/4,d-0058
 hv-41,statement,Swapped furnace filter,Changed furnace filter,y,4/4,d-0040
