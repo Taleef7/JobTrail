@@ -123,6 +123,11 @@ describe("isMatch: conflicting room, surface or pipe material (#114)", () => {
     expect(similarity(a, b, kind)).toBe(0);
   });
 
+  it("treats spelling variants of one place as the same place", () => {
+    expect(isMatch("Painted hall", "Painted hallway", "statement")).toBe(true);
+    expect(isMatch("Regrouted master bath", "Regrouted master bathroom", "statement")).toBe(true);
+  });
+
   it("does not fire when only one side names a room, or both share one", () => {
     expect(
       isMatch("Installed GFCI outlets", "Installed GFCI outlets in bathroom", "statement"),

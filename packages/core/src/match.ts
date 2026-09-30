@@ -66,6 +66,7 @@ const WORDS: Record<string, string> = {
   recharged: "recharge",
   receptacle: "outlet",
   bath: "bathroom",
+  hall: "hallway",
 };
 
 /** Normalized tokens with the synonym table applied: what matching compares. */
@@ -76,10 +77,11 @@ export function matchTokens(text: string): string[] {
 }
 
 // If both sides name one of these and the names don't overlap, the two items are
-// about different places or materials, whatever else they share.
+// about different places or materials, whatever else they share. Spelling variants
+// of one place ("bath", "hall") are canonicalized in WORDS first, so they never conflict.
 const CONFLICT_CLASSES: Set<string>[] = [
   new Set(
-    "kitchen bathroom bedroom basement attic garage laundry hallway hall upstairs downstairs porch patio office crawlspace living dining closet foyer".split(
+    "kitchen bathroom bedroom basement attic garage laundry hallway upstairs downstairs porch patio office crawlspace living dining closet foyer".split(
       " ",
     ),
   ),

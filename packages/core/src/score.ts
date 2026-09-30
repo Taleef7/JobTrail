@@ -320,7 +320,8 @@ export function scoreRun(
     matcher: {
       method: "token-dice-v2",
       threshold,
-      provisional: options.provisionalMatcher ?? false,
+      // Only the default threshold is validated (#114); an override is experimental.
+      provisional: options.provisionalMatcher ?? threshold !== MATCH_THRESHOLD,
     },
     overall: aggregate(records),
     bySource: groupBy(records, (s) => [s.source]),
