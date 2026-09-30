@@ -6,6 +6,7 @@ simply left for the next run."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import zlib
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ from .prompts import (
     checker_batch_input,
     checker_batch_schema,
     writer_batch_prompt,
+    writer_prompt,
 )
 
 
@@ -56,9 +58,24 @@ def read_done_ids(path: Path) -> set[str]:
     return ids
 
 
-def stale_draft_ids(plans: list[dict[str, Any]], out_dir: Path) -> list[str]:
-    """Drafts whose gold or tags differ from the active plan, or whose id isn't in it
-    (e.g. written before a re-plan). Resuming over them would mix two datasets."""
+def plan_fingerprint(plan: dict[str, Any], styles: dict[str, str]) -> str:
+    """Hash of everything that defines a draft's note: its plan (gold, tags, style,
+    trade, hard-case meta) and the exact prompts that wrote and checked it."""
+    parts = {
+        "plan": {k: plan[k] for k in ("record", "tags", "style", "trade", "meta")},
+        "writer": [WRITER_SYSTEM, writer_prompt(plan, styles)],
+        "checker": CHECKER_BATCH_SYSTEM,
+    }
+    blob = json.dumps(parts, sort_keys=True, ensure_ascii=False).encode()
+    return hashlib.sha256(blob).hexdigest()[:16]
+
+
+def stale_draft_ids(
+    plans: list[dict[str, Any]], out_dir: Path, styles: dict[str, str]
+) -> list[str]:
+    """Drafts not written from the active plan and prompts (their fingerprint differs,
+    or their id left the plan), e.g. after a re-plan or a prompt change. Resuming over
+    them would mix two datasets."""
     by_id = {p["id"]: p for p in plans}
     stale = []
     for split in sorted({p["split"] for p in plans} | {"test", "dev"}):
@@ -67,7 +84,8 @@ def stale_draft_ids(plans: list[dict[str, Any]], out_dir: Path) -> list[str]:
         for line in path.read_text(encoding="utf-8").splitlines() if path.exists() else []:
             row = json.loads(line)
             plan = by_id.get(row["id"])
-            if plan is None or row["gold"] != plan["record"] or row["tags"] != plan["tags"]:
+            have = row.get("meta", {}).get("fingerprint")
+            if plan is None or have != plan_fingerprint(plan, styles):
                 stale.append(row["id"])
     return stale
 
@@ -100,7 +118,7 @@ def run_generation(
 ) -> dict[str, Any]:
     """`plans` is always the full active plan; `limit` caps how many new drafts to write."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    stale = stale_draft_ids(plans, out_dir)
+    stale = stale_draft_ids(plans, out_dir, styles)
     if stale:
         raise ValueError(
             f"{len(stale)} drafts don't match the active plan ({', '.join(stale[:5])}"
@@ -176,6 +194,7 @@ def run_generation(
                     "checker": {"model": cfg.checker_model, "modelVersion": c.model_version},
                     "checked": checked,
                     "flags": note_flags(plan, note) + crosscheck_flags(plan["record"], checked),
+                    "fingerprint": plan_fingerprint(plan, styles),
                 },
             })  # fmt: skip
             written += 1

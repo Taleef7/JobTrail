@@ -66,7 +66,13 @@ def writer_prompt(plan: dict[str, Any], styles: dict[str, str]) -> str:
     if r["materials"]:
         lines.append(f"- Materials used: {'; '.join(material_phrase(x) for x in r['materials'])}.")
     else:
-        lines.append("- No materials were used; don't mention any.")
+        negated = m["negation"] and m["negation"]["kind"] == "material"
+        lines.append(
+            "- No materials were used; the only material you mention is the one you didn't "
+            "need (below)."
+            if negated
+            else "- No materials were used; don't mention any."
+        )
 
     phrasing = m["labor"]["phrasing"]
     if phrasing == "none":

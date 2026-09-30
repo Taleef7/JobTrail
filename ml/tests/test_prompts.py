@@ -181,3 +181,14 @@ def test_approval_must_be_an_actual_yes_and_checker_knows_the_rules():
     assert "not just that they were happy" in text
     for rule in ["supply house", "add", "roofing", "gutters", "general"]:
         assert rule in CHECKER_SYSTEM.lower(), rule
+
+
+def test_no_materials_note_may_still_mention_the_negated_material():
+    """Codex #105 round 2: 'don't mention any' contradicted 'mention you didn't need X'
+    (t-0044, d-0007)."""
+    p = plan(record={"materials": []},
+             meta={"negation": {"kind": "material", "item": "closet bolt"}})  # fmt: skip
+    text = writer_prompt(p, STYLES)
+    assert "don't mention any" not in text
+    assert "didn't need the closet bolt" in text
+    assert "don't mention any" in writer_prompt(plan(record={"materials": []}), STYLES)

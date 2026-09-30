@@ -64,7 +64,7 @@ def make_plans() -> list[dict]:
 def cmd_plan(_: argparse.Namespace) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     plans = make_plans()
-    stale = stale_draft_ids(plans, OUT)
+    stale = stale_draft_ids(plans, OUT, load_scenarios(SCENARIOS)["styles"])
     if stale:  # never let a re-plan silently mix with drafts from the old plan
         raise SystemExit(
             f"{len(stale)} existing drafts don't match the new plan; archive "

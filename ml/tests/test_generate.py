@@ -271,10 +271,10 @@ def test_drafts_from_a_different_plan_are_refused(tmp_path):
 
     c, _, _ = client([responder()] * 2)
     run_generation([plan(1)], STYLES, tmp_path, c, CFG)
-    assert stale_draft_ids([plan(1)], tmp_path) == []
+    assert stale_draft_ids([plan(1)], tmp_path, STYLES) == []
     changed = plan(1)
     changed["record"] = {**RECORD, "laborMinutes": 50}
-    assert stale_draft_ids([changed], tmp_path) == ["t-0001"]
+    assert stale_draft_ids([changed], tmp_path, STYLES) == ["t-0001"]
     c2, _, seen = client([])
     with pytest.raises(ValueError, match="t-0001"):
         run_generation([changed], STYLES, tmp_path, c2, CFG)
@@ -287,3 +287,22 @@ def test_limit_drafts_at_most_n_and_resume_sees_the_full_plan(tmp_path):
     assert run_generation(plans, STYLES, tmp_path, c, CFG, limit=1)["written"] == 1
     c2, _, _ = client([responder()] * 2)  # full plan passed again: earlier draft isn't stale
     assert run_generation(plans, STYLES, tmp_path, c2, CFG)["written"] == 2
+
+
+def test_drafts_are_stale_when_style_meta_or_prompt_change(tmp_path):
+    """Codex #105 round 2: a re-plan changing only style/meta (same gold and tags)
+    was accepted; drafts now carry a fingerprint of the exact prompt that wrote them."""
+    from jobtrail_ml.generate import stale_draft_ids
+
+    c, _, _ = client([responder()] * 2)
+    run_generation([plan(1)], STYLES, tmp_path, c, CFG)
+    assert stale_draft_ids([plan(1)], tmp_path, STYLES) == []
+    restyled = {**plan(1), "style": "rambling"}
+    assert stale_draft_ids([restyled], tmp_path, {**STYLES, "rambling": "Chatty."}) == ["t-0001"]
+    corrected = plan(1)
+    corrected["meta"] = {
+        **corrected["meta"],
+        "correction": {"field": "labor", "name": None, "wrong": 30, "right": 45},
+    }
+    assert stale_draft_ids([corrected], tmp_path, STYLES) == ["t-0001"]
+    assert stale_draft_ids([plan(1)], tmp_path, {"terse": "Reworded style."}) == ["t-0001"]

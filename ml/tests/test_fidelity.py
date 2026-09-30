@@ -154,3 +154,16 @@ def test_material_correction_is_checked_even_in_hours_notes():
         correction={"field": "labor", "name": None, "wrong": 90, "right": 60}),
         p["record"].update(laborMinutes=60)))  # fmt: skip
     assert "correction-missing" not in note_flags(hours_fix, NOTE.replace("45 minutes", "an hour"))
+
+
+def test_crosscheck_compares_list_contents_not_just_counts():
+    """Codex #105 round 2: a different task with the same count passed clean."""
+    other = copy.deepcopy(PLAN["record"])
+    other["workPerformed"] = ["Replaced kitchen faucet", PLAN["record"]["workPerformed"][1]]
+    flags = crosscheck_flags(PLAN["record"], other)
+    assert "crosscheck:workPerformed-missing:Replaced toilet wax ring" in flags
+    assert "crosscheck:workPerformed-count" not in flags
+    reworded = copy.deepcopy(PLAN["record"])
+    reworded["workPerformed"] = ["Replaced the wax ring on the toilet",
+                                 "Picked up a wax ring at the supply house"]  # fmt: skip
+    assert crosscheck_flags(PLAN["record"], reworded) == []

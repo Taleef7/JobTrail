@@ -143,24 +143,36 @@ def crosscheck_flags(planned: dict[str, Any], checked: dict[str, Any] | None) ->
     pm, cm = planned["materials"], checked.get("materials") or []
     if len(pm) != len(cm):
         flags.append("crosscheck:materials-count")
-    pairs = sorted(
-        ((_dice(a["name"], b["name"]), i, j) for i, a in enumerate(pm) for j, b in enumerate(cm)),
-        reverse=True,
-    )
-    used_p, used_c = set(), set()
-    for score, i, j in pairs:
-        if score < 0.5 or i in used_p or j in used_c:
-            continue
-        used_p.add(i)
-        used_c.add(j)
+    pairs = _match([m["name"] for m in pm], [m.get("name", "") for m in cm])
+    for i, j in pairs:
         if pm[i]["quantity"] != cm[j].get("quantity"):
             flags.append(f"crosscheck:quantity:{pm[i]['name']}")
         if _canonical_unit(pm[i]["unit"]) != _canonical_unit(cm[j].get("unit")):
             flags.append(f"crosscheck:unit:{pm[i]['name']}")
+    matched = {i for i, _ in pairs}
     flags += [
-        f"crosscheck:material-missing:{pm[i]['name']}" for i in range(len(pm)) if i not in used_p
+        f"crosscheck:material-missing:{m['name']}" for i, m in enumerate(pm) if i not in matched
     ]
+    # Lists are compared by content, not just length (Codex #105 round 2).
     for field in ("workPerformed", "issuesFound", "followUps"):
-        if len(planned[field]) != len(checked.get(field) or []):
+        mine, theirs = planned[field], checked.get(field) or []
+        if len(mine) != len(theirs):
             flags.append(f"crosscheck:{field}-count")
+        found = {i for i, _ in _match(mine, theirs)}
+        flags += [f"crosscheck:{field}-missing:{x}" for i, x in enumerate(mine) if i not in found]
     return flags
+
+
+def _match(planned: list[str], checked: list[str]) -> list[tuple[int, int]]:
+    """Greedy one-to-one pairs with Dice >= 0.5, best first (the scorer's matching rule)."""
+    scored = sorted(
+        ((_dice(a, b), i, j) for i, a in enumerate(planned) for j, b in enumerate(checked)),
+        reverse=True,
+    )
+    used_p, used_c, pairs = set(), set(), []
+    for score, i, j in scored:
+        if score >= 0.5 and i not in used_p and j not in used_c:
+            used_p.add(i)
+            used_c.add(j)
+            pairs.append((i, j))
+    return pairs
