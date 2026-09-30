@@ -63,7 +63,7 @@ Three additions (#114), each in `src/match.ts` and small enough to read in one s
 - **Conflict rule.** If both sides name a room (kitchen, bathroom, …), a surface (wall, ceiling, door, …) or a pipe material (copper, PVC, PEX, …) and the names don't overlap, it's not a match: "outlet in bathroom" ≠ "outlet in kitchen", "copper pipe" ≠ "PVC pipe". Naming a room on one side only doesn't count against a match.
 - **Head nouns (materials only).** A material name ends in the item, so the last word must agree ("roofing cement" ≠ "roofing nail", "furnace filter" = "air filter"), unless one name is contained in the other ("breaker" = "20 amp breaker"). Statements often end on a place, not the item, so they don't get this rule.
 
-**Validation.** `src/matcher-validation.test.ts` requires ≥ 90 % agreement on each of three labeled sets, so the threshold is no longer provisional (`matcher.provisional: false`):
+**Validation.** `src/matcher-validation.test.ts` requires ≥ 90 % agreement on each of three labeled sets, so the default threshold is no longer provisional (`matcher.provisional: false`). A report made with any other `--threshold` is marked provisional:
 
 | Set                                   | Pairs | Source                                       | Before #114 |        Now |
 | ------------------------------------- | ----: | -------------------------------------------- | ----------: | ---------: |
