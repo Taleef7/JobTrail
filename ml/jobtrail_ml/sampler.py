@@ -113,12 +113,14 @@ def _plan_one(
 
     mat_pool = list(job["materials"])
     rng.shuffle(mat_pool)
+    # If no task is left to negate, keep one material unused for the negation (Codex #105).
+    keep = 1 if spare and not work_pool else 0
     if "no-materials" in tagset:
         n_mat = 0
     elif "multiple-materials" in tagset:
-        n_mat = rng.randint(3, len(mat_pool) - spare)
+        n_mat = rng.randint(3, len(mat_pool) - keep)
     else:
-        n_mat = rng.randint(1, min(2, len(mat_pool)))
+        n_mat = rng.randint(1, min(2, len(mat_pool) - keep))
     materials = [_material(s, rng, mix["vague_quantity"]) for s in mat_pool[:n_mat]]
     unused_materials = [s["name"] for s in mat_pool[n_mat:]]
 

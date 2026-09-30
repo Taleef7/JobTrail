@@ -155,13 +155,16 @@ WRITER_BATCH_SCHEMA: dict[str, Any] = {
 }
 
 
+BATCH_HEAD = (
+    "Write {n} separate notes, one per section below, returned with the section's id. "
+    "Each is a different job, customer and tradesperson: don't reuse sentences, openings "
+    "or sign-offs between notes. Vary how each note opens and how it words the customer's "
+    "approval."
+)
+
+
 def writer_batch_prompt(plans: list[dict[str, Any]], styles: dict[str, str]) -> str:
-    head = (
-        f"Write {len(plans)} separate notes, one per section below, returned with the "
-        "section's id. Each is a different job, customer and tradesperson: don't reuse "
-        "sentences, openings or sign-offs between notes. Vary how each note opens and how "
-        "it words the customer's approval."
-    )
+    head = BATCH_HEAD.format(n=len(plans))
     return "\n\n".join([head, *(f"### {p['id']}\n{writer_prompt(p, styles)}" for p in plans)])
 
 

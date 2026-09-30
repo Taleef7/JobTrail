@@ -57,6 +57,22 @@ def _says_number(note: str, n: float) -> bool:
     return n in numbers_in_text(note)
 
 
+TIME_WORDS = {"minute", "min", "hour", "hr"}
+
+
+def _said_near(note: str, n: float, anchors: set[str], before: int = 5, after: int = 3) -> bool:
+    """True if `n` (digits or a number word) is said within a few words of an anchor
+    token, e.g. "three, no two closet bolts" for the closet bolt's slip."""
+    words = re.findall(r"[a-z]+|\d+(?:\.\d+)?", note.lower())
+    values = [float(w) if w[0].isdigit() else NUMBER_WORDS.get(w) for w in words]
+    for i, w in enumerate(words):
+        if _singular(w) in anchors:
+            window = values[max(0, i - before) : i + after + 1]
+            if n in window:
+                return True
+    return False
+
+
 def note_flags(plan: dict[str, Any], note: str) -> list[str]:
     r, m = plan["record"], plan["meta"]
     lower = note.lower()
@@ -87,8 +103,11 @@ def note_flags(plan: dict[str, Any], note: str) -> list[str]:
     # an hours-phrased labor slip ("an hour, no an hour and a half") can't be checked by
     # number lookup; every other correction can
     hours_slip = c and c["field"] == "labor" and labor["phrasing"] == "hours"
-    if c and not hours_slip and not _says_number(note, c["wrong"]):
-        flags.append("correction-missing")
+    if c and not hours_slip:
+        # the slip must be spoken next to what it corrects, not merely somewhere in the note
+        anchors = TIME_WORDS if c["field"] == "labor" else set(normalize_tokens(c["name"]))
+        if not _said_near(note, c["wrong"], anchors):
+            flags.append("correction-missing")
 
     said_approval = bool(APPROVAL.search(lower))
     if r["customerApproved"] is None and said_approval:

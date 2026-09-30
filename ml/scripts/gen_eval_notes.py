@@ -61,10 +61,15 @@ def make_plans() -> list[dict]:
     return plan_splits(load_scenarios(SCENARIOS), seed=SEED, counts=COUNTS)
 
 
+def make_config() -> RunConfig:
+    return RunConfig(WRITER, CHECKER, WRITER_TEMPERATURE, CHECKER_TEMPERATURE, THINKING, SEED,
+                     json.loads(SCHEMA.read_text(encoding="utf-8")), BATCH_SIZE)  # fmt: skip
+
+
 def cmd_plan(_: argparse.Namespace) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     plans = make_plans()
-    stale = stale_draft_ids(plans, OUT, load_scenarios(SCENARIOS)["styles"])
+    stale = stale_draft_ids(plans, OUT, load_scenarios(SCENARIOS)["styles"], make_config())
     if stale:  # never let a re-plan silently mix with drafts from the old plan
         raise SystemExit(
             f"{len(stale)} existing drafts don't match the new plan; archive "
@@ -108,8 +113,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     plans = read_jsonl(OUT / "plan.jsonl")
     if plans != make_plans():
         raise SystemExit("plan.jsonl is out of date with scenarios/sampler: run `plan` first")
-    cfg = RunConfig(WRITER, CHECKER, WRITER_TEMPERATURE, CHECKER_TEMPERATURE, THINKING, SEED,
-                    json.loads(SCHEMA.read_text(encoding="utf-8")), BATCH_SIZE)  # fmt: skip
+    cfg = make_config()
     started = datetime.now(UTC).isoformat(timespec="seconds")
     styles = load_scenarios(SCENARIOS)["styles"]
     client = GeminiClient(api_key(), rpm=args.rpm)

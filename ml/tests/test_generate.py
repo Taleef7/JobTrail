@@ -217,8 +217,9 @@ def test_unparseable_or_invalid_crosscheck_is_flagged_not_fatal(tmp_path):
 
     strict = RunConfig(**{**CFG.__dict__, "schema": {"type": "object", "required": ["jobType"]}})
     c2, _, _ = client([responder(checker_record={"nope": 1})] * 2)
-    run_generation([plan(1), plan(2)], STYLES, tmp_path, c2, strict)
-    assert lines(tmp_path / "test.jsonl")[1]["meta"]["flags"] == ["crosscheck:invalid"]
+    # a different schema is a different run (its fingerprint differs), so use its own dir
+    run_generation([plan(2)], STYLES, tmp_path / "strict", c2, strict)
+    assert lines(tmp_path / "strict" / "test.jsonl")[0]["meta"]["flags"] == ["crosscheck:invalid"]
 
 
 def test_timeouts_are_retried_then_succeed():
@@ -271,10 +272,10 @@ def test_drafts_from_a_different_plan_are_refused(tmp_path):
 
     c, _, _ = client([responder()] * 2)
     run_generation([plan(1)], STYLES, tmp_path, c, CFG)
-    assert stale_draft_ids([plan(1)], tmp_path, STYLES) == []
+    assert stale_draft_ids([plan(1)], tmp_path, STYLES, CFG) == []
     changed = plan(1)
     changed["record"] = {**RECORD, "laborMinutes": 50}
-    assert stale_draft_ids([changed], tmp_path, STYLES) == ["t-0001"]
+    assert stale_draft_ids([changed], tmp_path, STYLES, CFG) == ["t-0001"]
     c2, _, seen = client([])
     with pytest.raises(ValueError, match="t-0001"):
         run_generation([changed], STYLES, tmp_path, c2, CFG)
@@ -296,13 +297,36 @@ def test_drafts_are_stale_when_style_meta_or_prompt_change(tmp_path):
 
     c, _, _ = client([responder()] * 2)
     run_generation([plan(1)], STYLES, tmp_path, c, CFG)
-    assert stale_draft_ids([plan(1)], tmp_path, STYLES) == []
+    assert stale_draft_ids([plan(1)], tmp_path, STYLES, CFG) == []
     restyled = {**plan(1), "style": "rambling"}
-    assert stale_draft_ids([restyled], tmp_path, {**STYLES, "rambling": "Chatty."}) == ["t-0001"]
+    assert stale_draft_ids([restyled], tmp_path, {**STYLES, "rambling": "Chatty."}, CFG) == [
+        "t-0001"
+    ]
     corrected = plan(1)
     corrected["meta"] = {
         **corrected["meta"],
         "correction": {"field": "labor", "name": None, "wrong": 30, "right": 45},
     }
-    assert stale_draft_ids([corrected], tmp_path, STYLES) == ["t-0001"]
-    assert stale_draft_ids([plan(1)], tmp_path, {"terse": "Reworded style."}) == ["t-0001"]
+    assert stale_draft_ids([corrected], tmp_path, STYLES, CFG) == ["t-0001"]
+    assert stale_draft_ids([plan(1)], tmp_path, {"terse": "Reworded style."}, CFG) == ["t-0001"]
+
+
+def test_fingerprint_covers_run_settings_and_batch_wrapper(tmp_path):
+    """Codex #105 round 3: models, temperatures, thinking, schema and the batch wrapper
+    were not in the fingerprint, so a resumed run could mix settings."""
+    from jobtrail_ml.generate import stale_draft_ids
+
+    c, _, _ = client([responder()] * 2)
+    run_generation([plan(1)], STYLES, tmp_path, c, CFG)
+    assert stale_draft_ids([plan(1)], tmp_path, STYLES, CFG) == []
+    changes = [
+        {"writer_model": "other"},
+        {"checker_model": "other"},
+        {"writer_temperature": 0.5},
+        {"thinking_level": "high"},
+        {"schema": {"type": "object", "required": ["x"]}},
+        {"batch_size": 7},
+    ]
+    for change in changes:
+        changed = RunConfig(**{**CFG.__dict__, **change})
+        assert stale_draft_ids([plan(1)], tmp_path, STYLES, changed) == ["t-0001"], change

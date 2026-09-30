@@ -167,3 +167,31 @@ def test_crosscheck_compares_list_contents_not_just_counts():
     reworded["workPerformed"] = ["Replaced the wax ring on the toilet",
                                  "Picked up a wax ring at the supply house"]  # fmt: skip
     assert crosscheck_flags(PLAN["record"], reworded) == []
+
+
+def test_correction_evidence_must_sit_next_to_the_corrected_material():
+    """Codex #105 round 3: the wrong value also being another material's quantity
+    (t-0083, d-0003, d-0104) satisfied the note-wide check."""
+    p = with_(
+        lambda p: (
+            p["record"]["materials"].__setitem__(
+                0, {"name": "wax ring", "quantity": 3, "unit": None}
+            ),
+        )
+    )  # wax ring qty 3 == the closet bolt's deliberately wrong value
+    omitted = ("Ran to the supply house for 3 wax rings, swapped one in with two closet bolts. "
+               "Didn't need the toilet supply line. 45 minutes, customer signed off.")  # fmt: skip
+    assert "correction-missing" in note_flags(p, omitted)
+    spoken = omitted.replace("with two closet bolts", "with three, no two closet bolts")
+    assert "correction-missing" not in note_flags(p, spoken)
+
+
+def test_labor_correction_evidence_sits_next_to_the_time():
+    p = with_(lambda p: p["meta"].update(
+        correction={"field": "labor", "name": None, "wrong": 30, "right": 45}))  # fmt: skip
+    assert "correction-missing" in note_flags(
+        p, NOTE.replace("45 minutes", "45 minutes") + " Used 30 zip ties."
+    )
+    assert "correction-missing" not in note_flags(
+        p, NOTE.replace("45 minutes", "30, no 45 minutes")
+    )

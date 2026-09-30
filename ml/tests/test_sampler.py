@@ -145,3 +145,12 @@ def test_realism_main_task_first_minutes_capped_extra_is_minor(plans):
             assert r["laborMinutes"] <= 90, p["id"]
         if labor["phrasing"] == "base+extra":
             assert labor["base"] <= 90 and labor["extra_task"] not in mains, p["id"]
+
+
+def test_negation_always_has_something_to_negate_across_seeds():
+    """Codex #105 round 3: negation + approval-absent could leave nothing to negate
+    (IndexError for seed=1 and 23 of the first 100 seeds)."""
+    for seed in range(100):
+        for p in plan_splits(SCENARIOS, seed=seed, counts=COUNTS):
+            if p["meta"]["negation"]:
+                assert p["meta"]["negation"]["kind"] in {"material", "task", "approval"}

@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import zlib
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -19,6 +19,7 @@ from jsonschema import Draft202012Validator
 from .fidelity import crosscheck_flags, note_flags
 from .gemini import GeminiClient, GeminiError, QuotaExhausted, Result
 from .prompts import (
+    BATCH_HEAD,
     CHECKER_BATCH_SYSTEM,
     WRITER_BATCH_SCHEMA,
     WRITER_SYSTEM,
@@ -58,20 +59,23 @@ def read_done_ids(path: Path) -> set[str]:
     return ids
 
 
-def plan_fingerprint(plan: dict[str, Any], styles: dict[str, str]) -> str:
+def plan_fingerprint(plan: dict[str, Any], styles: dict[str, str], cfg: RunConfig) -> str:
     """Hash of everything that defines a draft's note: its plan (gold, tags, style,
-    trade, hard-case meta) and the exact prompts that wrote and checked it."""
+    trade, hard-case meta), the exact prompts that wrote and checked it (including the
+    batch wrapper), and every generation setting (models, temperatures, thinking, seed,
+    batch size, schema)."""
     parts = {
         "plan": {k: plan[k] for k in ("record", "tags", "style", "trade", "meta")},
-        "writer": [WRITER_SYSTEM, writer_prompt(plan, styles)],
+        "writer": [WRITER_SYSTEM, BATCH_HEAD, writer_prompt(plan, styles)],
         "checker": CHECKER_BATCH_SYSTEM,
+        "config": asdict(cfg),
     }
     blob = json.dumps(parts, sort_keys=True, ensure_ascii=False).encode()
     return hashlib.sha256(blob).hexdigest()[:16]
 
 
 def stale_draft_ids(
-    plans: list[dict[str, Any]], out_dir: Path, styles: dict[str, str]
+    plans: list[dict[str, Any]], out_dir: Path, styles: dict[str, str], cfg: RunConfig
 ) -> list[str]:
     """Drafts not written from the active plan and prompts (their fingerprint differs,
     or their id left the plan), e.g. after a re-plan or a prompt change. Resuming over
@@ -85,7 +89,7 @@ def stale_draft_ids(
             row = json.loads(line)
             plan = by_id.get(row["id"])
             have = row.get("meta", {}).get("fingerprint")
-            if plan is None or have != plan_fingerprint(plan, styles):
+            if plan is None or have != plan_fingerprint(plan, styles, cfg):
                 stale.append(row["id"])
     return stale
 
@@ -118,7 +122,7 @@ def run_generation(
 ) -> dict[str, Any]:
     """`plans` is always the full active plan; `limit` caps how many new drafts to write."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    stale = stale_draft_ids(plans, out_dir, styles)
+    stale = stale_draft_ids(plans, out_dir, styles, cfg)
     if stale:
         raise ValueError(
             f"{len(stale)} drafts don't match the active plan ({', '.join(stale[:5])}"
@@ -194,7 +198,7 @@ def run_generation(
                     "checker": {"model": cfg.checker_model, "modelVersion": c.model_version},
                     "checked": checked,
                     "flags": note_flags(plan, note) + crosscheck_flags(plan["record"], checked),
-                    "fingerprint": plan_fingerprint(plan, styles),
+                    "fingerprint": plan_fingerprint(plan, styles, cfg),
                 },
             })  # fmt: skip
             written += 1
