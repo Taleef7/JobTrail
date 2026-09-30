@@ -36,6 +36,14 @@
     {
       "source": "/spike/",
       "destination": "/spike/index.html"
+    },
+    {
+      "source": "/label",
+      "destination": "/label/index.html"
+    },
+    {
+      "source": "/label/",
+      "destination": "/label/index.html"
     }
   ]
 }

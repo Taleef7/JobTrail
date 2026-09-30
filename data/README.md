@@ -4,15 +4,16 @@ Evaluation data for JobTrail v2. Training data (3–5k synthetic examples) is pu
 
 ## Files (arrive in M1)
 
-| File                      | What                                                                                           | Created in |
-| ------------------------- | ---------------------------------------------------------------------------------------------- | ---------- |
-| `LABELING.md`             | Labeling rules: what the right label is (supply trips, negations, approval, …)                 | #70        |
-| `scenarios.yaml`          | Scenario matrix: trades × note styles × hard-case tags, with job templates                     | #70        |
-| `drafts/`                 | Teacher-drafted notes + planned labels, **not yet human-verified** (see below)                 | #70        |
-| `test.jsonl`              | Frozen test set (~200), human-verified — never trained or tuned on                             | #71        |
-| `dev.jsonl`               | Dev set (~100) for iteration and error analysis                                                | #71        |
-| `matcher-validation*.csv` | Same/different labels for 161 predicted/gold pairs in 3 sets (validate the matcher; see below) | #68, #114  |
-| `FROZEN.md`               | SHA-256 of every frozen file; CI fails if a frozen file changes                                | #71        |
+| File                      | What                                                                                             | Created in |
+| ------------------------- | ------------------------------------------------------------------------------------------------ | ---------- |
+| `LABELING.md`             | Labeling rules: what the right label is (supply trips, negations, approval, …)                   | #70        |
+| `scenarios.yaml`          | Scenario matrix: trades × note styles × hard-case tags, with job templates                       | #70        |
+| `drafts/`                 | Teacher-drafted notes + planned labels, **not yet human-verified** (see below)                   | #70        |
+| `review/`                 | Model-panel verdicts and the owner's review queue for the drafts (hybrid review; see its README) | #71        |
+| `test.jsonl`              | Frozen test set (~200), human-verified — never trained or tuned on                               | #71        |
+| `dev.jsonl`               | Dev set (~100) for iteration and error analysis                                                  | #71        |
+| `matcher-validation*.csv` | Same/different labels for 161 predicted/gold pairs in 3 sets (validate the matcher; see below)   | #68, #114  |
+| `FROZEN.md`               | SHA-256 of every frozen file; CI fails if a frozen file changes                                  | #71        |
 
 ## How the drafts are made (#70)
 
