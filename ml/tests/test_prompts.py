@@ -148,9 +148,19 @@ def test_no_instruction_words_to_parrot():
     for p in (plan(), extra, declined):
         text = writer_prompt(p, STYLES).lower()
         assert "explicitly" not in text and "extra task" not in text
-        # batch 1 (#70): 3 of 4 extra-labor notes said "something came up"; most said
-        # "signed off" (the example given) and one said "as extra work"
-        assert "came up" not in text and "signed off" not in text and "extra work" not in text
+        # batch 1 (#70): 3 of 4 extra-labor notes said "something came up" and one said
+        # "as extra work" (approval wording has its own test below)
+        assert "came up" not in text and "extra work" not in text
+
+
+def test_approval_wording_offers_several_phrasings_and_no_yes_to_parrot():
+    """#70 lessons: one example ("signed off") ended up in nearly every note; no example
+    ("an actual yes") produced "gave me an explicit yes" in 17 of 60 notes. The prompt now
+    offers several natural phrasings to vary between, and never says "yes" or "explicit"."""
+    text = writer_prompt(plan(), STYLES).lower()
+    options = ["signed off", "ok'd", "approved", "go-ahead"]
+    assert all(o in text for o in options), [o for o in options if o not in text]
+    assert "yes" not in text and "explicit" not in text and "vary" in text
 
 
 def test_batch_prompt_and_schemas():
@@ -178,7 +188,7 @@ def test_approval_must_be_an_actual_yes_and_checker_knows_the_rules():
     """Full run (#70): 21 'approved' notes only said the customer was happy; the checker
     didn't know the supply-trip rule; trades were undefined (general vs carpentry)."""
     text = writer_prompt(plan(), STYLES).lower()
-    assert "not just that they were happy" in text
+    assert "approved the work, not just liked it" in text
     for rule in ["supply house", "add", "roofing", "gutters", "general"]:
         assert rule in CHECKER_SYSTEM.lower(), rule
 

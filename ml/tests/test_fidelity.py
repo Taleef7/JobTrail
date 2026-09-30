@@ -195,3 +195,11 @@ def test_labor_correction_evidence_sits_next_to_the_time():
     assert "correction-missing" not in note_flags(
         p, NOTE.replace("45 minutes", "30, no 45 minutes")
     )
+
+
+def test_yes_agreed_and_confirmed_count_as_approval_mentioned():
+    """#70 run 2: 'gave me a solid yes', 'officially agreed', 'confirmed yes to the work'
+    were real approvals but raised approval-missing."""
+    for said in ["customer gave me a solid yes", "homeowner officially agreed the job was done",
+                 "client confirmed the work was complete"]:  # fmt: skip
+        assert "approval-missing" not in note_flags(PLAN, NOTE.replace("customer signed off", said))

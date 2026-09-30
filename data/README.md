@@ -35,7 +35,7 @@ uv run python scripts/gen_eval_notes.py report   # drafts/coverage.md
 | `test.jsonl`, `dev.jsonl`   | Drafts: note + planned gold + `meta` (flags, cross-check, models)      |
 | `usage.jsonl`, `runs.jsonl` | Tokens per API call; one summary per run                               |
 | `coverage.md`               | Tag × split counts, clean drafts, flag counts, usage                   |
-| `pilot-1/` … `pilot-4/`     | Earlier runs kept as evidence for prompt changes; **not** part of eval |
+| `pilot-1/` … `pilot-5/`     | Earlier runs kept as evidence for prompt changes; **not** part of eval |
 
 **Free-tier limits shape the run:** the Gemini API free tier allows 20 requests per model per day (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`). One writer call therefore drafts 20 notes, and one checker call extracts 20 (15 calls per model for all 275). A run that hits the quota stops cleanly and resumes the next day. The writer (`gemini-3.6-flash`) and checker (`gemini-3.1-flash-lite`) are different models. `gemini-3.8-flash` is kept out of generation so it can be the cloud ceiling in #73 without grading its own prose.
 

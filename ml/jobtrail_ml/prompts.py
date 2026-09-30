@@ -94,8 +94,9 @@ def writer_prompt(plan: dict[str, Any], styles: dict[str, str]) -> str:
     neg = m["negation"]
     if r["customerApproved"] is True:
         lines.append(
-            "- The customer approved the work: say they gave an actual yes to it, not just "
-            "that they were happy. Vary the words."
+            "- The customer approved the work, not just liked it: say it the way a "
+            "tradesperson would, e.g. they signed off, OK'd it, approved it, gave the "
+            "go-ahead. Vary the wording from note to note."
         )
     elif r["customerApproved"] is False:
         lines.append("- The customer did not approve the work: say so plainly, in your own words.")

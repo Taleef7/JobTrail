@@ -15,7 +15,8 @@ NUMBER_WORDS = {
 }  # fmt: skip
 APPROVAL = re.compile(
     r"approv|sign(?:ed)?[\s-]*off|\bsign|declin|reject|refus|turned (?:it |us )?down|okay"
-    r"|\bok(?:'?d)?\b|thumbs?[\s-]*up|go-?ahead|all clear|green light"
+    r"|\bok(?:'?d)?\b|thumbs?[\s-]*up|go-?ahead|all clear|green light|\byes\b|\bagree"
+    r"|\bconfirm"
 )
 NEGATION_CUE = re.compile(r"\b(?:didn'?t|did not|no need|not needed|never|wasn'?t|skipped)\b")
 
