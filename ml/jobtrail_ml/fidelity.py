@@ -62,11 +62,14 @@ def note_flags(plan: dict[str, Any], note: str) -> list[str]:
     lower = note.lower()
     flags: list[str] = []
 
+    note_tokens = set(normalize_tokens(note))
     for mat in r["materials"]:
         if not _mentions(note, mat["name"]):
             flags.append(f"material-not-in-note:{mat['name']}")
         if mat["quantity"] is not None and not _says_number(note, mat["quantity"]):
             flags.append(f"quantity-not-in-note:{mat['name']}={mat['quantity']}")
+        if mat["unit"] and not _unit_forms(mat["unit"]) & note_tokens:
+            flags.append(f"unit-not-in-note:{mat['name']}={mat['unit']}")
 
     labor, minutes = m["labor"], r["laborMinutes"]
     if labor["phrasing"] == "hours":
@@ -81,7 +84,10 @@ def note_flags(plan: dict[str, Any], note: str) -> list[str]:
         flags.append("labor-not-in-note")
 
     c = m["correction"]
-    if c and labor["phrasing"] != "hours" and not _says_number(note, c["wrong"]):
+    # an hours-phrased labor slip ("an hour, no an hour and a half") can't be checked by
+    # number lookup; every other correction can
+    hours_slip = c and c["field"] == "labor" and labor["phrasing"] == "hours"
+    if c and not hours_slip and not _says_number(note, c["wrong"]):
         flags.append("correction-missing")
 
     said_approval = bool(APPROVAL.search(lower))
@@ -97,6 +103,27 @@ def note_flags(plan: dict[str, Any], note: str) -> list[str]:
     if m["supply"] and "supply" not in lower:
         flags.append("supply-missing")
     return flags
+
+
+UNIT_ALIASES = {
+    "feet": {"feet", "foot", "ft"},
+    "gallon": {"gallon", "gal"},
+    "pound": {"pound", "lb", "lbs"},
+    "quart": {"quart", "qt"},
+}
+
+
+def _unit_forms(unit: str) -> set[str]:
+    """Normalized tokens that say this unit in a note ('gallon' → gallon, gal)."""
+    base = " ".join(normalize_tokens(unit))
+    return UNIT_ALIASES.get(base, {base})
+
+
+def _canonical_unit(unit: str | None) -> str | None:
+    if not unit:
+        return None
+    base = " ".join(normalize_tokens(unit))
+    return next((k for k, forms in UNIT_ALIASES.items() if base in forms), base)
 
 
 def _dice(a: str, b: str) -> float:
@@ -128,6 +155,8 @@ def crosscheck_flags(planned: dict[str, Any], checked: dict[str, Any] | None) ->
         used_c.add(j)
         if pm[i]["quantity"] != cm[j].get("quantity"):
             flags.append(f"crosscheck:quantity:{pm[i]['name']}")
+        if _canonical_unit(pm[i]["unit"]) != _canonical_unit(cm[j].get("unit")):
+            flags.append(f"crosscheck:unit:{pm[i]['name']}")
     flags += [
         f"crosscheck:material-missing:{pm[i]['name']}" for i in range(len(pm)) if i not in used_p
     ]

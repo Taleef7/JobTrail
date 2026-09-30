@@ -56,6 +56,22 @@ def read_done_ids(path: Path) -> set[str]:
     return ids
 
 
+def stale_draft_ids(plans: list[dict[str, Any]], out_dir: Path) -> list[str]:
+    """Drafts whose gold or tags differ from the active plan, or whose id isn't in it
+    (e.g. written before a re-plan). Resuming over them would mix two datasets."""
+    by_id = {p["id"]: p for p in plans}
+    stale = []
+    for split in sorted({p["split"] for p in plans} | {"test", "dev"}):
+        path = out_dir / f"{split}.jsonl"
+        read_done_ids(path)  # drop a truncated last line first
+        for line in path.read_text(encoding="utf-8").splitlines() if path.exists() else []:
+            row = json.loads(line)
+            plan = by_id.get(row["id"])
+            if plan is None or row["gold"] != plan["record"] or row["tags"] != plan["tags"]:
+                stale.append(row["id"])
+    return stale
+
+
 def _append(path: Path, obj: dict[str, Any]) -> None:
     with path.open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(obj, ensure_ascii=False) + "\n")
@@ -80,12 +96,20 @@ def run_generation(
     out_dir: Path,
     client: GeminiClient,
     cfg: RunConfig,
+    limit: int | None = None,
 ) -> dict[str, Any]:
+    """`plans` is always the full active plan; `limit` caps how many new drafts to write."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    stale = stale_draft_ids(plans, out_dir)
+    if stale:
+        raise ValueError(
+            f"{len(stale)} drafts don't match the active plan ({', '.join(stale[:5])}"
+            f"{', ...' if len(stale) > 5 else ''}); archive them before resuming"
+        )
     validator = Draft202012Validator(cfg.schema)
     checker_schema = checker_batch_schema(cfg.schema)
     done = {s: read_done_ids(out_dir / f"{s}.jsonl") for s in {p["split"] for p in plans}}
-    todo = [p for p in plans if p["id"] not in done[p["split"]]]
+    todo = [p for p in plans if p["id"] not in done[p["split"]]][:limit]
     tokens = {"prompt": 0, "output": 0, "thoughts": 0, "total": 0}
     written, missing, stopped, quota = 0, [], False, None
 

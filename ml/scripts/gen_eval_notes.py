@@ -22,7 +22,7 @@ sys.path.insert(0, str(ML))
 
 from jobtrail_ml.fidelity import crosscheck_flags, note_flags  # noqa: E402
 from jobtrail_ml.gemini import GeminiClient  # noqa: E402
-from jobtrail_ml.generate import RunConfig, run_generation  # noqa: E402
+from jobtrail_ml.generate import RunConfig, run_generation, stale_draft_ids  # noqa: E402
 from jobtrail_ml.report import coverage_markdown  # noqa: E402
 from jobtrail_ml.sampler import load_scenarios, plan_splits  # noqa: E402
 
@@ -64,6 +64,12 @@ def make_plans() -> list[dict]:
 def cmd_plan(_: argparse.Namespace) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     plans = make_plans()
+    stale = stale_draft_ids(plans, OUT)
+    if stale:  # never let a re-plan silently mix with drafts from the old plan
+        raise SystemExit(
+            f"{len(stale)} existing drafts don't match the new plan; archive "
+            "data/drafts/{test,dev}.jsonl (e.g. to pilot-N/) and re-run `plan`"
+        )
     write_jsonl(OUT / "plan.jsonl", plans)
     manifest = {
         "issue": 70,
@@ -102,15 +108,14 @@ def cmd_run(args: argparse.Namespace) -> int:
     plans = read_jsonl(OUT / "plan.jsonl")
     if plans != make_plans():
         raise SystemExit("plan.jsonl is out of date with scenarios/sampler: run `plan` first")
-    done = {d["id"] for s in COUNTS for d in read_jsonl(OUT / f"{s}.jsonl")}
-    todo = [p for p in plans if p["id"] not in done][: args.limit]
     cfg = RunConfig(WRITER, CHECKER, WRITER_TEMPERATURE, CHECKER_TEMPERATURE, THINKING, SEED,
                     json.loads(SCHEMA.read_text(encoding="utf-8")), BATCH_SIZE)  # fmt: skip
     started = datetime.now(UTC).isoformat(timespec="seconds")
     styles = load_scenarios(SCENARIOS)["styles"]
-    summary = run_generation(todo, styles, OUT, GeminiClient(api_key(), rpm=args.rpm), cfg)
+    client = GeminiClient(api_key(), rpm=args.rpm)
+    summary = run_generation(plans, styles, OUT, client, cfg, limit=args.limit)
     summary |= {"started": started, "finished": datetime.now(UTC).isoformat(timespec="seconds"),
-                "requested": len(todo), "rpm": args.rpm}  # fmt: skip
+                "limit": args.limit, "rpm": args.rpm}  # fmt: skip
     with (OUT / "runs.jsonl").open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(summary) + "\n")
     print(json.dumps(summary, indent=2))

@@ -217,7 +217,7 @@ def test_unparseable_or_invalid_crosscheck_is_flagged_not_fatal(tmp_path):
 
     strict = RunConfig(**{**CFG.__dict__, "schema": {"type": "object", "required": ["jobType"]}})
     c2, _, _ = client([responder(checker_record={"nope": 1})] * 2)
-    run_generation([plan(2)], STYLES, tmp_path, c2, strict)
+    run_generation([plan(1), plan(2)], STYLES, tmp_path, c2, strict)
     assert lines(tmp_path / "test.jsonl")[1]["meta"]["flags"] == ["crosscheck:invalid"]
 
 
@@ -253,3 +253,37 @@ def test_batch_reply_parsing_drops_duplicates_and_junk():
                                  {"id": "b", "note": "z"}, {"note": "no id"}, "junk"]})  # fmt: skip
     assert _by_id(text, "notes", "note") == {"b": "z"}  # ambiguous 'a' is redone next run
     assert _by_id("not json", "notes", "note") == {} and _by_id("[]", "notes", "note") == {}
+
+
+def test_non_json_5xx_is_retried_and_persistent_html_is_a_clean_error():
+    """Codex #105: a proxy's HTML 5xx made r.json() crash before the retry branch."""
+    html = httpx.Response(502, text="<html>Bad gateway</html>")
+    c, _, _ = client([html, ok("fine")])
+    assert c.generate("gemini-3.6-flash", "sys", "user").text == "fine"
+    c2, _, _ = client([html] * 3, max_retries=2)
+    with pytest.raises(GeminiError, match="502"):
+        c2.generate("gemini-3.6-flash", "sys", "user")
+
+
+def test_drafts_from_a_different_plan_are_refused(tmp_path):
+    """Codex #105: after a re-plan, old rows with the same id were silently kept."""
+    from jobtrail_ml.generate import stale_draft_ids
+
+    c, _, _ = client([responder()] * 2)
+    run_generation([plan(1)], STYLES, tmp_path, c, CFG)
+    assert stale_draft_ids([plan(1)], tmp_path) == []
+    changed = plan(1)
+    changed["record"] = {**RECORD, "laborMinutes": 50}
+    assert stale_draft_ids([changed], tmp_path) == ["t-0001"]
+    c2, _, seen = client([])
+    with pytest.raises(ValueError, match="t-0001"):
+        run_generation([changed], STYLES, tmp_path, c2, CFG)
+    assert seen == []  # refused before spending any quota
+
+
+def test_limit_drafts_at_most_n_and_resume_sees_the_full_plan(tmp_path):
+    plans = [plan(1), plan(2), plan(3)]
+    c, _, _ = client([responder()] * 2)
+    assert run_generation(plans, STYLES, tmp_path, c, CFG, limit=1)["written"] == 1
+    c2, _, _ = client([responder()] * 2)  # full plan passed again: earlier draft isn't stale
+    assert run_generation(plans, STYLES, tmp_path, c2, CFG)["written"] == 2

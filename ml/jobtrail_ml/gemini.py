@@ -38,6 +38,16 @@ def _retry_delay(error: dict[str, Any]) -> float | None:
     return None
 
 
+def _error_body(r: httpx.Response) -> dict[str, Any]:
+    """The API's error object; proxies may answer with HTML or plain text instead."""
+    try:
+        body = r.json()
+    except ValueError:
+        return {"message": r.text[:300]}
+    error = body.get("error") if isinstance(body, dict) else None
+    return error if isinstance(error, dict) else {"message": r.text[:300]}
+
+
 def _quota_ids(error: dict[str, Any]) -> str:
     """Which quotas Google says were hit, e.g. 'GenerateRequestsPerDay...=20'."""
     return ", ".join(
@@ -116,8 +126,11 @@ class GeminiClient:
                 self._sleep(min(60.0, 2.0**attempt))
                 continue
             if r.status_code == 200:
-                return self._result(r.json())
-            error = (r.json() if r.content else {}).get("error", {})
+                try:
+                    return self._result(r.json())
+                except ValueError as e:
+                    raise GeminiError(f"{model}: unparseable 200 response: {r.text[:200]}") from e
+            error = _error_body(r)
             if r.status_code == 429:
                 if _is_daily(error):
                     raise QuotaExhausted(_quota_ids(error))

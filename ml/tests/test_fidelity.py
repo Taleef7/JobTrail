@@ -125,3 +125,32 @@ def test_being_happy_is_not_approval():
     """LABELING.md: true needs an explicit yes; 'was happy with the work' is sentiment."""
     happy = NOTE.replace("customer signed off", "customer was happy with the work")
     assert "approval-missing" in note_flags(PLAN, happy)
+
+
+def test_units_are_checked_in_note_and_crosscheck():
+    """Codex #105: a note could drop 'feet' and still come back clean."""
+    p = with_(lambda p: p["record"]["materials"].__setitem__(
+        1, {"name": "closet bolt", "quantity": 2, "unit": "box"}))  # fmt: skip
+    assert "unit-not-in-note:closet bolt=box" in note_flags(p, NOTE)
+    assert "unit-not-in-note:closet bolt=box" not in note_flags(
+        p, NOTE.replace("two closet bolts", "two boxes of closet bolts")
+    )
+    other = copy.deepcopy(p["record"])
+    other["materials"][1]["unit"] = None
+    assert "crosscheck:unit:closet bolt" in crosscheck_flags(p["record"], other)
+    plural = copy.deepcopy(p["record"])
+    plural["materials"][1]["unit"] = "boxes"
+    assert crosscheck_flags(p["record"], plural) == []
+
+
+def test_material_correction_is_checked_even_in_hours_notes():
+    """Codex #105: hours-phrasing suppressed the check for material corrections too."""
+    p = with_(lambda p: (p["meta"].update(labor={"phrasing": "hours"}),
+                         p["record"].update(laborMinutes=60)))  # fmt: skip
+    note = NOTE.replace("three, no two", "two").replace("45 minutes", "an hour")
+    assert "correction-missing" in note_flags(p, note)
+    hours_fix = with_(lambda p: (p["meta"].update(
+        labor={"phrasing": "hours"},
+        correction={"field": "labor", "name": None, "wrong": 90, "right": 60}),
+        p["record"].update(laborMinutes=60)))  # fmt: skip
+    assert "correction-missing" not in note_flags(hours_fix, NOTE.replace("45 minutes", "an hour"))
