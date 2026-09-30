@@ -59,6 +59,32 @@ function numbersInText(text: string): Set<number> {
   return found;
 }
 
+// "a few" / "a bunch of" is not 1; "a couple" / "a dozen" / "a half" are number words above.
+const VAGUE_AFTER_ARTICLE = new Set([
+  "few", "bunch", "handful", "lot", "little", "bit", "couple", "pair", "dozen", "half",
+]); // prettier-ignore
+const ARTICLE_REACH = 3;
+
+/**
+ * "a new wax ring" says 1, but only for the material it introduces: the article
+ * must be followed, within ARTICLE_REACH content words of the same clause, by a
+ * token of the material's name or unit ("a box of deck screws"). See SCORING.md.
+ */
+function articleIntroduces(note: string, material: JobRecord["materials"][number]): boolean {
+  const targets = new Set(normalizeTokens(`${material.name} ${material.unit ?? ""}`));
+  for (const clause of note.toLowerCase().split(/[,.;:!?]/)) {
+    const words = clause.split(/\s+/);
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i]?.replace(/[^a-z]/g, "");
+      if (word !== "a" && word !== "an") continue;
+      const next = normalizeTokens(words.slice(i + 1).join(" ")).slice(0, ARTICLE_REACH);
+      if (next[0] !== undefined && VAGUE_AFTER_ARTICLE.has(next[0])) continue;
+      if (next.some((t) => targets.has(t))) return true;
+    }
+  }
+  return false;
+}
+
 function grounding(note: string, predicted: JobRecord): RecordScore["grounding"] {
   const noteTokens = new Set(normalizeTokens(note));
   const noteNumbers = numbersInText(note);
@@ -71,7 +97,8 @@ function grounding(note: string, predicted: JobRecord): RecordScore["grounding"]
     if (tokens.length === 0 || supported * 2 < tokens.length) ungrounded++;
     if (m.quantity !== null) {
       checked++;
-      if (!noteNumbers.has(m.quantity)) ungrounded++;
+      const said = noteNumbers.has(m.quantity) || (m.quantity === 1 && articleIntroduces(note, m));
+      if (!said) ungrounded++;
     }
   }
   return { checked, ungrounded };
