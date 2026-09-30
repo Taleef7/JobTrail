@@ -6,7 +6,7 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 ## [Unreleased]
 
 ### Fixed
-- Scorer: a correct quantity of 1 said as "a"/"an" ("used a wax ring") counted as hallucinated. The article now grounds 1 only for the material it introduces (within 3 content words, same clause), so invented 1s stay ungrounded; trade-off in `packages/core/SCORING.md` (#106).
+- Scorer: a correct quantity of 1 said as "a"/"an" ("used a wax ring") counted as hallucinated. The article now grounds 1 only for the material it introduces (within 3 words, same clause), so invented 1s stay ungrounded; trade-off in `packages/core/SCORING.md` (#106).
 - `/spike/` returned 404 in production (Vercel doesn't map the directory URL to `spike/index.html`); explicit rewrites added — found by live verification (#66).
 
 ### Changed

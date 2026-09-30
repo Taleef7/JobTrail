@@ -260,4 +260,15 @@ describe("grounding: quantity 1 said as an article", () => {
       ungrounded: 1,
     });
   });
+
+  it.each([
+    ["decimal point", "Installed a 1.5-inch PVC coupling under the sink.", "PVC coupling"],
+    ["abbreviation dots", "Installed an A.O. Smith water heater.", "Water heater"],
+    ["hyphenated size", "Put in a new 40-gallon water heater.", "Water heater"],
+  ])("counts reach in words, with no clause break inside a word (%s)", (_, note, name) => {
+    expect(groundingFor(note, [{ name, quantity: 1, unit: null }])).toEqual({
+      checked: 2,
+      ungrounded: 0,
+    });
+  });
 });

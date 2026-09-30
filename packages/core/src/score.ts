@@ -64,6 +64,9 @@ const VAGUE_AFTER_ARTICLE = new Set([
   "few", "bunch", "handful", "lot", "little", "bit", "couple", "pair", "dozen", "half",
 ]); // prettier-ignore
 const ARTICLE_REACH = 3;
+// A period ends a clause only before whitespace or the end, and not after an
+// initial: "1.5-inch" and "A.O. Smith" stay whole. Commas in "1,000" too.
+const CLAUSE_BREAK = /[;:!?]|,(?!\d)|(?<!\b[a-z])\.(?=\s|$)/;
 
 /**
  * "a new wax ring" says 1, but only for the material it introduces: the article
@@ -72,14 +75,19 @@ const ARTICLE_REACH = 3;
  */
 function articleIntroduces(note: string, material: JobRecord["materials"][number]): boolean {
   const targets = new Set(normalizeTokens(`${material.name} ${material.unit ?? ""}`));
-  for (const clause of note.toLowerCase().split(/[,.;:!?]/)) {
+  for (const clause of note.toLowerCase().split(CLAUSE_BREAK)) {
     const words = clause.split(/\s+/);
     for (let i = 0; i < words.length; i++) {
       const word = words[i]?.replace(/[^a-z]/g, "");
       if (word !== "a" && word !== "an") continue;
-      const next = normalizeTokens(words.slice(i + 1).join(" ")).slice(0, ARTICLE_REACH);
-      if (next[0] !== undefined && VAGUE_AFTER_ARTICLE.has(next[0])) continue;
-      if (next.some((t) => targets.has(t))) return true;
+      // Reach counts words ("40-gallon" is one), skipping stopword-only ones ("of").
+      const next = words
+        .slice(i + 1)
+        .map(normalizeTokens)
+        .filter((tokens) => tokens.length > 0)
+        .slice(0, ARTICLE_REACH);
+      if (next[0]?.[0] !== undefined && VAGUE_AFTER_ARTICLE.has(next[0][0])) continue;
+      if (next.some((tokens) => tokens.some((t) => targets.has(t)))) return true;
     }
   }
   return false;
