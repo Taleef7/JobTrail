@@ -243,7 +243,27 @@ function refreshDownload() {
   (window as Window & { __spikeResult?: unknown }).__spikeResult = resultJson();
 }
 
+// One benchmark at a time (review on #109): Run and Clear are locked before the first
+// await, so a double-tap can't start two loops over the same cells, and Clear can't
+// swap out the session while a run is still appending to it.
+let running = false;
+function setRunning(on: boolean) {
+  running = on;
+  $<HTMLButtonElement>("run").disabled = on;
+  $<HTMLButtonElement>("clear").disabled = on;
+}
+
 async function runBenchmark() {
+  if (running) return;
+  setRunning(true);
+  try {
+    await runCells();
+  } finally {
+    setRunning(false);
+  }
+}
+
+async function runCells() {
   const runButton = $<HTMLButtonElement>("run");
   $("log").textContent = "";
   if (checked("model").length === 0 || checked("backend").length === 0) {
@@ -268,7 +288,6 @@ async function runBenchmark() {
   }
   if (todo.length < cells.length)
     log(`Resuming: ${cells.length - todo.length} of ${cells.length} cells already done.`);
-  runButton.disabled = true;
   const loads = loadsOf(session);
   const runs = runsOf(session);
 
@@ -448,7 +467,6 @@ async function runBenchmark() {
   renderResults(runs, loads);
   refreshDownload();
   runButton.textContent = "Run again";
-  runButton.disabled = false;
   log("done.");
 }
 
@@ -476,6 +494,7 @@ renderChoices();
 void environment().then(renderEnv);
 $("run").addEventListener("click", () => void runBenchmark());
 $("clear").addEventListener("click", () => {
+  if (running) return;
   clearSession(store);
   session = loadSession(store, new Date().toISOString());
   $("log").textContent = "Saved results cleared.\n";
