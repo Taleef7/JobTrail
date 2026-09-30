@@ -97,8 +97,8 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
    - **MiniCPM5-1B:** Q4_K_M 688 MB. Apache-2.0, can think or not.
    - **Qwen3.5-0.8B:** Q4_0 507 MB. Multimodal, thinking off by default, and its card warns of thinking loops at this size.
 
-   Both exceed the ~400 MB iPhone budget below and add nothing over Qwen3-0.6B, which stays the Android-only upper rung. Reasoning modes are a cost here: a phone that writes 5–20 tok/s pays for every thinking token, so fine-tuning targets direct JSON output.
-   **Measured budget (#110):** on iPhone 16 Pro web, LFM2-350M-Extract Q8_0 (380 MB) runs from cache, and one model fits per page load.
+   Both are larger than anything that has run on the iPhone web (LFM2-350M-Extract Q8_0, 380 MB). Runtime memory, not file size, is the real limit, and Gemma 270M's smaller file still fails. Neither adds anything over Qwen3-0.6B, which stays the Android-only upper rung. Reasoning modes are a cost here: a phone that writes 5–20 tok/s pays for every thinking token, so fine-tuning targets direct JSON output.
+   **Measured (#110):** on iPhone 16 Pro web, LFM2-350M-Extract Q8_0 (380 MB) runs from cache, and one model fits per page load. Each new candidate is validated by its own iPhone run.
 4. **Ceiling:** cloud model with structured output (quality, $/note, latency).
 
 ### Quantization study

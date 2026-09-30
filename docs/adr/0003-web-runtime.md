@@ -75,7 +75,7 @@ Single-thread WASM (the fallback when a page isn't cross-origin isolated), Gemma
 - Pages running the model must be served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` (currently scoped to `/spike/*` in `apps/web/vercel.json`; #89 extends it).
 - Model files stay under wllama's 2 GB per-file limit (all candidates are ≤ 640 MB).
 - **iOS web: one small model, run from cache.** On iPhone the web demo (#89) must:
-  - offer a model with a ≤ ~400 MB GGUF (LFM2-350M-Extract Q8_0 and SmolLM2-135M fit; Gemma 270M does not);
+  - offer only a model **validated on the iPhone**: it completes the spike's runs there from cache. File size isn't the test. Runtime memory is, and it depends on the architecture: Gemma 270M Q8 (292 MB, about 0.9–1.0 GB in WebKit) is killed, while LFM2-350M-Extract Q8_0 (380 MB, about 0.5–0.8 GB) and SmolLM2-135M run. Validated so far: LFM2-350M-Extract Q8_0 and SmolLM2-135M Q8_0. Every new candidate, including LFM2.5, needs its own iPhone run;
   - separate _download_ from _first run_ (download, reload, run);
   - load one model per page load.
 

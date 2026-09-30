@@ -66,7 +66,7 @@ File: `phone-iphone-16-pro-chrome-smollm2.json` (owner, 2026-09-30).
 
 File: `phone-iphone-16-pro-chrome-lfm2-download-only.json` (owner, 2026-09-30, page `7d9824e`). Steps: tick LFM2-350M-Extract Q8_0 and SmolLM2-135M Q8_0 with WASM single-thread, press **Download models only**, reload, then press **Run**.
 
-- **LFM2-350M-Extract Q8_0 (380 MB), loaded from cache in 1.5 s, ran all 8 cells:**
+- **LFM2-350M-Extract Q8_0 (380 MB), loaded from cache in 1.5 s, completed all 8 runs of its one cell (WASM single-thread):**
   - prefill 25–30 tok/s and decode 17–22 tok/s, on one thread;
   - a long note took 29–33 s end to end, a short one 6–15 s.
   - This is the largest model to run on the iPhone so far, about 2.6× SmolLM2.
@@ -80,4 +80,4 @@ File: `phone-iphone-16-pro-chrome-lfm2-download-only.json` (owner, 2026-09-30, p
   - 1/8 outputs was schema-valid;
   - failures included repetition loops ("painting", "painting", …) and made-up keys.
   - Fine-tuning (M2) is required.
-- **Conclusion:** the iPhone web limit sits between LFM2-350M (0.5–0.8 GB in desktop WebKit, runs) and Gemma 270M (0.9–1.0 GB, killed). A ≤ ~400 MB GGUF, downloaded first and then run from cache, is the iOS web budget.
+- **Conclusion:** the iPhone web limit sits between LFM2-350M (0.5–0.8 GB in desktop WebKit, runs) and Gemma 270M (0.9–1.0 GB, killed). That limit is on **runtime memory, not file size**: Gemma's Q8 file is smaller (292 MB) than LFM2's (380 MB). A model qualifies for iOS web only by running here from cache, downloaded first.
