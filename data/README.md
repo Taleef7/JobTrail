@@ -4,14 +4,42 @@ Evaluation data for JobTrail v2. Training data (3–5k synthetic examples) is pu
 
 ## Files (arrive in M1)
 
-| File                       | What                                                                   | Created in |
-| -------------------------- | ---------------------------------------------------------------------- | ---------- |
-| `scenarios.yaml`           | Scenario matrix: trades × note styles × hard-case tags                 | #70        |
-| `drafts/*.jsonl`           | Teacher-drafted notes + labels, **not yet human-verified**             | #70        |
-| `test.jsonl`               | Frozen test set (~200), human-verified — never trained or tuned on     | #71        |
-| `dev.jsonl`                | Dev set (~100) for iteration and error analysis                        | #71        |
-| `matcher-validation.jsonl` | Human pass/fail judgments used to validate the scorer's fuzzy matchers | #68        |
-| `FROZEN.md`                | SHA-256 of every frozen file; CI fails if a frozen file changes        | #71        |
+| File                     | What                                                                            | Created in |
+| ------------------------ | ------------------------------------------------------------------------------- | ---------- |
+| `LABELING.md`            | Labeling rules: what the right label is (supply trips, negations, approval, …)  | #70        |
+| `scenarios.yaml`         | Scenario matrix: trades × note styles × hard-case tags, with job templates      | #70        |
+| `drafts/`                | Teacher-drafted notes + planned labels, **not yet human-verified** (see below)  | #70        |
+| `test.jsonl`             | Frozen test set (~200), human-verified — never trained or tuned on              | #71        |
+| `dev.jsonl`              | Dev set (~100) for iteration and error analysis                                 | #71        |
+| `matcher-validation.csv` | 50 predicted/gold pairs for human same/different labels (validates the matcher) | #68        |
+| `FROZEN.md`              | SHA-256 of every frozen file; CI fails if a frozen file changes                 | #71        |
+
+## How the drafts are made (#70)
+
+> **Status:** the generator, plan and manifest are committed. `drafts/test.jsonl` and `drafts/dev.jsonl` arrive in a follow-up once the full run completes; the free tier allows 20 requests per model per day.
+
+**Record first, then prose.** `ml/jobtrail_ml/sampler.py` draws each gold record from a job template in `scenarios.yaml` (seeded), along with the note's style and hard-case tags. A teacher model then writes a note that must say exactly that record. The label is therefore the plan, not the teacher's reading of its own note. Each draft carries **fidelity flags** for the reviewer in #71:
+
+- rule checks: every material, quantity and time is actually in the note; hours-phrased notes don't leak the minutes;
+- a blind cross-check: a _different_ model extracts the note with schema-constrained output, and disagreements with the plan are flagged.
+
+```bash
+cd ml
+uv run python scripts/gen_eval_notes.py plan     # deterministic: same seed → same plan.jsonl
+uv run python scripts/gen_eval_notes.py run      # resumable; stops cleanly on the daily quota
+uv run python scripts/gen_eval_notes.py report   # drafts/coverage.md
+```
+
+| File in `drafts/`           | What                                                                   |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `plan.jsonl`                | Every planned record, tag, style and hard-case detail (deterministic)  |
+| `manifest.json`             | Seed, counts, models, batch size, and SHA-256 of every input           |
+| `test.jsonl`, `dev.jsonl`   | Drafts: note + planned gold + `meta` (flags, cross-check, models)      |
+| `usage.jsonl`, `runs.jsonl` | Tokens per API call; one summary per run                               |
+| `coverage.md`               | Tag × split counts, clean drafts, flag counts, usage                   |
+| `pilot-1/` … `pilot-5/`     | Earlier runs kept as evidence for prompt changes; **not** part of eval |
+
+**Free-tier limits shape the run:** the Gemini API free tier allows 20 requests per model per day (`GenerateRequestsPerDayPerProjectPerModel-FreeTier`). One writer call therefore drafts 20 notes, and one checker call extracts 20 (15 calls per model for all 275). A run that hits the quota stops cleanly and resumes the next day. The writer (`gemini-3.6-flash`) and checker (`gemini-3.1-flash-lite`) are different models. `gemini-3.8-flash` is kept out of generation so it can be the cloud ceiling in #73 without grading its own prose.
 
 ## JSONL record format
 

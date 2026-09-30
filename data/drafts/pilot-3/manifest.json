@@ -1,0 +1,28 @@
+{
+  "issue": 70,
+  "seed": 70,
+  "counts": {
+    "test": 165,
+    "dev": 110
+  },
+  "batchSize": 15,
+  "writer": {
+    "model": "gemini-3.6-flash",
+    "temperature": 1.0,
+    "thinkingLevel": "low"
+  },
+  "checker": {
+    "model": "gemini-3.5-flash-lite",
+    "temperature": 0.0,
+    "thinkingLevel": "low",
+    "responseJsonSchema": "schema.v2.json"
+  },
+  "sha256": {
+    "data/scenarios.yaml": "6b7c630c0edcf4155e564080972e84ceef8ba03c7a644aef178f362748cf69f0",
+    "packages/core/schema/schema.v2.json": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c",
+    "ml/jobtrail_ml/sampler.py": "581cca36cccd6eef99a32c3f93078bb720532afc5d9685559b93874097e35d32",
+    "ml/jobtrail_ml/prompts.py": "bdbfdcb6926e8d4a711ca5cf93ea9e41e8f7e2c69f9315d51d76776185463fc7",
+    "ml/jobtrail_ml/generate.py": "c288bd3c9fe220236d9b1da9e182904261cfc734aa7fadc52e4fad848ba0ed1d",
+    "data/drafts/plan.jsonl": "b624abb0355cf2db1aed277166065e5bd3b3ac3b248a6046cf68019e45a70627"
+  }
+}
