@@ -20,7 +20,10 @@
       "properties": {
         "method": {
           "type": "string",
-          "const": "token-dice"
+          "enum": [
+            "token-dice",
+            "token-dice-v2"
+          ]
         },
         "threshold": {
           "type": "number",

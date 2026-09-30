@@ -37,7 +37,7 @@ export interface ScoreOptions {
   run: string;
   model?: string | null;
   threshold?: number;
-  /** True until the matcher threshold is validated against human labels. */
+  /** Mark the matcher as not validated (e.g. an experimental threshold). Default false since #114. */
   provisionalMatcher?: boolean;
 }
 
@@ -163,6 +163,7 @@ export function scoreRecord(
     p.materials.map((m) => m.name),
     g.materials.map((m) => m.name),
     threshold,
+    "material",
   );
   let quantityCorrect = 0;
   let unitCorrect = 0;
@@ -316,7 +317,12 @@ export function scoreRun(
     schemaVersion: 1,
     run: options.run,
     model: options.model ?? preds.find((p) => p.model)?.model ?? null,
-    matcher: { method: "token-dice", threshold, provisional: options.provisionalMatcher ?? true },
+    matcher: {
+      method: "token-dice-v2",
+      threshold,
+      // Only the default threshold is validated (#114); an override is experimental.
+      provisional: options.provisionalMatcher ?? threshold !== MATCH_THRESHOLD,
+    },
     overall: aggregate(records),
     bySource: groupBy(records, (s) => [s.source]),
     byTag: groupBy(records, (s) => s.tags),

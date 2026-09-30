@@ -153,6 +153,23 @@ describe("scoreRun", () => {
     expect(report.overall.issuesFound).toEqual({ precision: 1, recall: 1, f1: 1 });
   });
 
+  it("marks the matcher validated only at the default threshold (#114)", () => {
+    const run = (threshold?: number) =>
+      scoreRun([gold()], [pred(goldRecord)], {
+        run: "unit",
+        ...(threshold === undefined ? {} : { threshold }),
+      }).matcher;
+    expect(run()).toEqual({ method: "token-dice-v2", threshold: 0.5, provisional: false });
+    expect(run(0.6)).toMatchObject({ threshold: 0.6, provisional: true });
+    expect(
+      scoreRun([gold()], [pred(goldRecord)], {
+        run: "u",
+        threshold: 0.6,
+        provisionalMatcher: false,
+      }).matcher.provisional,
+    ).toBe(false);
+  });
+
   it("reports nearest-rank latency percentiles when timings exist", () => {
     const ids = ["a", "b", "c", "d"];
     const report = scoreRun(

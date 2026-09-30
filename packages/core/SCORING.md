@@ -55,11 +55,27 @@ Measured on the #70 drafts (`data/drafts/pilot-4`, rules baseline and gold-as-pr
 
 ## The fuzzy matcher
 
-Text is lowercased, split on non-alphanumerics, stripped of a few stopwords (a, an, and, at, for, in, of, on, some, the, to, with) and naively singularized. Two strings match when the **Dice coefficient** of their token sets, 2|A∩B| / (|A|+|B|), is ≥ **0.5**. Matching is one-to-one and greedy by score.
+Text is lowercased, split on non-alphanumerics, stripped of a few stopwords (a, an, and, at, for, in, of, on, some, the, to, with) and naively singularized. Two strings match when the **Dice coefficient** of their token sets, 2|A∩B| / (|A|+|B|), is ≥ **0.5**. Matching is one-to-one and greedy by score. Reports record this as `matcher.method: "token-dice-v2"` (#114); plain `"token-dice"` marks reports made before it.
 
-The threshold is **provisional** until it's validated against human judgments: the owner labels the 50 pairs in `data/matcher-validation.csv` as same/different, and `src/matcher-validation.test.ts` requires ≥ 90 % agreement. Every report records the threshold and whether it was provisional (`matcher.provisional`).
+Three additions (#114), each in `src/match.ts` and small enough to read in one sitting:
 
-**Known weakness, measured:** on short phrases a single shared word reaches 0.5, so at this threshold "copper pipe" matches "PVC pipe" (0.50), "Replaced breaker" matches "Reset breaker" (0.50) and "Painted bedroom walls" matches "Painted bedroom ceiling" (0.67) — all false matches — while "teflon tape" matches "plumber's tape" (0.50) correctly by luck. The matcher has no synonyms, word order or negation. The owner's labels decide whether the threshold moves, or whether the matcher needs more than token overlap.
+- **Synonyms.** A short table of wordings tradespeople use for the same thing: plumber's / teflon / thread seal tape; receptacle → outlet; replaced / swapped out / installed new; patched / repaired / fixed; sealed / caulked; recharged / topped off. Matching only: grounding still uses the words as said.
+- **Conflict rule.** If both sides name a room (kitchen, bathroom, …), a surface (wall, ceiling, door, …) or a pipe material (copper, PVC, PEX, …) and the names don't overlap, it's not a match: "outlet in bathroom" ≠ "outlet in kitchen", "copper pipe" ≠ "PVC pipe". Naming a room on one side only doesn't count against a match.
+- **Head nouns (materials only).** A material name ends in the item, so the last word must agree ("roofing cement" ≠ "roofing nail", "furnace filter" = "air filter"), unless one name is contained in the other ("breaker" = "20 amp breaker"). Statements often end on a place, not the item, so they don't get this rule.
+
+**Validation.** `src/matcher-validation.test.ts` requires ≥ 90 % agreement on each of three labeled sets, so the default threshold is no longer provisional (`matcher.provisional: false`). A report made with any other `--threshold` is marked provisional:
+
+| Set                                   | Pairs | Source                                       | Before #114 |        Now |
+| ------------------------------------- | ----: | -------------------------------------------- | ----------: | ---------: |
+| `data/matcher-validation.csv`         |    50 | hand-written (#68)                           |      80.0 % |      100 % |
+| `data/matcher-validation-heldout.csv` |    57 | dev drafts: blind checker extraction vs gold |      89.5 % |      100 % |
+| `data/matcher-validation-blind.csv`   |    54 | test drafts, same way                        |      90.7 % | **94.4 %** |
+
+The first two sets were used to design the additions, so their 100 % is expected. The third was labeled and frozen before the matcher was run on it. Note that the old matcher also clears 90 % there, narrowly; its clear failure is the hand-written set (80 %). Labels come from a model panel (Sonnet 5.5, Opus 5.5, Fable 5.1, each labeling blind; plus the #68 reference labels on the first two sets), which agreed on every pair of all three sets. It's one model family standing in for a trade expert, and the data README says so.
+
+A pair and its reverse count once: the validation test fails if any pair repeats, in either direction, within or across sets. The sampled sets were drawn by `pnpm matcher-pairs` when it still keyed pairs by direction; 7 reversed repeats were then dropped (the first occurrence kept, in set order), which is how the blind set's first reported run of 93.1 % on 58 pairs became 94.4 % on 54. The script now keys pairs symmetrically, so re-running it draws a different sample.
+
+**Known weakness, measured:** the same item with a different action still matches, since the item words dominate. The 3 misses on the blind set are two of this kind and a synonym the table lacks: "Replaced dryer heating element" vs "Picked up dryer heating element at the supply house", "Secured gutters" vs "Cleaned gutters", and "Installed single pole switch" vs "Added a new wall switch" (a real match that's missed). The matcher still has no word order or negation. On the 110 dev drafts, the rules baseline and the checker's extractions score identically under the old and new matcher; the difference shows up on messier model output.
 
 ## Report contract
 

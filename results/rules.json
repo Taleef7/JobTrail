@@ -3,9 +3,9 @@
   "run": "rules-demo",
   "model": "rules-legacy-v0",
   "matcher": {
-    "method": "token-dice",
+    "method": "token-dice-v2",
     "threshold": 0.5,
-    "provisional": true
+    "provisional": false
   },
   "overall": {
     "n": 3,
