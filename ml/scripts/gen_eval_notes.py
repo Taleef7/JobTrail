@@ -82,7 +82,8 @@ def cmd_plan(_: argparse.Namespace) -> int:
             "data/drafts/plan.jsonl": sha256(OUT / "plan.jsonl"),
         },
     }  # fmt: skip
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_text = json.dumps(manifest, indent=2) + "\n"
+    (OUT / "manifest.json").write_text(manifest_text, encoding="utf-8", newline="\n")
     print(f"planned {len(plans)} drafts -> {OUT / 'plan.jsonl'}")
     return 0
 

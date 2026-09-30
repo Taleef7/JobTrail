@@ -51,7 +51,8 @@ def read_done_ids(path: Path) -> set[str]:
         except (json.JSONDecodeError, KeyError) as e:
             if i != len(lines) - 1:
                 raise ValueError(f"{path}:{i + 1}: corrupt line in the middle of the file") from e
-            path.write_text("".join(f"{x}\n" for x in lines[:-1]), encoding="utf-8")
+            text = "".join(f"{x}\n" for x in lines[:-1])
+            path.write_text(text, encoding="utf-8", newline="\n")
     return ids
 
 

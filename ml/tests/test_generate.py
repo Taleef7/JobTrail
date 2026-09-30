@@ -206,7 +206,7 @@ def test_truncated_last_line_is_dropped_and_redone(tmp_path):
     good = json.dumps({"id": "t-0001", "note": "x"})
     (tmp_path / "test.jsonl").write_text(good + '\n{"id": "t-0002", "no', encoding="utf-8")
     assert read_done_ids(tmp_path / "test.jsonl") == {"t-0001"}
-    assert (tmp_path / "test.jsonl").read_text(encoding="utf-8") == good + "\n"
+    assert (tmp_path / "test.jsonl").read_bytes() == (good + "\n").encode()  # LF on Windows too
 
 
 def test_unparseable_or_invalid_crosscheck_is_flagged_not_fatal(tmp_path):
