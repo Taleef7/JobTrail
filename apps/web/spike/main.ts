@@ -1,6 +1,6 @@
 // Spike #66: measure wllama (llama.cpp → WASM/WebGPU) on real browsers.
 // Vanilla DOM on purpose: this page is disposable and must not grow the main app.
-import { Wllama } from "@wllama/wllama/esm/index.js";
+import { ModelManager, Wllama } from "@wllama/wllama/esm/index.js";
 import type { ResultTimings } from "@wllama/wllama/esm/types/oai-compat.js";
 import wasmUrl from "@wllama/wllama/esm/wasm/wllama.wasm?url";
 import "../src/styles.css";
@@ -27,7 +27,7 @@ import {
   type Session,
   type Store,
 } from "../src/spike/session";
-import { MODELS } from "../src/spike/models";
+import { MODELS, hfUrl } from "../src/spike/models";
 import { parseOptions, wasmCaps } from "../src/spike/options";
 
 // Read before ?compat=1 hides JSPI, so the result records what the browser really has.
@@ -244,6 +244,40 @@ function setRunning(on: boolean) {
   running = on;
   $<HTMLButtonElement>("run").disabled = on;
   $<HTMLButtonElement>("clear").disabled = on;
+  $<HTMLButtonElement>("prefetch").disabled = on;
+}
+
+// iPhone workaround (#110): download without loading, then reload and Run from cache.
+// On iOS the first inference right after a download was killed, while the same model
+// loaded from cache ran all 8 runs.
+async function prefetchModels() {
+  if (running) return;
+  const chosen = MODELS.filter((m) => checked("model").includes(m.id));
+  if (chosen.length === 0) {
+    log("Select at least one model.");
+    return;
+  }
+  setRunning(true);
+  $("log").textContent = "";
+  try {
+    const manager = new ModelManager();
+    for (const m of chosen) {
+      log(`download ${m.id}…`);
+      await manager.downloadModel(hfUrl(m), {
+        progressCallback: ({ loaded, total }: { loaded: number; total: number }) => {
+          if (total)
+            $("prefetch").textContent = `Downloading ${Math.round((loaded / total) * 100)}%`;
+        },
+      });
+      log(`  cached ${m.id}`);
+    }
+    log("Done. Reload this page, then tap Run: the models will load from cache.");
+  } catch (e) {
+    log(`  download error: ${String(e)}`);
+  } finally {
+    $("prefetch").textContent = "Download models only";
+    setRunning(false);
+  }
 }
 
 async function runBenchmark() {
@@ -264,7 +298,9 @@ async function runCells() {
     return;
   }
   const env = await environment();
-  session.env ??= env;
+  // The environment of the latest run: a session can outlive a page deploy (#110 found
+  // an iPhone JSON still describing the previous page and missing the wasm fields).
+  session.env = env;
   const cells = MODELS.filter((m) => checked("model").includes(m.id)).flatMap((model) =>
     BACKENDS.filter((b) => checked("backend").includes(b.id)).map((b) => ({
       model: model.id,
@@ -518,6 +554,7 @@ function startup() {
 renderChoices();
 void environment().then(renderEnv);
 $("run").addEventListener("click", () => void runBenchmark());
+$("prefetch").addEventListener("click", () => void prefetchModels());
 $("clear").addEventListener("click", () => {
   if (running) return;
   clearSession(store, SESSION_KEY_FOR_OPTIONS);

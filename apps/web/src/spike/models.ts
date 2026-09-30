@@ -55,3 +55,12 @@ export const MODELS: ModelSpec[] = [
     defaultOn: false,
   },
 ];
+
+/**
+ * The URL wllama's loadModelFromHF() resolves to and caches under. Downloading this
+ * exact URL with wllama's ModelManager pre-fills the same cache, so a later Run is a
+ * cache hit (#110: on iPhone, running right after a download can exceed the tab's
+ * memory, while the same model run from cache succeeds).
+ */
+export const hfUrl = (m: Pick<ModelSpec, "repo" | "file">) =>
+  `https://huggingface.co/${m.repo}/resolve/main/${m.file}`;

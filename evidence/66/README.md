@@ -51,11 +51,13 @@ The constrained rows are shown here; the JSON has all 48 runs. Unconstrained Gem
 
 **One outlier:** Gemma Q4_0 / WASM / note 1 / short / unconstrained took 601 s at 0.43 tok/s. The screen probably locked or the tab went to the background during the run, so it is excluded from any conclusion.
 
-## Phone: iPhone 16 Pro, iOS 26.7 (Safari and Chrome, both WebKit): crashes
+## Phone: iPhone 16 Pro, iOS 26.7 (Chrome on iOS, i.e. WebKit): runs SmolLM2-135M from cache (#110)
 
-Every cell loaded (about 2 s from cache) and then the tab was killed at the first inference:
+File: `phone-iphone-16-pro-chrome-smollm2.json` (owner, 2026-09-30).
 
-- Gemma Q8 and Q4;
-- WebGPU, WASM multi-thread and single-thread.
-
-The #108 recovery recorded each crash, but there is no JSON worth committing yet. No Jetsam event was logged. Investigation and hypotheses are in #110 and ADR 0003; that issue adds `?compat=1`, `?threads=`, `?ctx=`, finer crash stages and smaller models to diagnose it on the device.
+- **SmolLM2-135M Q8_0, WASM single-thread, loaded from cache (1.2 s): all 8 runs completed.** Prefill ran at 36–60 tok/s and decode at 19–42 tok/s, 5–10× the Redmi's Gemma numbers. Zero-shot quality was poor: numbers repeated in lists and runaway units, and 1/8 runs was schema-valid.
+- **The same model right after a fresh download, on `?compat=1`, was killed at `run:0`.** The recovery screenshot is on #110.
+- **Earlier runs:** Gemma Q8 and Q4 were killed at the first inference on every backend, whether loaded from cache or a fresh download.
+- **The browser reports no JSPI and no Memory64,** so wllama **always** runs its 32-bit compat build on iOS; its constructor enables compat by default. `?compat=1` therefore changes nothing on iOS, and the "64-bit build" hypothesis is ruled out.
+- **Conclusion:** it's the tab's memory limit. In desktop WebKit, SmolLM2 needs about 0.5–0.6 GB and Gemma 270M about 0.9–1.0 GB, so the iOS limit for this page sits somewhere between those. Download buffers push SmolLM2 over it on the first run.
+- **Known gap in this file:** `env` describes the page that _started_ the session (`1f328e9`, with no `wasm` fields). The page kept the first environment it saw; the fix records the latest one.
