@@ -17,6 +17,7 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
+- iPhone web diagnosis resolved (#110). It's the tab's memory limit, not the 64-bit build: iOS always runs wllama's 32-bit compat build. SmolLM2-135M runs on the iPhone from cache (decode 19–42 tok/s), while Gemma 270M doesn't fit. `/spike/` gains **Download models only** (pre-fill the cache, reload, run), and results record the latest page environment. iPhone evidence is in `evidence/66/`.
 - `/spike/` diagnoses the iPhone crash and measures small models (#110):
   - URL overrides: `?compat=1` forces wllama's 32-bit build, plus `?threads=` and `?ctx=`;
   - the results record JSPI and Memory64 support, which wllama build ran, and the exact crash stage (`load`, `warmup` or `run:<n>`);

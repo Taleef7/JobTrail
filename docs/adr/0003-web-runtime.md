@@ -53,7 +53,12 @@ Single-thread WASM (the fallback when a page isn't cross-origin isolated), Gemma
     - physical memory scales with the model: SmolLM2-135M about 0.47–0.64 GB, LFM2-350M about 0.5–0.8 GB;
     - threads, the 32-bit compat build and context size barely matter.
 
-    The two hypotheses: (a) WebKit's own per-tab memory limit; (b) a crash in WebKit's ARM64 compiler on the Memory64 build wllama picks when JSPI and Memory64 are present. The spike now takes `?compat=1` (the 32-bit build), `?threads=` and `?ctx=`, and records the exact crash stage (`load` / `warmup` / `run:<n>`), so the iPhone can tell the two apart.
+    **Resolved on the device (#110):** it's the tab's memory limit. iOS 26.7 has no JSPI and no Memory64, so wllama _always_ runs its 32-bit compat build there; the constructor enables compat by default, which rules out the 64-bit-build hypothesis.
+    - SmolLM2-135M loaded **from cache** completed all 8 runs (prefill 36–60 tok/s, decode 19–42 tok/s, single thread).
+    - The same model straight after a fresh download was killed at `run:0`.
+    - Gemma 270M (about 1 GB in WebKit) was killed either way.
+
+    The spike therefore gains **Download models only**: pre-fill the cache, reload, then Run. Its session `env` now records the latest run's page and capabilities.
 
 ## Decision
 
@@ -67,5 +72,5 @@ Single-thread WASM (the fallback when a page isn't cross-origin isolated), Gemma
 
 - Pages running the model must be served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` (currently scoped to `/spike/*` in `apps/web/vercel.json`; #89 extends it).
 - Model files stay under wllama's 2 GB per-file limit (all candidates are ≤ 640 MB).
-- **iOS web is unsupported until #110 finds a configuration that survives.** The native app (llama.rn, #64) is the iPhone path either way; the web demo must detect WebKit on iOS and offer the smallest model, or a "run on your phone's app" message.
+- **iOS web: small models only, run from cache.** On iPhone the web demo (#89) must offer a ≤ ~150 MB model (SmolLM2-135M class; Gemma 270M does not fit) and separate _download_ from _first run_ (download, reload, run). The native app (llama.rn, #64) remains the main iPhone path.
 - The same spike page is the measurement tool for phone browsers (Note 9S Chrome, iPhone 16 Pro Safari): run it, press **Download results JSON**, commit to `evidence/66/`. The Redmi is measured; the iPhone is being diagnosed (#110).
