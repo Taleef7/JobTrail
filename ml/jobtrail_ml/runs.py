@@ -169,6 +169,8 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
             raise ConfigError(f"cloud.batch_size must be a positive integer, got {n!r}")
         if n > 1 and not cfg["grammar"]:
             raise ConfigError("batched cloud runs need grammar: true to split the answer")
+        if n > 1 and cfg["prompt"] not in ("zero-shot", "zero-shot-v2"):
+            raise ConfigError("batched cloud runs send the zero-shot rules; use batch_size: 1")
     return {k: cfg[k] for k in KEYS if k in cfg}
 
 
@@ -212,7 +214,11 @@ def identity(cfg: dict[str, Any]) -> dict[str, Any]:
     batch = (cfg.get("cloud") or {}).get("batch_size", 1)
     if batch > 1:
         note = hashlib.sha256(extract.BATCH_NOTE.encode()).hexdigest()
-        ident["batch"] = {"size": batch, "note_sha256": note}
+        ident["batch"] = {"size": batch, "note_sha256": note,
+                          "shape_sha256": extract.batch_shape_sha()}  # fmt: skip
+    if cfg["provider"] == "agy":
+        version = extract.prompt_version(cfg["prompt"])
+        ident["agy_prompt_sha256"] = extract.agy_prompt_sha(cfg["format"], version)
     return ident
 
 
@@ -278,6 +284,29 @@ class Run:
 
     def todo(self) -> list[dict]:
         return [g for g in self.gold if g["id"] not in self.done]
+
+    def pending_batches(self, n: int) -> list[list[dict]]:
+        """Batches cut from the whole gold file, so a resumed run sends exactly the requests
+        the first try did (neighbouring notes are model input); those with a note to do."""
+        batches = [self.gold[k : k + n] for k in range(0, len(self.gold), n)]
+        return [b for b in batches if any(g["id"] not in self.done for g in b)]
+
+    def append_many(self, lines: list[dict[str, Any]]) -> None:
+        """A batch's predictions in one write, skipping notes an earlier try already saved.
+        A skipped line's usage moves to the first line kept, so every request is counted."""
+        kept = [dict(x) for x in lines if x["id"] not in self.done]
+        if not kept:
+            return
+        usage = dict(kept[0].get("usage") or {})
+        for x in lines:
+            if x["id"] in self.done:
+                for k, v in (x.get("usage") or {}).items():
+                    usage[k] = usage.get(k, 0) + v
+        if usage:
+            kept[0]["usage"] = usage
+        with self.pred_path.open("a", encoding="utf-8", newline="\n") as f:
+            f.write("".join(json.dumps(x) + "\n" for x in kept))
+        self.done.update(x["id"] for x in kept)
 
     def append(self, line: dict[str, Any]) -> None:
         with self.pred_path.open("a", encoding="utf-8", newline="\n") as f:

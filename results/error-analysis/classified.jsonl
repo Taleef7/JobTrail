@@ -1,16 +1,16 @@
-{"id": "d-0011", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
-{"id": "d-0022", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
-{"id": "d-0027", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
-{"id": "d-0037", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
-{"id": "d-0059", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
-{"id": "d-0061", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
-{"id": "d-0063", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
-{"id": "d-0066", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
-{"id": "d-0072", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
-{"id": "d-0077", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
-{"id": "d-0094", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
-{"id": "d-0097", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
-{"id": "d-0100", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0011", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0022", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0027", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0037", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0059", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0061", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0063", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0066", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0072", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0077", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0094", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0097", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0100", "run": "gemini-3.8-flash-high-agy-b15-dev-770ca07c", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
 {"id": "d-0010", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "trade-run-default", "spoken-modifier-misresolved", "field-slot-routing"]}
 {"id": "d-0016", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "field-slot-routing", "trade-run-default"]}
 {"id": "d-0024", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "field-slot-routing", "ungrounded-fill", "spoken-modifier-misresolved", "trade-run-default"]}

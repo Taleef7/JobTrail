@@ -8,6 +8,7 @@ escaped, so callers keep prompts under about 28K (adjudicate.MAX_CMDLINE).
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -17,6 +18,23 @@ from typing import Any
 
 class AgyError(RuntimeError):
     pass
+
+
+def version() -> str:
+    """The `agy --version` number. agy updates itself, so runs check it before each batch."""
+    exe = shutil.which("agy")
+    if not exe:
+        raise AgyError("agy not found on PATH (install the Antigravity CLI)")
+    try:
+        out = subprocess.run([exe, "--version"], capture_output=True, text=True,
+                             encoding="utf-8", errors="replace", timeout=60)  # fmt: skip
+    except subprocess.TimeoutExpired as e:
+        raise AgyError("agy --version timed out") from e
+    found = re.search(r"\b\d+\.\d+(?:\.\d+)*\b", f"{out.stdout}\n{out.stderr}")
+    if out.returncode != 0 or not found:
+        raise AgyError(f"agy --version gave no version (exit {out.returncode}): "
+                       f"{(out.stdout + out.stderr).strip()[:200]!r}")  # fmt: skip
+    return found.group()
 
 
 def run(

@@ -153,6 +153,28 @@ def batch_schema(record: dict[str, Any]) -> dict[str, Any]:
             "required": ["records"]}  # fmt: skip
 
 
+AGY_TOOLS = "\n\nDo not use any tools. Answer with JSON only, matching the response schema."
+_PLACEHOLDER = [{"id": "{id}", "note": "{note}"}]
+
+
+def agy_batch_prompt(fmt: str, version: int, items: list[dict[str, str]]) -> str:
+    """The whole prompt run_agy sends: the rules, the batch note, a no-tools line, the notes."""
+    rules = system_prompt(fmt, version) + BATCH_NOTE + AGY_TOOLS
+    return f"{rules}\n\n# Notes\n\n{batch_input(items)}\n"
+
+
+def batch_shape_sha() -> str:
+    """Fingerprint of the batched request around the rules: the notes envelope, the
+    response-schema envelope and the batch note. Part of a batched run's ID."""
+    shape = {"input": batch_input(_PLACEHOLDER), "schema": batch_schema({"$ref": "record"}),
+             "note": BATCH_NOTE}  # fmt: skip
+    return hashlib.sha256(json.dumps(shape, sort_keys=True).encode()).hexdigest()
+
+
+def agy_prompt_sha(fmt: str, version: int) -> str:
+    return hashlib.sha256(agy_batch_prompt(fmt, version, _PLACEHOLDER).encode()).hexdigest()
+
+
 def split_batch(ids: list[str], text: str, finish: str | None) -> list[tuple[str, str, str]]:
     """(id, raw record JSON, finish reason) per note of a batched answer. A note the answer
     leaves out, or an answer that isn't JSON, scores as that note's failure."""

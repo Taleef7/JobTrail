@@ -7,7 +7,8 @@ Usage (from ml/):
 No API key is used. agy runs a model inside its own agent harness, so this measures what
 the model extracts, not API latency or price: no per-note timings are recorded, and the
 token counts agy reports include its harness prompt. Notes go batch_size per call
-(structured output, one record per id). Resumable like the other runners.
+(structured output, one record per id). Resumable like the other runners: an unfinished
+batch is resent whole, with the same notes, and only its missing notes are saved.
 """
 
 import argparse
@@ -21,13 +22,9 @@ sys.path.insert(0, str(ML))
 from jobtrail_ml import agy, extract  # noqa: E402
 from jobtrail_ml.runs import RESULTS, ROOT, Run, host, load_config  # noqa: E402
 
-TOOLS = "\n\nDo not use any tools. Answer with JSON only, matching the response schema."
-
 
 def batch_prompt(cfg: dict, chunk: list[dict]) -> str:
-    version = extract.prompt_version(cfg["prompt"])
-    rules = extract.system_prompt(cfg["format"], version) + extract.BATCH_NOTE + TOOLS
-    return f"{rules}\n\n# Notes\n\n{extract.batch_input(chunk)}\n"
+    return extract.agy_batch_prompt(cfg["format"], extract.prompt_version(cfg["prompt"]), chunk)
 
 
 def agy_usage(u: dict) -> dict[str, int]:
@@ -56,7 +53,7 @@ def main() -> int:
     run = Run(cfg, args.out_dir)
     todo = run.todo()
     print(f"{run.id}: {len(run.gold) - len(todo)}/{len(run.gold)} done, {len(todo)} to go")
-    status = generate(run, cfg, todo) if todo else "incomplete"
+    status = generate(run, cfg) if todo else "incomplete"
     report = run.finish(status, score_it=not args.no_score)
     if report:
         print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
@@ -64,14 +61,19 @@ def main() -> int:
     return 0 if run.complete else 1
 
 
-def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
+def generate(run: Run, cfg: dict) -> str:
     model, n = cfg["model"]["id"], cfg["cloud"]["batch_size"]
-    run.open({"runtime": f"agy {model}", "host": host(),
+    started = agy.version()
+    run.open({"runtime": f"agy {started} {model}", "host": host(),
               "note": "agent harness, owner's plan: no API key, latency or price"})  # fmt: skip
     record = {k: v for k, v in extract.schema(cfg["format"]).items() if k != "$schema"}
     schema = extract.batch_schema(record)
-    for k in range(0, len(todo), n):
-        chunk = todo[k : k + n]
+    batches = run.pending_batches(n)
+    for k, chunk in enumerate(batches, 1):
+        if (now := agy.version()) != started:
+            print(f"agy updated itself from {started} to {now}: start a new run (delete the "
+                  "folder) rather than mix versions in one report")  # fmt: skip
+            return "version-changed"
         for attempt in (1, 2):
             try:
                 out, usage = agy.run(model, batch_prompt(cfg, chunk), schema)
@@ -82,15 +84,14 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
             return "incomplete"  # rerun to resume
         text = json.dumps(out, ensure_ascii=False)
         u = agy_usage(usage)
-        for j, (note_id, raw, finish) in enumerate(
-            extract.split_batch([g["id"] for g in chunk], text, "STOP")
-        ):
-            run.append({"id": note_id, "raw": raw, "format": cfg["format"],
-                        "model": f"{model} (agy)",
-                        "batch": {"first": chunk[0]["id"], "size": len(chunk)},
-                        "usage": u if j == 0 else {x: 0 for x in u},
-                        "finishReason": finish})  # fmt: skip
-        print(f"  {k + len(chunk)}/{len(todo)}", flush=True)
+        run.append_many([
+            {"id": note_id, "raw": raw, "format": cfg["format"], "model": f"{model} (agy)",
+             "batch": {"first": chunk[0]["id"], "size": len(chunk)},
+             "usage": u if j == 0 else {x: 0 for x in u}, "finishReason": finish}
+            for j, (note_id, raw, finish) in enumerate(
+                extract.split_batch([g["id"] for g in chunk], text, "STOP"))
+        ])  # fmt: skip
+        print(f"  batch {k}/{len(batches)}", flush=True)
     return "incomplete"
 
 

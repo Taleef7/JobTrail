@@ -31,7 +31,9 @@
     "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c",
     "batch": {
       "size": 15,
-      "note_sha256": "ae39e9f11c4a0b01f398277b9c763f157e1fa0f5680b86ea4ecdbafdcad5f784"
-    }
+      "note_sha256": "ae39e9f11c4a0b01f398277b9c763f157e1fa0f5680b86ea4ecdbafdcad5f784",
+      "shape_sha256": "06c3b72caeead7d4ac0bbfc80cefa77a704ad9d9e98c198b4691e071e110af5c"
+    },
+    "agy_prompt_sha256": "4474f57565d61404d646f36e96434ca07f0877ddca6f2716e6824fc4bf49385a"
   }
 }
