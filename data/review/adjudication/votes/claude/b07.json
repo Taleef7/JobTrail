@@ -1,0 +1,95 @@
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b07",
+ "prompt_sha256": "4cfce52eb567621c59aa219d277f286e3cb23244f595400e50e01449e9f73086",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0073",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0074",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0075",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0076",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0077",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0078",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0079",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0080",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0081",
+   "action": "accept",
+   "gold": null,
+   "comment": "Debris on the roof is context for the gutter cleaning, not a problem reported as found, so issuesFound stays empty."
+  },
+  {
+   "id": "t-0082",
+   "action": "accept",
+   "gold": null,
+   "comment": "'Because the old one was shot' is the reason for the task itself with no finding reported, so issuesFound stays empty."
+  },
+  {
+   "id": "t-0083",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0084",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker"
+    ],
+    "issuesFound": [
+     "Scorched breaker terminal"
+    ],
+    "materials": [],
+    "laborMinutes": 60,
+    "customerApproved": null,
+    "followUps": [
+     "Send quote for panel replacement"
+    ]
+   },
+   "comment": "Follow-up reworded to the note's action (send a quote), not 'recommend' a quote."
+  }
+ ]
+}

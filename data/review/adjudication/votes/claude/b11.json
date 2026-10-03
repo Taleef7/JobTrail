@@ -1,0 +1,124 @@
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b11",
+ "prompt_sha256": "4f2154551c01d59fffafa410fe90610d1f6bb29b7a064d76c98f811560e007a7",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0121",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Installed new furnace filter"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 70,
+    "customerApproved": true,
+    "followUps": [
+     "Schedule fall tune-up"
+    ]
+   },
+   "comment": "Added the furnace filter installation as its own work item; it is a distinct task from the thermostat swap."
+  },
+  {
+   "id": "t-0122",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0123",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters",
+     "Fixed pulled-out gutter hanger"
+    ],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 3,
+      "unit": null
+     },
+     {
+      "name": "gutter sealant",
+      "quantity": 1,
+      "unit": "tube"
+     }
+    ],
+    "laborMinutes": 70,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the fix of the pulled-out gutter hanger as work performed, since a found-and-fixed problem yields both an issue and a work item."
+  },
+  {
+   "id": "t-0124",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0125",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0126",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0127",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0128",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0129",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0130",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0131",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0132",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

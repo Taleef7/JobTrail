@@ -1,0 +1,127 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b01",
+ "prompt_sha256": "25e32406c0c0cbe55e8a4a1a592d1611dfb67678e7f3d26ef1a35d80f68e6e91",
+ "usage": {
+  "input_tokens": 23327,
+  "output_tokens": 30392,
+  "thinking_tokens": 29878,
+  "cache_read_tokens": 0,
+  "total_tokens": 53719
+ },
+ "decisions": [
+  {
+   "action": "edit",
+   "comment": "Added the fix for the lifted shingles to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Inspect again after the next storm"
+    ],
+    "issuesFound": [
+     "Lifted shingles on the ridge"
+    ],
+    "jobType": "roofing",
+    "laborMinutes": 90,
+    "materials": [
+     {
+      "name": "roofing cement",
+      "quantity": null,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced missing shingles",
+     "Put down roofing cement on lifted shingles"
+    ]
+   },
+   "id": "t-0001"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0002"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0003"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0004"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0005"
+  },
+  {
+   "action": "edit",
+   "comment": "Added the gutter hanger repair to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "jobType": "roofing",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 6,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Cleaned gutters",
+     "Fixed pulled-out gutter hanger"
+    ]
+   },
+   "id": "t-0006"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0007"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0008"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0009"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0010"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0011"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0012"
+  }
+ ]
+}

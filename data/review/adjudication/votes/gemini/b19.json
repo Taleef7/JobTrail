@@ -1,0 +1,130 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b19",
+ "prompt_sha256": "33a54f7e393dc4a8ad016d2857ced9779fee264fc2463516dbfd3e3264bea342",
+ "usage": {
+  "input_tokens": 22439,
+  "output_tokens": 32072,
+  "thinking_tokens": 31535,
+  "cache_read_tokens": 0,
+  "total_tokens": 54511
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0052"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0053"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0054"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0055"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0056"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0057"
+  },
+  {
+   "action": "edit",
+   "comment": "Added missing work item for repairing the pulled-out gutter hanger.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Quote gutter guards"
+    ],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "jobType": "roofing",
+    "laborMinutes": 30,
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 3,
+      "unit": null
+     },
+     {
+      "name": "gutter sealant",
+      "quantity": 1,
+      "unit": "tube"
+     }
+    ],
+    "workPerformed": [
+     "Cleaned gutters",
+     "Repaired gutter hanger"
+    ]
+   },
+   "id": "d-0058"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed the issue found because the drywall hole was the job's main task rather than a problem discovered on site.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "general",
+    "laborMinutes": 90,
+    "materials": [
+     {
+      "name": "drywall patch kit",
+      "quantity": 1,
+      "unit": "kit"
+     }
+    ],
+    "workPerformed": [
+     "Patched drywall hole",
+     "Picked up drywall patch kit at the supply house"
+    ]
+   },
+   "id": "d-0059"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0060"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0061"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0062"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0063"
+  }
+ ]
+}

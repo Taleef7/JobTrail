@@ -1,0 +1,124 @@
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b19",
+ "prompt_sha256": "33a54f7e393dc4a8ad016d2857ced9779fee264fc2463516dbfd3e3264bea342",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "d-0052",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0053",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0054",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0055",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0056",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0057",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0058",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters",
+     "Repaired pulled-out gutter hanger"
+    ],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 3,
+      "unit": null
+     },
+     {
+      "name": "gutter sealant",
+      "quantity": 1,
+      "unit": "tube"
+     }
+    ],
+    "laborMinutes": 30,
+    "customerApproved": true,
+    "followUps": [
+     "Quote gutter guards"
+    ]
+   },
+   "comment": "Added the fix of the found pulled-out gutter hanger as its own work item."
+  },
+  {
+   "id": "d-0059",
+   "action": "edit",
+   "gold": {
+    "jobType": "general",
+    "workPerformed": [
+     "Patched drywall hole",
+     "Picked up drywall patch kit at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "drywall patch kit",
+      "quantity": 1,
+      "unit": "kit"
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed issue: the doorknob hole is the job's own task, not a problem reported as found."
+  },
+  {
+   "id": "d-0060",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0061",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0062",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0063",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

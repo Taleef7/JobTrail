@@ -1,0 +1,97 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-oss-120b-medium (Antigravity CLI 1.2)",
+ "batch": "t01",
+ "prompt_sha256": "69bf9c7fe5ffca32cb2f35a5fad5babec835e8377857de36842e3b4cbab28728",
+ "usage": {
+  "input_tokens": 384229,
+  "output_tokens": 15772,
+  "thinking_tokens": 0,
+  "cache_read_tokens": 0,
+  "total_tokens": 400001
+ },
+ "decisions": [
+  {
+   "action": "edit",
+   "comment": "Added issuesFound entries for loose panel neutral connections and tripping breaker.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Recommend panel replacement quote"
+    ],
+    "issuesFound": [
+     "Loose panel neutral connections",
+     "Tripping breaker"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 60,
+    "materials": [
+     {
+      "name": "20 amp breaker",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "12 gauge wire",
+      "quantity": 7,
+      "unit": "feet"
+     }
+    ],
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Tightened panel neutral connections"
+    ]
+   },
+   "id": "t-0021"
+  },
+  {
+   "action": "edit",
+   "comment": "Added issuesFound for peeling trim and followUp to sand it.",
+   "gold": {
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ],
+    "issuesFound": [
+     "Peeling trim"
+    ],
+    "jobType": "painting",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Painted front door"
+    ]
+   },
+   "id": "t-0022"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0052"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0101"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0162"
+  }
+ ]
+}

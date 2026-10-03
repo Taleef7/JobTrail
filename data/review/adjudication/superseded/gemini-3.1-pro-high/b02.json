@@ -1,0 +1,152 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b02",
+ "usage": {
+  "input_tokens": 20306,
+  "output_tokens": 4664,
+  "thinking_tokens": 4022,
+  "cache_read_tokens": 8119,
+  "total_tokens": 24970
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0013"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0014"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0015"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0016"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0017"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0018"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0019"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0020"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Tripping breaker' and 'Loose panel neutral connections' to issuesFound as they were problems found and fixed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Recommend panel replacement quote"
+    ],
+    "issuesFound": [
+     "Tripping breaker",
+     "Loose panel neutral connections"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 60,
+    "materials": [
+     {
+      "name": "20 amp breaker",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "12 gauge wire",
+      "quantity": 7,
+      "unit": "feet"
+     }
+    ],
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Tightened panel neutral connections"
+    ]
+   },
+   "id": "t-0021"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Peeling trim' to issuesFound and 'Sand peeling trim' to followUps.",
+   "gold": {
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ],
+    "issuesFound": [
+     "Peeling trim"
+    ],
+    "jobType": "painting",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Painted front door"
+    ]
+   },
+   "id": "t-0022"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Fixed corroded thermostat wiring' to workPerformed since repairing a found issue is work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "jobType": "hvac",
+    "laborMinutes": 75,
+    "materials": [],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Fixed corroded thermostat wiring",
+     "Changed furnace filter"
+    ]
+   },
+   "id": "t-0023"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0024"
+  }
+ ]
+}

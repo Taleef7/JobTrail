@@ -1,0 +1,179 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b07",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0073",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dryer heating element",
+     "Cleaned dryer vent",
+     "Picked up foil tape at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "rigid duct",
+      "quantity": 6,
+      "unit": "feet"
+     },
+     {
+      "name": "dryer heating element",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed foil tape from materials because the note says it was picked up but does not say it was used."
+  },
+  {
+   "id": "t-0074",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0075",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0076",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0077",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0078",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0079",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0080",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Sorted bedroom clutter",
+     "Painted bedroom walls",
+     "Patched nail holes"
+    ],
+    "issuesFound": [
+     "Water stain on the ceiling corner"
+    ],
+    "materials": [
+     {
+      "name": "painter's tape",
+      "quantity": 3,
+      "unit": "roll"
+     },
+     {
+      "name": "interior eggshell paint",
+      "quantity": 2,
+      "unit": "gallon"
+     }
+    ],
+    "laborMinutes": 240,
+    "customerApproved": true,
+    "followUps": [
+     "Touch up after the furniture is back"
+    ]
+   },
+   "comment": "Added sorting the bedroom clutter as a completed task."
+  },
+  {
+   "id": "t-0081",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters"
+    ],
+    "issuesFound": [
+     "Heavy tree debris on the roof"
+    ],
+    "materials": [],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the reported tree debris on the roof as an issue found."
+  },
+  {
+   "id": "t-0082",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump"
+    ],
+    "issuesFound": [
+     "Failed dishwasher drain pump"
+    ],
+    "materials": [
+     {
+      "name": "hose clamp",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "dishwasher drain pump",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 120,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the old drain pump being shot as an issue found."
+  },
+  {
+   "id": "t-0083",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0084",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker"
+    ],
+    "issuesFound": [
+     "Scorched breaker terminal"
+    ],
+    "materials": [],
+    "laborMinutes": 60,
+    "customerApproved": null,
+    "followUps": [
+     "Send quote for panel replacement"
+    ]
+   },
+   "comment": "Changed the follow-up to sending the panel replacement quote."
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b04",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0037",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0038",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0039",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0040",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0041",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0042",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0043",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0044",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Checked unit",
+     "Replaced refrigerator defrost timer"
+    ],
+    "issuesFound": [
+     "Evaporator coil iced over"
+    ],
+    "materials": [],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the explicitly stated unit inspection to workPerformed."
+  },
+  {
+   "id": "t-0045",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0046",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0047",
+   "action": "edit",
+   "gold": {
+    "jobType": "carpentry",
+    "workPerformed": [
+     "Rehung sagging exterior door",
+     "Replaced door weatherstripping"
+    ],
+    "issuesFound": [
+     "Sticking entry door"
+    ],
+    "materials": [
+     {
+      "name": "3 inch hinge screw",
+      "quantity": 5,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the separately reported sticking entry door to issuesFound."
+  },
+  {
+   "id": "t-0048",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

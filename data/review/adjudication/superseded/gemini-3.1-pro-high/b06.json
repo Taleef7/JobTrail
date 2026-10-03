@@ -1,0 +1,127 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b06",
+ "usage": {
+  "input_tokens": 29255,
+  "output_tokens": 11721,
+  "thinking_tokens": 10256,
+  "cache_read_tokens": 30668,
+  "total_tokens": 40976
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0061"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0062"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0063"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0064"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed melamine shelf boards from materials because the note only says they were picked up at the supply house, not explicitly that they were used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "carpentry",
+    "laborMinutes": 85,
+    "materials": [],
+    "workPerformed": [
+     "Installed closet shelving",
+     "Patched old bracket holes",
+     "Picked up melamine shelf board at the supply house"
+    ]
+   },
+   "id": "t-0065"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0066"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed deck stain from materials as the note states it was picked up but never explicitly says it was used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Customer to stay off the deck for 48 hours"
+    ],
+    "issuesFound": [
+     "Mildew on the north side boards"
+    ],
+    "jobType": "painting",
+    "laborMinutes": 90,
+    "materials": [],
+    "workPerformed": [
+     "Stained deck",
+     "Picked up deck stain at the supply house"
+    ]
+   },
+   "id": "t-0067"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0068"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0069"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed programmable thermostat from materials since the note only says it was picked up, never that it was used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "jobType": "hvac",
+    "laborMinutes": 180,
+    "materials": [],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Changed furnace filter",
+     "Picked up programmable thermostat at the supply house"
+    ]
+   },
+   "id": "t-0070"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0071"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0072"
+  }
+ ]
+}

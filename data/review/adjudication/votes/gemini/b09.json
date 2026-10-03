@@ -1,0 +1,100 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b09",
+ "prompt_sha256": "060fd6791f2141ca284144121937af074ece4bf1d101477b85d81679679c3224",
+ "usage": {
+  "input_tokens": 22365,
+  "output_tokens": 50277,
+  "thinking_tokens": 49857,
+  "cache_read_tokens": 0,
+  "total_tokens": 72642
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0097"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0098"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0099"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0100"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0101"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed 12 gauge wire from materials because the note does not state it was used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Loose neutral on the bus bar"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 65,
+    "materials": [],
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Picked up 12 gauge wire at the supply house"
+    ]
+   },
+   "id": "t-0102"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0103"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0104"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0105"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0106"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0107"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0108"
+  }
+ ]
+}

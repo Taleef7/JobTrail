@@ -1,0 +1,81 @@
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b14",
+ "prompt_sha256": "d19b04d1853cdebe008f2338deba8e4e91249b665097433166e39b5ccb8e0a81",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0157",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0158",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0159",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0160",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0161",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0162",
+   "action": "accept",
+   "gold": null,
+   "comment": "Concern checked: the note names only one task (deep cleaned kitchen); degreaser use is a material, not a separate stated task."
+  },
+  {
+   "id": "t-0163",
+   "action": "accept",
+   "gold": null,
+   "comment": "Concern checked: 'kit' is the package word said with the quantity, so unit 'kit' is correct."
+  },
+  {
+   "id": "t-0164",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0165",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0001",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0002",
+   "action": "accept",
+   "gold": null,
+   "comment": "Concern checked: staining with washing prep falls under painting."
+  },
+  {
+   "id": "d-0003",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

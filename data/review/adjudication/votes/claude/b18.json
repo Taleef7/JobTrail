@@ -1,0 +1,81 @@
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b18",
+ "prompt_sha256": "e2086e4a8f511f756611e7e4d6b24089b7f2b071a0e75ad08d83f0923d12b1f4",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "d-0040",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0041",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0042",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0043",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0044",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0045",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0046",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0047",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0048",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0049",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0050",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0051",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

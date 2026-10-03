@@ -1,0 +1,110 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b23",
+ "prompt_sha256": "4072a50e9f13b2a69d2f1e97523f73f833e34a90b3c2888e578114e56d24ddc5",
+ "usage": {
+  "input_tokens": 22164,
+  "output_tokens": 29372,
+  "thinking_tokens": 28949,
+  "cache_read_tokens": 0,
+  "total_tokens": 51536
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0100"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0101"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0102"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0103"
+  },
+  {
+   "action": "edit",
+   "comment": "Added changing the furnace filter to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Filter completely clogged"
+    ],
+    "jobType": "hvac",
+    "laborMinutes": 65,
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "wire nut",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "programmable thermostat",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Changed furnace filter"
+    ]
+   },
+   "id": "d-0104"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0105"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0106"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0107"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0108"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0109"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0110"
+  }
+ ]
+}

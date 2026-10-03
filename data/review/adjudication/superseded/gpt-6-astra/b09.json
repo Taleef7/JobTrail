@@ -1,0 +1,125 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b09",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0097",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0098",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0099",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0100",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Stained deck",
+     "Pressure washed deck"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "deck cleaner",
+      "quantity": 1,
+      "unit": "gallon"
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Remind customer to stay off the deck for 48 hours"
+    ]
+   },
+   "comment": "Changed the follow-up to the reminder the tradesperson still needs to give."
+  },
+  {
+   "id": "t-0101",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced plumbing vent boot",
+     "Resealed exposed nail heads"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 50,
+    "customerApproved": null,
+    "followUps": [
+     "Check the attic for dampness next week"
+    ]
+   },
+   "comment": "Removed the vent boot issue because it describes the job's task rather than a reported on-site finding."
+  },
+  {
+   "id": "t-0102",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Picked up 12 gauge wire at the supply house"
+    ],
+    "issuesFound": [
+     "Loose neutral on the bus bar"
+    ],
+    "materials": [],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed the wire from materials because the note says it was picked up but never says it was used."
+  },
+  {
+   "id": "t-0103",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0104",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0105",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0106",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0107",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0108",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

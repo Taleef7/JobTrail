@@ -1,0 +1,87 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b20",
+ "prompt_sha256": "6b3f318a8d0609a3bbf8217e4db4974eb6cc8acdc5d4f9531f4ba0f73ce85aec",
+ "usage": {
+  "input_tokens": 22425,
+  "output_tokens": 59828,
+  "thinking_tokens": 59485,
+  "cache_read_tokens": 0,
+  "total_tokens": 82253
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0064"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0065"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0066"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0067"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0068"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0069"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0070"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0071"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0072"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0073"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0074"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0075"
+  }
+ ]
+}

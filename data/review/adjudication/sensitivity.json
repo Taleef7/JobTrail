@@ -1,0 +1,479 @@
+{
+ "reviewers": {
+  "gpt": "gpt-6-astra",
+  "gemini": "gemini-3.1-pro-high",
+  "claude": "claude-opus-5-5"
+ },
+ "drafts": 132,
+ "same": 122,
+ "different": [
+  {
+   "id": "t-0022",
+   "planned": "edit",
+   "final": "edit",
+   "fields": [
+    "issuesFound"
+   ],
+   "planned_key": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Painted front door"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 80,
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ]
+   },
+   "final_key": {
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ],
+    "issuesFound": [
+     "Peeling trim"
+    ],
+    "jobType": "painting",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Painted front door"
+    ]
+   }
+  },
+  {
+   "id": "t-0052",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump",
+     "Cleaned dishwasher filter",
+     "Picked up hose clamp at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump",
+     "Cleaned dishwasher filter",
+     "Picked up hose clamp at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "hose clamp",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0065",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "carpentry",
+    "workPerformed": [
+     "Installed closet shelving",
+     "Patched old bracket holes",
+     "Picked up melamine shelf board at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "carpentry",
+    "workPerformed": [
+     "Installed closet shelving",
+     "Patched old bracket holes",
+     "Picked up melamine shelf board at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "melamine shelf board",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0067",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Stained deck",
+     "Picked up deck stain at the supply house"
+    ],
+    "issuesFound": [
+     "Mildew on the north side boards"
+    ],
+    "materials": [],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Customer to stay off the deck for 48 hours"
+    ]
+   },
+   "final_key": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Stained deck",
+     "Picked up deck stain at the supply house"
+    ],
+    "issuesFound": [
+     "Mildew on the north side boards"
+    ],
+    "materials": [
+     {
+      "name": "deck stain",
+      "quantity": 2,
+      "unit": "gallon"
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Customer to stay off the deck for 48 hours"
+    ]
+   }
+  },
+  {
+   "id": "t-0070",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Changed furnace filter",
+     "Picked up programmable thermostat at the supply house"
+    ],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "materials": [],
+    "laborMinutes": 180,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Changed furnace filter",
+     "Picked up programmable thermostat at the supply house"
+    ],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "materials": [
+     {
+      "name": "programmable thermostat",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 180,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0082",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "issuesFound"
+   ],
+   "planned_key": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump"
+    ],
+    "issuesFound": [
+     "Failed dishwasher drain pump"
+    ],
+    "materials": [
+     {
+      "name": "hose clamp",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "dishwasher drain pump",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 120,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "hose clamp",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "dishwasher drain pump",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 120,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0101",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "issuesFound"
+   ],
+   "planned_key": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced plumbing vent boot",
+     "Resealed exposed nail heads"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 50,
+    "customerApproved": null,
+    "followUps": [
+     "Check the attic for dampness next week"
+    ]
+   },
+   "final_key": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced plumbing vent boot",
+     "Resealed exposed nail heads"
+    ],
+    "issuesFound": [
+     "Cracked rubber vent boot leaking into the attic"
+    ],
+    "materials": [],
+    "laborMinutes": 50,
+    "customerApproved": null,
+    "followUps": [
+     "Check the attic for dampness next week"
+    ]
+   }
+  },
+  {
+   "id": "t-0102",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Picked up 12 gauge wire at the supply house"
+    ],
+    "issuesFound": [
+     "Loose neutral on the bus bar"
+    ],
+    "materials": [],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Picked up 12 gauge wire at the supply house"
+    ],
+    "issuesFound": [
+     "Loose neutral on the bus bar"
+    ],
+    "materials": [
+     {
+      "name": "12 gauge wire",
+      "quantity": 5,
+      "unit": "feet"
+     }
+    ],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0110",
+   "planned": "edit",
+   "final": "accept",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced blower motor capacitor",
+     "Cleared condensate drain line",
+     "Picked up condensate pan tablets at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "run capacitor",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 100,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced blower motor capacitor",
+     "Cleared condensate drain line",
+     "Picked up condensate pan tablets at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "condensate pan tablets",
+      "quantity": 1,
+      "unit": "pack"
+     },
+     {
+      "name": "run capacitor",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 100,
+    "customerApproved": true,
+    "followUps": []
+   }
+  },
+  {
+   "id": "t-0117",
+   "planned": "edit",
+   "final": "edit",
+   "fields": [
+    "materials"
+   ],
+   "planned_key": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Installed ceiling light fixture",
+     "Added a new wall switch",
+     "Installed fan-rated ceiling box"
+    ],
+    "issuesFound": [
+     "Ceiling box not rated for the fixture"
+    ],
+    "materials": [
+     {
+      "name": "single pole switch",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "final_key": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Ceiling box not rated for the fixture"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 90,
+    "materials": [
+     {
+      "name": "fan-rated ceiling box",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "single pole switch",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Installed ceiling light fixture",
+     "Added a new wall switch",
+     "Installed fan-rated ceiling box"
+    ]
+   }
+  }
+ ]
+}

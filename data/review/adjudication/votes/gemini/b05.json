@@ -1,0 +1,106 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b05",
+ "prompt_sha256": "64275b8cd2a6bddfb4a5f8e270370658d8603ce4fb921f93b17c4d7c2f480b0f",
+ "usage": {
+  "input_tokens": 22115,
+  "output_tokens": 42772,
+  "thinking_tokens": 42347,
+  "cache_read_tokens": 0,
+  "total_tokens": 64887
+ },
+ "decisions": [
+  {
+   "action": "edit",
+   "comment": "Removed drywall damage from issues found as the job's own task is not an issue.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Return to paint the patch"
+    ],
+    "issuesFound": [],
+    "jobType": "general",
+    "laborMinutes": 50,
+    "materials": [
+     {
+      "name": "door stop",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Patched drywall hole",
+     "Installed door stop"
+    ]
+   },
+   "id": "t-0049"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0050"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0051"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0052"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0053"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0054"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0055"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0056"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0057"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0058"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0059"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0060"
+  }
+ ]
+}

@@ -1,0 +1,99 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b08",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0085",
+   "action": "edit",
+   "gold": {
+    "jobType": "general",
+    "workPerformed": [
+     "Patched drywall hole",
+     "Installed door stop"
+    ],
+    "issuesFound": [
+     "Hole in the wall"
+    ],
+    "materials": [
+     {
+      "name": "drywall patch kit",
+      "quantity": 1,
+      "unit": "kit"
+     }
+    ],
+    "laborMinutes": 95,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the wall hole explicitly shown by the homeowner before the repair."
+  },
+  {
+   "id": "t-0086",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0087",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0088",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0089",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0090",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0091",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0092",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0093",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0094",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0095",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0096",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

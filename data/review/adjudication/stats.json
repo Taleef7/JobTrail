@@ -1,0 +1,39 @@
+{
+ "reviewers": {
+  "gpt": "gpt-oss-120b-medium (Antigravity CLI 1.2)",
+  "gemini": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+  "claude": "claude-opus-5-5 (subagent)"
+ },
+ "votes": {
+  "gpt": {
+   "edit": 2,
+   "accept": 3
+  },
+  "gemini": {
+   "edit": 16,
+   "accept": 258,
+   "reject": 1
+  },
+  "claude": {
+   "edit": 17,
+   "accept": 257,
+   "reject": 1
+  }
+ },
+ "agreesWithFinalKey": {
+  "gpt": 4,
+  "gemini": 270,
+  "claude": 268
+ },
+ "finalKeySupport": {
+  "0/2": 2,
+  "2/2": 267,
+  "2/3": 4
+ },
+ "tiebreaks": 5,
+ "overrides": [
+  "t-0102",
+  "t-0110"
+ ],
+ "unresolved": 1
+}

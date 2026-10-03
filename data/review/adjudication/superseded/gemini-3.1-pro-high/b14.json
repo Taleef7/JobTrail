@@ -1,0 +1,107 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b14",
+ "usage": {
+  "input_tokens": 14395,
+  "output_tokens": 17084,
+  "thinking_tokens": 16646,
+  "cache_read_tokens": 8127,
+  "total_tokens": 31479
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0157"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0158"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0159"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0160"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0161"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0162"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed the unit word 'kit' from the material name 'PVC P-trap kit'.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "plumbing",
+    "laborMinutes": 70,
+    "materials": [
+     {
+      "name": "braided supply line",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "PVC P-trap",
+      "quantity": 1,
+      "unit": "kit"
+     }
+    ],
+    "workPerformed": [
+     "Replaced kitchen sink P-trap"
+    ]
+   },
+   "id": "t-0163"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0164"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0165"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0001"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0002"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0003"
+  }
+ ]
+}

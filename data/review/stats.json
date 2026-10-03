@@ -1,0 +1,59 @@
+{
+  "drafts": 275,
+  "accepted": 261,
+  "edited": 12,
+  "rejected": 2,
+  "by_reason": {
+    "clean": {
+      "n": 205,
+      "accept": 204,
+      "edit": 1,
+      "reject": 0
+    },
+    "fidelity": {
+      "n": 66,
+      "accept": 54,
+      "edit": 11,
+      "reject": 1
+    },
+    "panel": {
+      "n": 17,
+      "accept": 5,
+      "edit": 10,
+      "reject": 2
+    }
+  },
+  "fields_edited": {
+    "followUps": 1,
+    "issuesFound": 3,
+    "workPerformed": 9
+  },
+  "clean_changed": {
+    "k": 1,
+    "n": 205,
+    "rate": 0.004878048780487805,
+    "ci95": [
+      0.0008615928370303422,
+      0.02710984580354701
+    ]
+  },
+  "methods": {
+    "adjudicated": 275
+  },
+  "rejected_notes": [
+    {
+      "id": "t-0021",
+      "split": "test",
+      "comment": "no two reviewers agree on a key"
+    },
+    {
+      "id": "t-0136",
+      "split": "test",
+      "comment": "rejected by gemini: The note contradicts itself on whether cover plates were replaced or not needed.; claude: Note says cracked cover plates were replaced yet also that the cover plate wasn't needed, and never says the supply-house electrical tape was used, so the work and materials are not settled by the rules."
+    }
+  ],
+  "counts": {
+    "test": 163,
+    "dev": 110
+  }
+}

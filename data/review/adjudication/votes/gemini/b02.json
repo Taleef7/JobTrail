@@ -1,0 +1,152 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b02",
+ "prompt_sha256": "b8e499e29d779500753d5dd18abd3a12dd5db5104568beb54d300515f379b73d",
+ "usage": {
+  "input_tokens": 22535,
+  "output_tokens": 34692,
+  "thinking_tokens": 34085,
+  "cache_read_tokens": 0,
+  "total_tokens": 57227
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0013"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0014"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0015"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0016"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0017"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0018"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0019"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0020"
+  },
+  {
+   "action": "edit",
+   "comment": "Added loose panel neutral connections to issues found.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Recommend panel replacement quote"
+    ],
+    "issuesFound": [
+     "Loose panel neutral connections"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 60,
+    "materials": [
+     {
+      "name": "20 amp breaker",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "12 gauge wire",
+      "quantity": 7,
+      "unit": "feet"
+     }
+    ],
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Tightened panel neutral connections"
+    ]
+   },
+   "id": "t-0021"
+  },
+  {
+   "action": "edit",
+   "comment": "Added peeling trim to issues found and sanding the peeling trim to follow-ups.",
+   "gold": {
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ],
+    "issuesFound": [
+     "Peeling trim"
+    ],
+    "jobType": "painting",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Painted front door"
+    ]
+   },
+   "id": "t-0022"
+  },
+  {
+   "action": "edit",
+   "comment": "Added fixing the thermostat wiring to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "jobType": "hvac",
+    "laborMinutes": 75,
+    "materials": [],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Fixed thermostat wiring",
+     "Changed furnace filter"
+    ]
+   },
+   "id": "t-0023"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0024"
+  }
+ ]
+}

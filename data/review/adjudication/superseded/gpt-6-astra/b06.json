@@ -1,0 +1,121 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b06",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0061",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0062",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0063",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0064",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0065",
+   "action": "edit",
+   "gold": {
+    "jobType": "carpentry",
+    "workPerformed": [
+     "Installed closet shelving",
+     "Patched old bracket holes",
+     "Picked up melamine shelf board at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed shelf boards from materials because the note says they were picked up but does not state they were used."
+  },
+  {
+   "id": "t-0066",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0067",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Stained deck",
+     "Picked up deck stain at the supply house"
+    ],
+    "issuesFound": [
+     "Mildew on the north side boards"
+    ],
+    "materials": [],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Customer to stay off the deck for 48 hours"
+    ]
+   },
+   "comment": "Removed deck stain from materials because the note states only that two gallons were picked up, not used."
+  },
+  {
+   "id": "t-0068",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0069",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0070",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Changed furnace filter",
+     "Picked up programmable thermostat at the supply house"
+    ],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "materials": [],
+    "laborMinutes": 180,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed the programmable thermostat from materials because pickup alone does not establish use, and the replacement task gives no material count."
+  },
+  {
+   "id": "t-0071",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0072",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

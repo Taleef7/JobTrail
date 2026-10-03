@@ -1,45 +1,45 @@
 # data/review/ (#71)
 
-The inputs to the owner's review of the 275 eval drafts before the test set is frozen.
-
-## How the review works (hybrid; owner decision, 2026-09-30)
+How the 275 eval drafts were checked before `data/test.jsonl` and `data/dev.jsonl` were frozen. The full story, results and caveats are in [`docs/DATA_CARD.md`](../../docs/DATA_CARD.md).
 
 The check is reading comprehension, not trade knowledge: does the note say exactly what its answer key says, under [`../LABELING.md`](../LABELING.md)?
 
-1. **Model panel.** Sonnet 5.5, Opus 5.5 and Fable 5.1 each checked every draft alone. Each saw only `LABELING.md` and the drafts' `id`, `note` and `gold`, not the flags, the plan or each other's verdicts. Each lists concrete discrepancies per field. Their verdicts are in `panel/{split}-{model}.jsonl`.
-2. **Review queue.** `queue.jsonl` is built by `ml/scripts/review_queue.py`. It holds every draft with a fidelity flag from #70 or a problem reported by any panelist, plus a seeded random **audit** of 30 drafts that nothing flagged (seed 71).
-3. **Owner review.** The owner reviews the queue at [`/label/`](https://jobtrail-drab.vercel.app/label/), accepting, editing or rejecting each note, and downloads the decisions as JSONL. The audit estimates how often a "clean" draft is still wrong.
+## Step 1: Claude panel and the owner's queue (2026-09-30)
 
-## Numbers
+1. **Panel.** Sonnet 5.5, Opus 5.5 and Fable 5.1 each checked every draft blind. Each saw only `LABELING.md` and the drafts' `id`, `note` and `gold`. Their verdicts are in `panel/{split}-{model}.jsonl`.
+2. **Queue.** `queue.jsonl` (built by `ml/scripts/review_queue.py`) collects 100 drafts for the owner:
+   - every draft with a fidelity flag (66);
+   - every draft a panelist questioned (17);
+   - a seeded random audit of 30 clean drafts.
 
-|                                           |            Test |             Dev |   Total |
-| ----------------------------------------- | --------------: | --------------: | ------: |
-| Drafts                                    |             165 |             110 |     275 |
-| Panel verdicts OK (Sonnet / Opus / Fable) | 154 / 152 / 155 | 108 / 108 / 108 |         |
-| Queued for the owner                      |              61 |              39 | **100** |
+   The owner was to review them in [`/label/`](https://jobtrail-drab.vercel.app/label/).
 
-The 100 queued drafts break down as:
+**The owner declined manual review (2026-10-02).** They aren't a domain expert and asked for a model review instead. The queue and `/label/` are kept but weren't used for the freeze.
 
-- **66** with fidelity flags;
-- **17** questioned by the panel (13 of these are also flagged; 11 were questioned by all three panelists);
-- **30** audited.
+## Step 2: cross-family adjudication (2026-10-02)
 
-**Pattern the panel found:** a problem found and fixed in the note ("put down roofing cement to fix the lifted shingles") often has its fix missing from `workPerformed`. `LABELING.md` requires both the issue and the fix. The drafts were planned record-first, and the writer sometimes narrated a fix the plan didn't list. The owner's review corrects these one by one; the data card (#71) reports the edit rate.
+Code: `ml/jobtrail_ml/adjudicate.py`, `ml/scripts/adjudicate.py`. The decision rule was committed before any vote. Which models reviewed, and GPT's tie-break role, changed afterwards; the data card dates each change and measures its effect.
 
-## Files
+- **Who reviewed:**
+  - **Gemini 3.8 Flash (High)**, via the Antigravity CLI, reviewed all 275.
+  - **Claude Opus 5.5**, via subagents, reviewed all 275.
+  - **GPT-OSS 120B**, via Antigravity, reviewed only the drafts those two left unsettled (5).
+- **What each saw:** the note, the draft key, the tags, and the earlier flags and panel notes as concerns that might be wrong. Each answered accept, edit (full corrected key) or reject (ambiguous note).
+- **How it was decided:** a key is final when two reviewers agree on it, using the scorer's zero-edit test both ways. Two rejects, or no agreement, reject the note.
 
-| File                                         | What                                                                                                                 |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `panel/{test,dev}-{sonnet,opus,fable}.jsonl` | One verdict per draft: `{id, ok, problems: [{field, issue}]}`                                                        |
-| `queue.jsonl`                                | Review items: `{id, split, note, gold, tags, flags, panel, reasons}`, where `reasons` ⊆ `fidelity`, `panel`, `audit` |
+| File (in `adjudication/`)             | What                                                                                                                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `batches.json`                        | The 23 batches (b01–b23) every-draft reviewers saw, with each prompt's SHA-256 and the rules' SHA-256                                                                                 |
+| `vote.schema.json`                    | The response schema every reviewer answered with                                                                                                                                      |
+| `votes/{gemini,claude}/bNN.json`      | One vote per draft (`{id, action, gold, comment}`), plus the reviewer, model, batch and the SHA-256 of the prompt answered. `decide` refuses a file that doesn't match `batches.json` |
+| `tiebreak.json`, `votes/gpt/t01.json` | The 5 unsettled drafts and the tie-breaker's votes                                                                                                                                    |
+| `decisions.jsonl`                     | One decision per draft, with every vote; the input to `ml/scripts/freeze_eval.py`                                                                                                     |
+| `stats.json`                          | Votes per reviewer, agreement with the final key, tie-breaks                                                                                                                          |
+| `overrides.jsonl`                     | 2 decisions changed after the vote to apply the supply-house rule to all 41 such drafts, each with its reason                                                                         |
+| `sensitivity.json`                    | How the originally planned reviewers would have decided on the 132 drafts they all covered, vs the final keys                                                                         |
+| `pilot/`                              | A one-batch pilot under the earlier `LABELING.md`. It exposed three ambiguous rules, which were clarified before the run                                                              |
+| `superseded/`                         | Partial runs by models the owner later swapped out (`gemini-3.1-pro-high`, `gpt-6-astra`); not used                                                                                   |
 
-Rebuild the queue (from `ml/`): `uv run python scripts/review_queue.py`.
+`stats.json` in this folder (written by the freeze step) has the outcomes by reason, the fields corrected and the change rate of clean drafts.
 
-## The owner's decisions (input to the freeze step)
-
-`/label/` exports one JSON line per reviewed item: `{id, split, action, gold, comment, reviewedAt, draftHash, draft}`.
-
-- `action` is `accept` (the draft key is right), `edit` (`gold` is the corrected key) or `reject` (the note is ambiguous; `gold` is null and `comment` says why).
-- `draftHash` fingerprints the note plus the draft key the owner saw. The freeze step joins each decision to its draft by `id` and refuses any line whose hash no longer matches.
-- The freeze step requires a decision for **all 100** queued items.
-- The 175 drafts that were never queued (no flag, all three panelists OK, not audited) are kept on the panel's verdict and marked as panel-verified, not human-verified.
+Reproduce (from `ml/`): `uv run python scripts/adjudicate.py decide`, then `uv run python scripts/freeze_eval.py --out-dir <scratch>`, and compare hashes with `data/FROZEN.md`. The freeze step refuses to overwrite `data/` without `--refreeze`.
