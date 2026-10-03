@@ -160,3 +160,27 @@ def test_agy_v2_batch_prompt_uses_the_v2_rules():
         {"format": "full", "prompt": "zero-shot-v2"}, [{"id": "a", "note": "n"}]
     )
     assert text.startswith(EXTRACT_SYSTEM_V2)
+
+
+# The text run_agy sends is only partly hashed into the run ID (the rules are; its tools line
+# and "# Notes" wrapper aren't), so it is pinned here: changing it must mean a new run.
+AGY_PROMPT_SHA = {
+    "zero-shot": "ea2475532e231445b5bc4332af9a01e4eb0f108d0af4f2723b8474315f7c32cc",
+    "zero-shot-v2": "4474f57565d61404d646f36e96434ca07f0877ddca6f2716e6824fc4bf49385a",
+}
+
+
+def test_the_agy_batch_prompt_text_is_pinned():
+    import hashlib
+    import importlib.util
+
+    path = Path(__file__).parents[1] / "scripts/run_agy.py"
+    spec = importlib.util.spec_from_file_location("run_agy", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    for variant, want in AGY_PROMPT_SHA.items():
+        text = mod.batch_prompt(
+            {"format": "full", "prompt": variant}, [{"id": "{id}", "note": "{note}"}]
+        )
+        got = hashlib.sha256(text.encode()).hexdigest()
+        assert got == want, f"{variant}: agy prompt changed; give the config a new name (new run)"

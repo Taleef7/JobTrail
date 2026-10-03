@@ -5,6 +5,7 @@ model:
   file: ml/models/granite-4.0-h-350m-Q8_0.gguf
   url: https://huggingface.co/ibm-granite/granite-4.0-h-350m-GGUF/resolve/main/granite-4.0-h-350m-Q8_0.gguf
   sha256: c7d9873640dc303b6773dcc44e72e5bdf533e1c95ca8421e6191fbff5c94c942
+  bytes: 366195616
 prompt: few-shot
 format: full
 grammar: true

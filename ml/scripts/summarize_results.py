@@ -20,6 +20,8 @@ from pathlib import Path
 ML = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ML))
 
+import yaml  # noqa: E402
+
 from jobtrail_ml.runs import ROOT, read_jsonl, score_run  # noqa: E402
 from jobtrail_ml.scorer import score  # noqa: E402
 
@@ -63,6 +65,9 @@ def runs() -> list[dict]:
     rows = []
     for split in ("test", "dev"):
         rep = RULES / f"{split}.report.json"
+        if not rep.exists():  # reports aren't committed: rebuild from the predictions
+            score(ROOT / "data" / f"{split}.jsonl", RULES / f"{split}.predictions.jsonl", rep,
+                  f"rules-legacy-v0-{split}")  # fmt: skip
         if rep.exists():
             r = json.loads(rep.read_text(encoding="utf-8"))
             rows.append({
@@ -115,11 +120,26 @@ def runs() -> list[dict]:
     return rows
 
 
+def config_bytes() -> dict[str, int]:
+    """sha256 -> file size, from ml/configs (run folders' config.json predate model.bytes)."""
+    out = {}
+    for path in (ML / "configs").glob("*.yaml"):
+        model = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("model") or {}
+        if model.get("sha256") and model.get("bytes"):
+            out[model["sha256"]] = model["bytes"]
+    return out
+
+
+BYTES = config_bytes()
+
+
 def model_mb(cfg: dict) -> int | None:
     if cfg["provider"] != "llamacpp":
         return None
-    path = ROOT / cfg["model"]["file"]
-    return round(path.stat().st_size / 1e6) if path.exists() else None
+    n = cfg["model"].get("bytes") or BYTES.get(cfg["model"]["sha256"])
+    if n is None:
+        raise SystemExit(f"no size for {cfg['model']['file']}: add model.bytes to its config")
+    return round(n / 1e6)
 
 
 def usd(v) -> str:

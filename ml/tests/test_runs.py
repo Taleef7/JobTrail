@@ -362,8 +362,11 @@ def test_agy_configs_take_no_sampling_and_must_batch_structured_output(gold):
     assert run_id(cfg) != run_id(resolve({**base, "cloud": {"batch_size": 5}}))
 
 
-def test_committed_evidence_runs_keep_their_run_ids():
-    runs = sorted((ML.parent / "evidence" / "72" / "runs").glob("*/config.json"))
+def test_committed_runs_keep_their_run_ids():
+    root = ML.parent
+    runs = sorted([*(root / "evidence" / "72" / "runs").glob("*/config.json"),
+                   *(root / "results" / "runs").glob("*/config.json")])  # fmt: skip
+    assert len(runs) > 6  # covers agy, batched, prompt-v2 and reasoning_format runs
     for path in runs:  # a change to the identity must not orphan existing run folders
         assert run_id(load_config(path)) == path.parent.name
 

@@ -7,28 +7,28 @@ The data is synthetic and its labels were model-reviewed, not human-verified ([`
 
 ## Headline (test, n = 163)
 
-Each model's best prompt is shown. **Zero-edit** is the share of records a user could accept with no change (the product metric).
+Each listed model is shown with the prompt that scored best on **dev** (ties broken by dev work + materials F1). The numbers are **test**. Every variant of every model is in the full tables at the end. **Zero-edit** is the share of records a user could accept with no change (the product metric).
 
-| Rung                  | Model                                |     Size | Prompt       | Zero-edit | jobType | laborMinutes | Approved | Materials F1 | Work F1 | Hallucination | p50 latency |
-| --------------------- | ------------------------------------ | -------: | ------------ | --------: | ------: | -----------: | -------: | -----------: | ------: | ------------: | ----------: |
-| Floor                 | rules (`rules-legacy-v0`)            |        – | –            |      0.0% |   33.7% |        63.8% |    51.5% |        0.349 |   0.320 |          4.2% |       <1 ms |
-| ≤ 400 MB (iPhone web) | SmolLM2-135M Q8_0                    |   145 MB | few-shot     |      0.0% |    8.6% |        57.1% |     4.3% |        0.129 |   0.496 |         16.1% |      0.53 s |
-|                       | LFM2.5-350M QAD-Q4_0                 |   219 MB | few-shot     |      1.2% |   27.0% |        69.9% |    84.0% |        0.853 |   0.701 |          2.5% |      0.74 s |
-|                       | LFM2.5-350M Q8_0                     |   379 MB | few-shot     |      1.2% |   33.7% |        70.6% |    84.7% |        0.815 |   0.714 |          2.2% |      1.14 s |
-|                       | Granite 4.0-H-350M Q8_0 (Apache-2.0) |   366 MB | few-shot     |      3.1% |   21.5% |        66.9% |    85.3% |        0.861 |   0.804 |          2.4% |      2.79 s |
-| ≤ 1.1 GB (Android)    | Qwen3-0.6B Q4_K_M                    |   397 MB | few-shot     |      1.8% |   39.3% |        81.6% |    81.0% |        0.854 |   0.801 |          1.8% |      1.89 s |
-|                       | LFM2.5-1.2B Q4_K_M                   |   731 MB | few-shot     |      7.4% |   47.2% |        84.0% |    88.3% |        0.925 |   0.848 |          1.7% |      2.15 s |
-|                       | Llama 3.2 1B Q4_K_M                  |   808 MB | few-shot v2  |     12.9% |   74.2% |        77.3% |    94.5% |        0.773 |   0.839 |          3.1% |      1.90 s |
-|                       | **Qwen3-1.7B Q4_K_M**                | 1,107 MB | few-shot v2  | **19.0%** |   76.1% |        92.0% |   100.0% |        0.945 |   0.869 |          1.3% |      3.22 s |
-| Ceiling               | Gemini 3.8 Flash (High)              |    cloud | zero-shot v1 |     80.4% |   97.5% |       100.0% |   100.0% |        0.998 |   0.992 |          0.0% |           – |
-|                       | **Gemini 3.8 Flash (High)**          |    cloud | zero-shot v2 | **92.6%** |  100.0% |       100.0% |   100.0% |        0.998 |   0.994 |          0.0% |           – |
+| Rung                  | Model                                |     Size | Prompt                    | Zero-edit | jobType | laborMinutes | Approved | Materials F1 | Work F1 | Hallucination | p50 latency |
+| --------------------- | ------------------------------------ | -------: | ------------------------- | --------: | ------: | -----------: | -------: | -----------: | ------: | ------------: | ----------: |
+| Floor                 | rules (`rules-legacy-v0`)            |        – | –                         |      0.0% |   33.7% |        63.8% |    51.5% |        0.349 |   0.320 |          4.2% |       <1 ms |
+| ≤ 400 MB (iPhone web) | SmolLM2-135M Q8_0                    |   145 MB | few-shot                  |      0.0% |    8.6% |        57.1% |     4.3% |        0.129 |   0.496 |         16.1% |      0.53 s |
+|                       | LFM2.5-350M QAD-Q4_0                 |   219 MB | few-shot                  |      1.2% |   27.0% |        69.9% |    84.0% |        0.853 |   0.701 |          2.5% |      0.74 s |
+|                       | LFM2.5-350M Q8_0                     |   379 MB | few-shot v2               |      0.0% |   26.4% |        69.3% |    84.0% |        0.774 |   0.701 |          2.7% |      1.02 s |
+|                       | Granite 4.0-H-350M Q8_0 (Apache-2.0) |   366 MB | few-shot                  |      3.1% |   21.5% |        66.9% |    85.3% |        0.861 |   0.804 |          2.4% |      2.79 s |
+| ≤ 1.1 GB (Android)    | Qwen3-0.6B Q4_K_M                    |   397 MB | few-shot                  |      1.8% |   39.3% |        81.6% |    81.0% |        0.854 |   0.801 |          1.8% |      1.89 s |
+|                       | LFM2.5-1.2B Q4_K_M                   |   731 MB | few-shot                  |      7.4% |   47.2% |        84.0% |    88.3% |        0.925 |   0.848 |          1.7% |      2.15 s |
+|                       | Llama 3.2 1B Q4_K_M                  |   808 MB | few-shot                  |     10.4% |   71.2% |        79.8% |    96.9% |        0.764 |   0.870 |          2.0% |      2.24 s |
+|                       | **Qwen3-1.7B Q4_K_M**                | 1,107 MB | few-shot v2               | **19.0%** |   76.1% |        92.0% |   100.0% |        0.945 |   0.869 |          1.3% |      3.22 s |
+| Ceiling               | Gemini 3.8 Flash (High)              |    cloud | zero-shot v1 (comparison) |     80.4% |   97.5% |       100.0% |   100.0% |        0.998 |   0.992 |          0.0% |           – |
+|                       | **Gemini 3.8 Flash (High)**          |    cloud | zero-shot v2              | **92.6%** |  100.0% |       100.0% |   100.0% |        0.998 |   0.994 |          0.0% |           – |
 
 **How to read the latency and cost columns:**
 
 - **Latency** is the median wall time per note on a desktop CPU (AMD Zen 4, llama.cpp b9837, CPU only, one slot). It is not a phone number: phones come in M2/M3.
 - **Schema validity** is 96–100% for every row above, with the JSON-schema grammar on.
 - **Every local model costs $0 per note.**
-- **The ceiling's cost:** it ran through the Antigravity CLI on the owner's plan, batched 15 notes per call, so it has no price or latency of its own. One note per call through the Gemini API, as measured in #72 ([`evidence/72`](../evidence/72/README.md)), costs about **$0.0023 per note** at 2026 prices and **$0.0047 per note** from 2027-01-01. That run was thinking `medium` and the ladder was `high`, so read it as an estimate.
+- **The ceiling's cost is a lower bound.** It ran through the Antigravity CLI on the owner's plan, batched 15 notes per call, so it has no price or latency of its own. The only API measurement is #72's 7-note run ([`evidence/72`](../evidence/72/README.md)), at thinking `medium` and one note per call: **$0.0023 per note** at 2026 prices, $0.0047 from 2027-01-01. The ladder ran thinking `high`, which spends more thinking tokens. Antigravity's token counts include its own agent harness, so they can't be priced. Expect the ceiling to cost **at least $0.0023 per note**, probably several times that.
 
 ## What the ladder shows
 
@@ -36,19 +36,19 @@ Each model's best prompt is shown. **Zero-edit** is the share of records a user 
    - SmolLM2-135M zero-shot at 2.5%: it repeats a list item until the token cap;
    - LFM2-350M-Extract at 73–84%;
    - LFM2.5-350M zero-shot at 93.9% with v1 and 82.8% with v2.
-2. **Few-shot beats zero-shot on every model.** Llama 3.2 1B without examples returns `jobType: null` on 161 of 163 test notes.
+2. **Few-shot beats zero-shot on the general models that score at all:** Qwen3, Llama 3.2 1B, LFM2.5-350M and 1.2B, and Granite-H-350M. Below 300M both prompts sit at 0% zero-edit. For the two LFM2 Extract models few-shot is worse: LFM2-1.2B-Extract's hallucination goes from 16.8% to 36.0%. Llama 3.2 1B without examples returns `jobType: null` on 161 of 163 test notes.
 3. **Size matters a lot below 1B:**
-   - nothing at 400 MB or less beats 3.1% zero-edit;
-   - Qwen3-1.7B and Llama 3.2 1B reach 12.9–19.0%;
+   - nothing at 400 MB or less gets above 4% zero-edit on either split. The best is Granite-H-350M on test (3.1%) and LFM2.5-350M QAD-Q4_0 on dev (3.6%), a handful of notes each;
+   - Llama 3.2 1B reaches 10.4% and Qwen3-1.7B 19.0%;
    - the ceiling is at 93%.
 
    The per-tag table shows where: self-corrections, multiple materials and supply-house trips are almost never fully right below 1B.
 
-4. **Prompt v2 helps the big models and hurts the small one.** v2 is longer and states the rules v1 left out (below).
-   - The ceiling went from 80.4% to 92.6%, Qwen3-1.7B few-shot from 13.5% to 19.0%, and Llama 1B from 10.4% to 12.9%.
-   - LFM2.5-350M went down: 1.2% → 0.0% few-shot, and 93.9% → 82.8% schema-valid zero-shot.
-   - Prompting can't carry a 350M model.
-5. **Quantisation-aware 4-bit is nearly free.** LFM2.5-350M QAD-Q4_0 matches its Q8_0 at 58% of the size and about a third faster.
+4. **Prompt v2 clearly helps only the strongest models.** v2 is longer and states the rules v1 left out (below).
+   - **Gains on both splits:** the ceiling (+12.2 points on test, +9.1 on dev) and Qwen3-1.7B few-shot (+5.5 and +2.7).
+   - **No reliable change:** Llama 3.2 1B few-shot (+2.5 on test, −0.9 on dev) and LFM2.5-350M few-shot (−1.2, +0.9) move by a note or two in opposite directions on the two splits.
+   - **What v2 does to LFM2.5-350M, on both splits:** it lowers zero-shot schema validity (93.9% → 82.8% on test, 94.5% → 86.4% on dev).
+5. **Quantisation-aware 4-bit costs little.** LFM2.5-350M QAD-Q4_0 is 58% of the Q8_0's size and about a third faster. On both splits it matches or beats the Q8_0 on zero-edit and materials F1, but jobType is about 7 points lower (27.0% vs 33.7% on test, 25.5% vs 32.7% on dev).
 6. **Specialist models weren't better.**
    - LFM2-1.2B-Extract, Liquid's extraction model, hallucinates (17–36%) under our schema and rules.
    - LFM2-350M-Extract loops and copies the prompt's example.
@@ -78,8 +78,8 @@ Each model's best prompt is shown. **Zero-edit** is the share of records a user 
   - 10 from LFM2-350M-Extract zero-shot;
   - 15 from Llama 3.2 1B few-shot;
   - 5 from Llama 3.2 1B zero-shot.
-- Blind Claude agents read each against `LABELING.md` and coded it freely, flagging any case where the gold or the scorer was at fault.
-- Two independent axial codings were reconciled into one taxonomy, then every case was classified, with multiple labels and one primary cause.
+- Claude agents read each against `LABELING.md` and coded it freely, flagging any case where the gold or the scorer was at fault. They saw which model and prompt produced the failure. They didn't see each other's codes.
+- Two independent axial codings ([`axial-drafts.json`](../results/error-analysis/axial-drafts.json)) were reconciled into one taxonomy ([`taxonomy.json`](../results/error-analysis/taxonomy.json)). Then every case was classified, with multiple labels and one primary cause ([`classified.jsonl`](../results/error-analysis/classified.jsonl)).
 
 The files are in [`results/error-analysis/`](../results/error-analysis/).
 
@@ -101,12 +101,12 @@ The files are in [`results/error-analysis/`](../results/error-analysis/).
 **By cause:**
 
 - The model's own capacity is the primary cause in **42 of 68**.
-- The prompt is the primary cause in **21**. These cases led to prompt v2:
+- The prompt is the primary cause in **21**. The first round of coding (48 failures: the ceiling, LFM2.5-350M and LFM2-350M-Extract) had already surfaced these gaps, and they led to prompt v2 before the taxonomy existed:
   - v1 never said supply-house parts are materials;
   - it never said package words like "kit" are units;
   - it never said an issue needs a finding;
   - it never listed what each trade covers;
-  - its concrete examples were copied verbatim. LFM2-350M-Extract's output contains the prompt's "kitchen sink P-trap" on 75 of 110 dev notes.
+  - its concrete examples were copied verbatim. LFM2-350M-Extract wrote the prompt's "kitchen sink P-trap" into 69 of 110 dev notes that never mention a kitchen sink. Six more outputs contain the phrase, but those notes really are about a kitchen-sink P-trap.
 - The label convention is the primary cause in **5**, all the ceiling's. In "1 drywall patch kit" the gold has `unit: "kit"`, while the model puts "kit" only in the name. Both say the same thing, and the scorer's exact unit match counts it as an error. Prompt v2 states the convention. A follow-up could make the scorer treat a unit equal to the name's last word as matching.
 
 **The ceiling's failures were all prompt or convention issues** (kit units, issues without a finding, supply-house parts). That is why v2 took it from 80% to 93%. **The small models' failures are mostly capacity:**
@@ -122,28 +122,33 @@ The files are in [`results/error-analysis/`](../results/error-analysis/).
 
 **What the baseline says:**
 
-- **Prompting can't close the gap at the sizes that fit the phones.** The best model of 400 MB or less is at 3.1% zero-edit. A longer, clearer prompt made LFM2.5-350M worse, and its errors are capacity errors (field routing, trade defaults, spoken corrections), which training data targets directly.
+- **Prompting can't close the gap at the sizes that fit the phones.** Every model of 400 MB or less is at 4% zero-edit or below on both splits, under every prompt. Prompt v2 gave the 350M model nothing reliable. The errors are mostly capacity errors (field routing, trade defaults, invented values, spoken corrections), which training data targets directly.
 - **The bar is low and well defined.** The ~2B general model (Qwen3-1.7B) scores 9.2% zero-shot and 19.0% with the best prompt. The ceiling shows the task is learnable from these notes (93%).
 - **Fine-tuning also fixes speed.** A fine-tuned model takes the note alone (the `fine-tuned-short` prompt, #72), so the phone skips the ~400-token instruction prompt. Its prefill was the bottleneck on the Note 9S (#66).
 - **There is published evidence for this recipe.** LoRA on about 5k synthetic examples took LFM2.5-350M from 34–63% to 96–98% on tool-call tasks ([distil labs](https://www.distillabs.ai/blog/fine-tuning-liquids-lfm25-accurate-tool-calling-at-350m-parameters/)).
 
-**Candidates for M2 (#74–#77):**
+**Candidates for M2 (#74–#77)**, the same list as [`docs/research`](research/2026-10-03-models-and-runtimes.md):
 
-- **LFM2.5-350M**, shipped as QAD-Q4_0 at 219 MB for the iPhone web.
-- **Granite 4.0-H-350M**: Apache-2.0, the strongest zero-edit at 400 MB or less, and a hedge against the LFM licence's US$10M revenue cap.
+- **LFM2.5-350M**, the main candidate, shipped as QAD-Q4_0 at 219 MB for the iPhone web.
+- **Granite 4.0-H-350M**: Apache-2.0, a hedge against the LFM licence's US$10M revenue cap. It is the strongest list-field model at 400 MB or less, with Work F1 0.804 and Issues F1 0.800 on test.
 - **Qwen3-0.6B** for Android.
+- **LFM2.5-230M**, optional, if the iPhone needs something smaller.
 
 **Bar to beat:** Qwen3-1.7B few-shot v2 on dev, 29.1% zero-edit (19.0% on test). **Target:** approach the ceiling (97% on dev).
 
 **What would turn this into a no-go:**
 
 - a fine-tuned 350M model under 19% zero-edit on test;
-- a p50 over 8 s on the Note 9S.
+- a p50 over 8 s on the Note 9S;
+- the fine-tuned model's gain vanishing on notes from job templates it never trained on.
+
+**Templates are shared, so M2 needs a held-out check.** Dev and test draw on the same 27 job templates (3 per trade, `data/scenarios.yaml`) that M2's training data will come from. A fine-tune could clear the bar by learning the templates rather than the task. M2 must hold some templates out of training and report on them separately. The spoken-note slice (#92), written by the owner without templates, is the other check.
 
 ## Caveats
 
 - **The notes are synthetic.** They were written by one Gemini model from templates, and the labels were model-reviewed, not human-verified. Spoken notes (#92) are reported separately when they exist.
-- **Prompt v2 was designed from dev failures** and reported on test. Test was never used to choose anything: every model's variants are all in the full table.
+- **Choices were made on dev.** Prompt v2 was designed from dev failures, and the headline's prompt per model is the dev winner. The full tables report every variant on both splits.
+- **Test and dev share job templates** with each other and with the future training data (above). Scores here measure these templates, not unseen job types.
 - **The ceiling ran through an agent harness** (Antigravity), batched. Results from the raw API may differ slightly. The owner approves any API-key use; the cost above comes from #72's API measurement.
 - **Latency is from a desktop CPU.** Phones are slower, and that is measured in M2/M3.
 
@@ -153,7 +158,7 @@ The files are in [`results/error-analysis/`](../results/error-analysis/).
 cd ml
 uv run python scripts/run_llamacpp.py --config configs/<run>.yaml --gold ../data/test.jsonl   # one local run
 uv run python scripts/run_agy.py --config configs/gemini-3.8-flash-high-agy-b15-v2.yaml --gold ../data/test.jsonl
-uv run python scripts/summarize_results.py --markdown   # results/summary.json + these tables
+uv run python scripts/summarize_results.py --markdown   # rebuilds any missing report, writes summary.json + these tables
 ```
 
 Score reports aren't committed. `score_run.py` rebuilds each one from its predictions, and `summary.json` records each report's SHA-256.

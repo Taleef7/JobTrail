@@ -5,6 +5,7 @@ model:
   file: ml/models/Qwen3-1.7B-Q4_K_M.gguf
   url: https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf
   sha256: b139949c5bd74937ad8ed8c8cf3d9ffb1e99c866c823204dc42c0d91fa181897
+  bytes: 1107409472
 prompt: zero-shot
 format: full
 grammar: false

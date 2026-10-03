@@ -7,7 +7,7 @@ There were two multi-agent research passes:
 - **models:** 5 search angles, then each of 31 candidates checked against its Hugging Face repo;
 - **runtimes:** 5 angles plus a synthesis, then skeptics checking the 12 claims the recommendation rests on.
 
-Every model name, size and licence below was read from the model's repo. Runtime claims link their primary source. One claim stayed unverified, and it's marked.
+Every model name, size and licence below was read from the model's repo. The raw data is in [`2026-10-03-survey-data.json`](2026-10-03-survey-data.json): 31 unique candidates, plus the 12 runtime claims a skeptic checked against primary sources. Of those 12, 9 were confirmed, 2 held in substance with corrected details, and 1 stayed unverified (marked below). One more item, about wllama 3.8.x, comes from a third-party report and is also marked unverified.
 
 ## Models
 
@@ -32,8 +32,11 @@ Every model name, size and licence below was read from the model's repo. Runtime
 
 ### Fine-tuning (M2)
 
+The same list as [`docs/RESULTS.md`](../RESULTS.md):
+
 - **LFM2.5-350M stays the main candidate.** A published LoRA on about 5k synthetic examples took it from 34–63% to 96–98% on tool-call tasks ([distil labs](https://www.distillabs.ai/blog/fine-tuning-liquids-lfm25-accurate-tool-calling-at-350m-parameters/)).
-- **LFM2.5-230M** for the iPhone tier.
+- **Qwen3-0.6B** for Android.
+- **LFM2.5-230M**, optional, if the iPhone needs something smaller than LFM2.5-350M's QAD-Q4_0 (219 MB).
 - **Granite 4.0-H-350M** as the Apache-licensed hedge: the LFM licence allows commercial use only below US$10M annual revenue.
 
 ## Runtimes: keep llama.cpp everywhere

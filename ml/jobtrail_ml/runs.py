@@ -51,7 +51,7 @@ GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY",
                 "batch_size": 1}  # fmt: skip
 # agy: a model through the Antigravity CLI on the owner's plan (no API key; #73).
 AGY_CLOUD = {"batch_size": 15}
-MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}, "agy": {"id"}}
+MODEL_KEYS = {"llamacpp": {"file", "url", "sha256", "bytes"}, "gemini": {"id"}, "agy": {"id"}}
 # Settings that don't change what the model writes stay out of the run ID.
 # The model file and gold are identified by their SHA-256, not their path or URL.
 NOT_IDENTITY = {
@@ -59,6 +59,7 @@ NOT_IDENTITY = {
     "gold",
     "model.file",
     "model.url",
+    "model.bytes",
     "cloud.rpm",
     "cloud.key_env",
     "cloud.pricing",

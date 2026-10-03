@@ -5,6 +5,7 @@ model:
   file: ml/models/SmolLM2-135M-Instruct-Q8_0.gguf
   url: https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q8_0.gguf
   sha256: 5a1395716f7913741cc51d98581b9b1228d80987a9f7d3664106742eb06bba83
+  bytes: 144811360
 prompt: zero-shot
 format: full
 grammar: false

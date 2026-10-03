@@ -5,6 +5,7 @@ model:
   file: ml/models/LFM2.5-230M-Q8_0.gguf
   url: https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/resolve/main/LFM2.5-230M-Q8_0.gguf
   sha256: 855be85429300602eda72958547614703541b7d6dd965a8f8f6052b85a7aa935
+  bytes: 246598496
 prompt: few-shot
 format: full
 grammar: true

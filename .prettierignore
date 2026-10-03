@@ -18,3 +18,4 @@ data/drafts/**
 data/review/adjudication/**
 data/review/stats.json
 data/FROZEN.md
+docs/research/*.json

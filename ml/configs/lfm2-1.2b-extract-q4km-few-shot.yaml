@@ -5,6 +5,7 @@ model:
   file: ml/models/LFM2-1.2B-Extract-Q4_K_M.gguf
   url: https://huggingface.co/LiquidAI/LFM2-1.2B-Extract-GGUF/resolve/main/LFM2-1.2B-Extract-Q4_K_M.gguf
   sha256: 09b60b507ee7d1698b2b4dfce184c75083d7790c7701910ed60afa2801024702
+  bytes: 730894048
 prompt: few-shot
 format: full
 grammar: true

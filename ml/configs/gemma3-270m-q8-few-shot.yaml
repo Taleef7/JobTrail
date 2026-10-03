@@ -5,6 +5,7 @@ model:
   file: ml/models/gemma-3-270m-it-Q8_0.gguf
   url: https://huggingface.co/unsloth/gemma-3-270m-it-GGUF/resolve/main/gemma-3-270m-it-Q8_0.gguf
   sha256: d156a5159f2f79c1b1d53c7c1cc20f1ff28ab8d00f17a292620aad13399b9698
+  bytes: 291546144
 prompt: few-shot
 format: full
 grammar: true
