@@ -1,0 +1,68 @@
+{"id": "d-0011", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0022", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0027", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0037", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0059", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0061", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0063", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0066", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "kit-unit-convention", "categories": ["kit-unit-convention"]}
+{"id": "d-0072", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0077", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0094", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0097", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0100", "run": "gemini-3.8-flash-high-agy-b15-dev-a8bb55f8", "primary": "issue-without-finding", "categories": ["issue-without-finding"]}
+{"id": "d-0010", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "trade-run-default", "spoken-modifier-misresolved", "field-slot-routing"]}
+{"id": "d-0016", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "field-slot-routing", "trade-run-default"]}
+{"id": "d-0024", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "field-slot-routing", "ungrounded-fill", "spoken-modifier-misresolved", "trade-run-default"]}
+{"id": "d-0036", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "output-collapse", "categories": ["output-collapse", "prompt-example-copied", "trade-run-default"]}
+{"id": "d-0039", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "issue-without-finding", "field-slot-routing"]}
+{"id": "d-0060", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "field-slot-routing", "issue-without-finding", "trade-run-default"]}
+{"id": "d-0062", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "output-collapse", "categories": ["output-collapse", "prompt-example-copied", "ungrounded-fill", "trade-run-default"]}
+{"id": "d-0065", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "trade-run-default", "field-slot-routing", "ungrounded-fill"]}
+{"id": "d-0073", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "output-collapse", "categories": ["output-collapse", "ungrounded-fill", "field-slot-routing"]}
+{"id": "d-0076", "run": "lfm2-350m-extract-q8-zero-shot-dev-422b9b69", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "trade-run-default", "spoken-modifier-misresolved", "ungrounded-fill", "field-slot-routing"]}
+{"id": "d-0003", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved"]}
+{"id": "d-0004", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "field-slot-routing", "issue-without-finding", "ungrounded-fill"]}
+{"id": "d-0010", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "trade-run-default", "categories": ["trade-run-default", "spoken-modifier-misresolved", "prompt-example-copied"]}
+{"id": "d-0015", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "field-slot-routing", "trade-run-default", "ungrounded-fill", "prompt-example-copied"]}
+{"id": "d-0016", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "trade-boundary-undefined", "categories": ["trade-boundary-undefined", "field-slot-routing", "prompt-example-copied"]}
+{"id": "d-0024", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "issue-without-finding", "trade-run-default", "spoken-modifier-misresolved", "prompt-example-copied"]}
+{"id": "d-0026", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "field-slot-routing", "materials-rule-gap", "trade-run-default"]}
+{"id": "d-0033", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "ungrounded-fill", "trade-run-default"]}
+{"id": "d-0036", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "trade-run-default", "ungrounded-fill"]}
+{"id": "d-0039", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "trade-run-default", "categories": ["trade-run-default", "field-slot-routing", "issue-without-finding", "prompt-example-copied"]}
+{"id": "d-0047", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "trade-run-default", "issue-without-finding", "field-slot-routing"]}
+{"id": "d-0053", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "ungrounded-fill", "issue-without-finding"]}
+{"id": "d-0054", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "trade-run-default", "categories": ["trade-run-default", "field-slot-routing", "prompt-example-copied"]}
+{"id": "d-0055", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "trade-run-default"]}
+{"id": "d-0056", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "issue-without-finding", "trade-run-default"]}
+{"id": "d-0059", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "ungrounded-fill", "issue-without-finding", "prompt-example-copied"]}
+{"id": "d-0061", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "ungrounded-fill", "issue-without-finding", "trade-boundary-undefined", "spoken-modifier-misresolved"]}
+{"id": "d-0063", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing"]}
+{"id": "d-0064", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "field-slot-routing", "trade-run-default"]}
+{"id": "d-0066", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "ungrounded-fill", "trade-run-default"]}
+{"id": "d-0068", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "prompt-example-copied", "categories": ["prompt-example-copied", "trade-run-default", "field-slot-routing", "materials-rule-gap"]}
+{"id": "d-0073", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "trade-run-default", "categories": ["trade-run-default"]}
+{"id": "d-0074", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "prompt-example-copied", "trade-run-default", "field-slot-routing", "issue-without-finding"]}
+{"id": "d-0077", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved"]}
+{"id": "d-0108", "run": "lfm2.5-350m-q8-few-shot-dev-e2a0fe4e", "primary": "field-slot-routing", "categories": ["field-slot-routing", "trade-boundary-undefined", "prompt-example-copied"]}
+{"id": "d-0012", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0019", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "field-slot-routing", "categories": ["field-slot-routing"]}
+{"id": "d-0031", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "field-slot-routing", "categories": ["field-slot-routing", "trade-boundary-undefined"]}
+{"id": "d-0033", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "field-slot-routing", "categories": ["field-slot-routing", "materials-rule-gap"]}
+{"id": "d-0044", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "materials-rule-gap", "categories": ["materials-rule-gap"]}
+{"id": "d-0047", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "ungrounded-fill", "categories": ["ungrounded-fill"]}
+{"id": "d-0063", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "trade-boundary-undefined", "categories": ["trade-boundary-undefined", "field-slot-routing"]}
+{"id": "d-0069", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "trade-boundary-undefined", "categories": ["trade-boundary-undefined", "spoken-modifier-misresolved", "field-slot-routing", "materials-rule-gap"]}
+{"id": "d-0072", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "field-slot-routing", "categories": ["field-slot-routing", "trade-boundary-undefined", "materials-rule-gap"]}
+{"id": "d-0076", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "field-slot-routing", "categories": ["field-slot-routing", "spoken-modifier-misresolved"]}
+{"id": "d-0077", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "materials-rule-gap"]}
+{"id": "d-0079", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "spoken-modifier-misresolved", "categories": ["spoken-modifier-misresolved", "field-slot-routing"]}
+{"id": "d-0082", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "trade-boundary-undefined", "categories": ["trade-boundary-undefined"]}
+{"id": "d-0088", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "trade-run-default", "categories": ["trade-run-default"]}
+{"id": "d-0092", "run": "llama3.2-1b-q4km-few-shot-dev-2f9352f5", "primary": "ungrounded-fill", "categories": ["ungrounded-fill", "prompt-example-copied"]}
+{"id": "d-0016", "run": "llama3.2-1b-q4km-zero-shot-dev-8b397343", "primary": "trade-run-default", "categories": ["trade-run-default", "field-slot-routing", "ungrounded-fill"]}
+{"id": "d-0036", "run": "llama3.2-1b-q4km-zero-shot-dev-8b397343", "primary": "output-collapse", "categories": ["output-collapse", "prompt-example-copied", "ungrounded-fill", "field-slot-routing", "trade-run-default"]}
+{"id": "d-0062", "run": "llama3.2-1b-q4km-zero-shot-dev-8b397343", "primary": "trade-run-default", "categories": ["trade-run-default", "issue-without-finding", "field-slot-routing"]}
+{"id": "d-0065", "run": "llama3.2-1b-q4km-zero-shot-dev-8b397343", "primary": "field-slot-routing", "categories": ["field-slot-routing", "ungrounded-fill", "trade-run-default"]}
+{"id": "d-0073", "run": "llama3.2-1b-q4km-zero-shot-dev-8b397343", "primary": "trade-run-default", "categories": ["trade-run-default", "issue-without-finding"]}
