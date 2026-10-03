@@ -1,0 +1,7379 @@
+{
+  "schemaVersion": 1,
+  "run": "rules-legacy-v0-test",
+  "model": "rules-legacy-v0",
+  "matcher": {
+    "method": "token-dice-v2",
+    "threshold": 0.5,
+    "provisional": false
+  },
+  "overall": {
+    "n": 163,
+    "parseRate": 1,
+    "schemaValidRate": 1,
+    "zeroEditRate": 0,
+    "jobTypeAccuracy": 0.3374233128834356,
+    "laborMinutesAccuracy": 0.6380368098159509,
+    "customerApprovedAccuracy": 0.5153374233128835,
+    "workPerformed": {
+      "precision": 0.484375,
+      "recall": 0.23846153846153847,
+      "f1": 0.31958762886597936
+    },
+    "issuesFound": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "followUps": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "materials": {
+      "precision": 0.864406779661017,
+      "recall": 0.21888412017167383,
+      "f1": 0.34931506849315064,
+      "quantityAccuracy": 0.9215686274509803
+    },
+    "hallucinationRate": 0.0423728813559322,
+    "latency": {
+      "p50WallMs": 0.019,
+      "p90WallMs": 0.044
+    }
+  },
+  "bySource": {
+    "synthetic": {
+      "n": 163,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.3374233128834356,
+      "laborMinutesAccuracy": 0.6380368098159509,
+      "customerApprovedAccuracy": 0.5153374233128835,
+      "workPerformed": {
+        "precision": 0.484375,
+        "recall": 0.23846153846153847,
+        "f1": 0.31958762886597936
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0.864406779661017,
+        "recall": 0.21888412017167383,
+        "f1": 0.34931506849315064,
+        "quantityAccuracy": 0.9215686274509803
+      },
+      "hallucinationRate": 0.0423728813559322,
+      "latency": {
+        "p50WallMs": 0.019,
+        "p90WallMs": 0.044
+      }
+    }
+  },
+  "byTag": {
+    "approval-absent": {
+      "n": 25,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.28,
+      "laborMinutesAccuracy": 0.72,
+      "customerApprovedAccuracy": 1,
+      "workPerformed": {
+        "precision": 0.6153846153846154,
+        "recall": 0.25806451612903225,
+        "f1": 0.36363636363636365
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 0.2391304347826087,
+        "f1": 0.3859649122807018,
+        "quantityAccuracy": 1
+      },
+      "hallucinationRate": 0,
+      "latency": {
+        "p50WallMs": 0.024,
+        "p90WallMs": 0.032
+      }
+    },
+    "extra-labor": {
+      "n": 26,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.38461538461538464,
+      "laborMinutesAccuracy": 0,
+      "customerApprovedAccuracy": 0.5384615384615384,
+      "workPerformed": {
+        "precision": 0.4782608695652174,
+        "recall": 0.18333333333333332,
+        "f1": 0.2650602409638554
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0.6666666666666666,
+        "recall": 0.11764705882352941,
+        "f1": 0.2,
+        "quantityAccuracy": 1
+      },
+      "hallucinationRate": 0,
+      "latency": {
+        "p50WallMs": 0.016,
+        "p90WallMs": 0.122
+      }
+    },
+    "hours-phrasing": {
+      "n": 25,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.32,
+      "laborMinutesAccuracy": 0,
+      "customerApprovedAccuracy": 0.52,
+      "workPerformed": {
+        "precision": 0.65,
+        "recall": 0.37142857142857144,
+        "f1": 0.4727272727272728
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 0.42424242424242425,
+        "f1": 0.5957446808510638,
+        "quantityAccuracy": 0.9285714285714286
+      },
+      "hallucinationRate": 0.03571428571428571,
+      "latency": {
+        "p50WallMs": 0.024,
+        "p90WallMs": 0.034
+      }
+    },
+    "multiple-materials": {
+      "n": 24,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.25,
+      "laborMinutesAccuracy": 0.875,
+      "customerApprovedAccuracy": 0.5833333333333334,
+      "workPerformed": {
+        "precision": 0.5294117647058824,
+        "recall": 0.28125,
+        "f1": 0.3673469387755102
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 1,
+        "recall": 0.1506849315068493,
+        "f1": 0.2619047619047619,
+        "quantityAccuracy": 1
+      },
+      "hallucinationRate": 0,
+      "latency": {
+        "p50WallMs": 0.021,
+        "p90WallMs": 0.03
+      }
+    },
+    "negation": {
+      "n": 24,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.2916666666666667,
+      "laborMinutesAccuracy": 0.75,
+      "customerApprovedAccuracy": 0.4166666666666667,
+      "workPerformed": {
+        "precision": 0.3157894736842105,
+        "recall": 0.1875,
+        "f1": 0.23529411764705882
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0.5625,
+        "recall": 0.25,
+        "f1": 0.34615384615384615,
+        "quantityAccuracy": 0.8888888888888888
+      },
+      "hallucinationRate": 0.09375,
+      "latency": {
+        "p50WallMs": 0.018,
+        "p90WallMs": 0.056
+      }
+    },
+    "no-materials": {
+      "n": 25,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.24,
+      "laborMinutesAccuracy": 0.56,
+      "customerApprovedAccuracy": 0.32,
+      "workPerformed": {
+        "precision": 0.47058823529411764,
+        "recall": 0.2,
+        "f1": 0.2807017543859649
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0,
+        "recall": 1,
+        "f1": 0,
+        "quantityAccuracy": null
+      },
+      "hallucinationRate": 0.25,
+      "latency": {
+        "p50WallMs": 0.018,
+        "p90WallMs": 0.067
+      }
+    },
+    "self-correction": {
+      "n": 25,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.48,
+      "laborMinutesAccuracy": 0.56,
+      "customerApprovedAccuracy": 0.32,
+      "workPerformed": {
+        "precision": 0.5,
+        "recall": 0.3142857142857143,
+        "f1": 0.38596491228070173
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0.9,
+        "recall": 0.2727272727272727,
+        "f1": 0.41860465116279066,
+        "quantityAccuracy": 0.8888888888888888
+      },
+      "hallucinationRate": 0,
+      "latency": {
+        "p50WallMs": 0.017,
+        "p90WallMs": 0.06
+      }
+    },
+    "supply-house-trip": {
+      "n": 24,
+      "parseRate": 1,
+      "schemaValidRate": 1,
+      "zeroEditRate": 0,
+      "jobTypeAccuracy": 0.375,
+      "laborMinutesAccuracy": 0.625,
+      "customerApprovedAccuracy": 0.5416666666666666,
+      "workPerformed": {
+        "precision": 0.5238095238095238,
+        "recall": 0.1746031746031746,
+        "f1": 0.2619047619047619
+      },
+      "issuesFound": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "followUps": {
+        "precision": 1,
+        "recall": 0,
+        "f1": 0
+      },
+      "materials": {
+        "precision": 0.6,
+        "recall": 0.08333333333333333,
+        "f1": 0.14634146341463414,
+        "quantityAccuracy": 0.6666666666666666
+      },
+      "hallucinationRate": 0.1,
+      "latency": {
+        "p50WallMs": 0.017,
+        "p90WallMs": 0.03
+      }
+    }
+  },
+  "unmatchedPredictionIds": [],
+  "records": [
+    {
+      "id": "t-0001",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 1.037
+    },
+    {
+      "id": "t-0002",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.504
+    },
+    {
+      "id": "t-0003",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.153
+    },
+    {
+      "id": "t-0004",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.122
+    },
+    {
+      "id": "t-0005",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.067
+    },
+    {
+      "id": "t-0006",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.102
+    },
+    {
+      "id": "t-0007",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.031
+    },
+    {
+      "id": "t-0008",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.039
+    },
+    {
+      "id": "t-0009",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.043
+    },
+    {
+      "id": "t-0010",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.11
+    },
+    {
+      "id": "t-0011",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.056
+    },
+    {
+      "id": "t-0012",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 0.11
+    },
+    {
+      "id": "t-0013",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.019
+    },
+    {
+      "id": "t-0014",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0015",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.043
+    },
+    {
+      "id": "t-0016",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.058
+    },
+    {
+      "id": "t-0017",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.044
+    },
+    {
+      "id": "t-0018",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.032
+    },
+    {
+      "id": "t-0019",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.129
+    },
+    {
+      "id": "t-0020",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.063
+    },
+    {
+      "id": "t-0022",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.054
+    },
+    {
+      "id": "t-0023",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0024",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0025",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0026",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0027",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.019
+    },
+    {
+      "id": "t-0028",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.035
+    },
+    {
+      "id": "t-0029",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0030",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0031",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.01
+    },
+    {
+      "id": "t-0032",
+      "source": "synthetic",
+      "tags": [
+        "no-materials",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0033",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0034",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0035",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0036",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0037",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0038",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.006
+    },
+    {
+      "id": "t-0039",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.006
+    },
+    {
+      "id": "t-0040",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.015
+    },
+    {
+      "id": "t-0041",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0042",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.015
+    },
+    {
+      "id": "t-0043",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.008
+    },
+    {
+      "id": "t-0044",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0045",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0046",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0047",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0048",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0049",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.027
+    },
+    {
+      "id": "t-0050",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0051",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0052",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0053",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0054",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0055",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.029
+    },
+    {
+      "id": "t-0056",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.032
+    },
+    {
+      "id": "t-0057",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.031
+    },
+    {
+      "id": "t-0058",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0059",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0060",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0061",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0062",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 0.035
+    },
+    {
+      "id": "t-0063",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.033
+    },
+    {
+      "id": "t-0064",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0065",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0066",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0067",
+      "source": "synthetic",
+      "tags": [
+        "self-correction",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.026
+    },
+    {
+      "id": "t-0068",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0069",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0070",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0071",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0072",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0073",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0074",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 0.025
+    },
+    {
+      "id": "t-0075",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 4,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.06
+    },
+    {
+      "id": "t-0076",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0077",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0078",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.02
+    },
+    {
+      "id": "t-0079",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0080",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.034
+    },
+    {
+      "id": "t-0081",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.02
+    },
+    {
+      "id": "t-0082",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0083",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0084",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.009
+    },
+    {
+      "id": "t-0085",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.034
+    },
+    {
+      "id": "t-0086",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.01
+    },
+    {
+      "id": "t-0087",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.02
+    },
+    {
+      "id": "t-0088",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0089",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.027
+    },
+    {
+      "id": "t-0090",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0091",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.023
+    },
+    {
+      "id": "t-0092",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.019
+    },
+    {
+      "id": "t-0093",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.026
+    },
+    {
+      "id": "t-0094",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0095",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.02
+    },
+    {
+      "id": "t-0096",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.023
+    },
+    {
+      "id": "t-0097",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0098",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0099",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.01
+    },
+    {
+      "id": "t-0100",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0101",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0102",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0103",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0104",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.026
+    },
+    {
+      "id": "t-0105",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0106",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0107",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.276
+    },
+    {
+      "id": "t-0108",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0109",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.008
+    },
+    {
+      "id": "t-0110",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.006
+    },
+    {
+      "id": "t-0111",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0112",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.008
+    },
+    {
+      "id": "t-0113",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0114",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.009
+    },
+    {
+      "id": "t-0115",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.006
+    },
+    {
+      "id": "t-0116",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0117",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0118",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0119",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0120",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0121",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.011
+    },
+    {
+      "id": "t-0122",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0123",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0124",
+      "source": "synthetic",
+      "tags": [
+        "negation",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 4,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.03
+    },
+    {
+      "id": "t-0125",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.015
+    },
+    {
+      "id": "t-0126",
+      "source": "synthetic",
+      "tags": [
+        "no-materials",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.009
+    },
+    {
+      "id": "t-0127",
+      "source": "synthetic",
+      "tags": [
+        "self-correction",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0128",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0129",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.019
+    },
+    {
+      "id": "t-0130",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0131",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0132",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0133",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.014
+    },
+    {
+      "id": "t-0134",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials",
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.02
+    },
+    {
+      "id": "t-0135",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.026
+    },
+    {
+      "id": "t-0137",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0138",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.029
+    },
+    {
+      "id": "t-0139",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0140",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0141",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0142",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0143",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0144",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.027
+    },
+    {
+      "id": "t-0145",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.021
+    },
+    {
+      "id": "t-0146",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0147",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 3
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0148",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0149",
+      "source": "synthetic",
+      "tags": [
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0150",
+      "source": "synthetic",
+      "tags": [
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.019
+    },
+    {
+      "id": "t-0151",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0152",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.024
+    },
+    {
+      "id": "t-0153",
+      "source": "synthetic",
+      "tags": [
+        "negation"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0154",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.028
+    },
+    {
+      "id": "t-0155",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.016
+    },
+    {
+      "id": "t-0156",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.018
+    },
+    {
+      "id": "t-0157",
+      "source": "synthetic",
+      "tags": [
+        "self-correction"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.156
+    },
+    {
+      "id": "t-0158",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0159",
+      "source": "synthetic",
+      "tags": [
+        "approval-absent",
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.022
+    },
+    {
+      "id": "t-0160",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.013
+    },
+    {
+      "id": "t-0161",
+      "source": "synthetic",
+      "tags": [
+        "extra-labor",
+        "supply-house-trip"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": true
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 1,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.01
+    },
+    {
+      "id": "t-0162",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "quantityCorrect": 0,
+        "unitCorrect": 1
+      },
+      "grounding": {
+        "checked": 2,
+        "ungrounded": 1
+      },
+      "zeroEdit": false,
+      "wallMs": 0.042
+    },
+    {
+      "id": "t-0163",
+      "source": "synthetic",
+      "tags": [],
+      "parse": "ok",
+      "scalars": {
+        "jobType": true,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.012
+    },
+    {
+      "id": "t-0164",
+      "source": "synthetic",
+      "tags": [
+        "multiple-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": true,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.017
+    },
+    {
+      "id": "t-0165",
+      "source": "synthetic",
+      "tags": [
+        "hours-phrasing",
+        "no-materials"
+      ],
+      "parse": "ok",
+      "scalars": {
+        "jobType": false,
+        "laborMinutes": false,
+        "customerApproved": false
+      },
+      "lists": {
+        "workPerformed": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        },
+        "issuesFound": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0
+        },
+        "followUps": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1
+        }
+      },
+      "materials": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "quantityCorrect": 0,
+        "unitCorrect": 0
+      },
+      "grounding": {
+        "checked": 0,
+        "ungrounded": 0
+      },
+      "zeroEdit": false,
+      "wallMs": 0.009
+    }
+  ]
+}
