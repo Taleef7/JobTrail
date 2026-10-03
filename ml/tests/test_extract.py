@@ -10,11 +10,14 @@ from jsonschema import Draft202012Validator
 from jobtrail_ml.extract import (
     COMPACT_LEGEND,
     EXTRACT_SYSTEM,
+    batch_input,
+    batch_schema,
     encode,
     fewshot_examples,
     messages,
     prompt_fingerprint,
     schema,
+    split_batch,
 )
 
 DATA = Path(__file__).resolve().parents[2] / "data"
@@ -77,6 +80,23 @@ def test_fewshot_notes_share_no_eight_word_run_with_any_eval_note():
     assert eval_grams, "no eval notes found"
     for ex in fewshot_examples():
         assert not (_grams(ex["note"]) & eval_grams), ex["id"]
+
+
+def test_a_batched_answer_splits_into_one_raw_record_per_note():
+    rec = {"jobType": "plumbing"}
+    text = json.dumps({"records": [{"id": "a", "record": rec}, {"id": "a", "record": {}},
+                                   {"id": "c", "record": rec}]})  # fmt: skip
+    got = split_batch(["a", "b", "c"], text, "STOP")
+    assert got == [("a", json.dumps(rec), "STOP"), ("b", "", "MISSING_IN_BATCH"),
+                   ("c", json.dumps(rec), "STOP")]  # fmt: skip
+    assert split_batch(["a"], "not json", "MAX_TOKENS") == [("a", "", "UNPARSEABLE_BATCH")]
+
+
+def test_batch_input_and_schema_wrap_notes_and_records():
+    assert json.loads(batch_input([{"id": "a", "note": "n", "gold": {}}])) == [
+        {"id": "a", "note": "n"}]  # fmt: skip
+    s = batch_schema({"type": "object"})
+    assert s["properties"]["records"]["items"]["properties"]["record"] == {"type": "object"}
 
 
 def test_prompt_fingerprint_tracks_the_prompt_not_the_note():

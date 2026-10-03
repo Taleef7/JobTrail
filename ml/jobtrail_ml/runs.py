@@ -43,9 +43,12 @@ DEFAULTS: dict[str, Any] = {
 }
 # `build` pins the llama.cpp release (e.g. "b9837"): grammar conversion, chat templates and
 # sampling can change between builds, so it is part of the run ID and checked at start.
+# reasoning_format: "none" keeps raw exactly as written. Qwen3 needs "deepseek": its
+# template pre-fills an empty <think></think>, which a grammar can't start with under "none".
 LLAMACPP_SERVER = {"build": None, "ctx": 4096, "gpu_layers": 0, "threads": None,
-                   "chat_template_kwargs": {}}  # fmt: skip
-GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None}
+                   "chat_template_kwargs": {}, "reasoning_format": "none"}  # fmt: skip
+GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None,
+                "batch_size": 1}  # fmt: skip
 MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}}
 # Settings that don't change what the model writes stay out of the run ID.
 # The model file and gold are identified by their SHA-256, not their path or URL.
@@ -58,6 +61,8 @@ NOT_IDENTITY = {
     "cloud.key_env",
     "cloud.pricing",
     "server.threads",
+    "cloud.batch_size",  # hashed below only when > 1, so unbatched run IDs stay as they were
+    "server.reasoning_format",  # hashed below only when not "none", for the same reason
 }
 
 
@@ -143,6 +148,11 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
             cfg["sampling"]["max_tokens"] = None  # thinking counts against the cap
         _known(raw.get("cloud"), GEMINI_CLOUD, "cloud")
         cfg["cloud"] = _merge(GEMINI_CLOUD, cfg.get("cloud") or {})
+        n = cfg["cloud"]["batch_size"]
+        if not isinstance(n, int) or n < 1:
+            raise ConfigError(f"cloud.batch_size must be a positive integer, got {n!r}")
+        if n > 1 and not cfg["grammar"]:
+            raise ConfigError("batched cloud runs need grammar: true to split the answer")
     return {k: cfg[k] for k in KEYS if k in cfg}
 
 
@@ -180,6 +190,13 @@ def identity(cfg: dict[str, Any]) -> dict[str, Any]:
     }
     if cfg["grammar"]:
         ident["schema_sha256"] = sha256_file(extract.SCHEMAS[cfg["format"]])
+    fmt = (cfg.get("server") or {}).get("reasoning_format", "none")
+    if fmt != "none":
+        ident["reasoning_format"] = fmt
+    batch = (cfg.get("cloud") or {}).get("batch_size", 1)
+    if batch > 1:
+        note = hashlib.sha256(extract.BATCH_NOTE.encode()).hexdigest()
+        ident["batch"] = {"size": batch, "note_sha256": note}
     return ident
 
 

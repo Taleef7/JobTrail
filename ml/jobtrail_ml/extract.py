@@ -88,6 +88,38 @@ def messages(note: str, variant: str, fmt: str) -> list[dict[str, str]]:
     return msgs
 
 
+BATCH_NOTE = (
+    " The input is a JSON list of unrelated notes, each with an id. Extract each note on its "
+    "own, as if it were the only one, and return one record per id, in the same order."
+)
+
+
+def batch_input(items: list[dict[str, str]]) -> str:
+    """Several notes in one request (cloud runs on a free tier's daily request limit)."""
+    return json.dumps([{"id": x["id"], "note": x["note"]} for x in items], ensure_ascii=False)
+
+
+def batch_schema(record: dict[str, Any]) -> dict[str, Any]:
+    item = {"type": "object", "properties": {"id": {"type": "string"}, "record": record},
+            "required": ["id", "record"]}  # fmt: skip
+    return {"type": "object", "properties": {"records": {"type": "array", "items": item}},
+            "required": ["records"]}  # fmt: skip
+
+
+def split_batch(ids: list[str], text: str, finish: str | None) -> list[tuple[str, str, str]]:
+    """(id, raw record JSON, finish reason) per note of a batched answer. A note the answer
+    leaves out, or an answer that isn't JSON, scores as that note's failure."""
+    try:
+        records = json.loads(text)["records"]
+        got: dict[str, str] = {}
+        for r in records:
+            if isinstance(r, dict) and isinstance(r.get("id"), str) and r["id"] not in got:
+                got[r["id"]] = json.dumps(r.get("record"), ensure_ascii=False)
+    except (ValueError, KeyError, TypeError):
+        return [(i, "", "UNPARSEABLE_BATCH") for i in ids]
+    return [(i, got[i], finish or "") if i in got else (i, "", "MISSING_IN_BATCH") for i in ids]
+
+
 def schema(fmt: str) -> dict[str, Any]:
     return json.loads(SCHEMAS[fmt].read_text(encoding="utf-8"))
 

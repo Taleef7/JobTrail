@@ -327,6 +327,27 @@ def test_a_new_cloud_model_version_is_caught_before_it_mixes_into_a_run():
     assert new_model_version({"gemini-3.8-flash-001"}, "gemini-3.8-flash-002")
 
 
+def test_batching_is_part_of_the_run_id_only_when_used(gold):
+    one = cloud(gold)
+    assert run_id(one) == run_id(cloud(gold, cloud={"batch_size": 1}))
+    assert run_id(one) != run_id(cloud(gold, cloud={"batch_size": 10}))
+    with pytest.raises(ConfigError, match="grammar"):
+        cloud(gold, grammar=False, cloud={"batch_size": 10})
+    with pytest.raises(ConfigError, match="batch_size"):
+        cloud(gold, cloud={"batch_size": 0})
+
+
+def test_a_reasoning_format_other_than_none_changes_the_run_id(gold):
+    assert run_id(local(gold)) == run_id(local(gold, server={"reasoning_format": "none"}))
+    assert run_id(local(gold)) != run_id(local(gold, server={"reasoning_format": "deepseek"}))
+
+
+def test_committed_evidence_runs_keep_their_run_ids():
+    runs = sorted((ML.parent / "evidence" / "72" / "runs").glob("*/config.json"))
+    for path in runs:  # a change to the identity must not orphan existing run folders
+        assert run_id(load_config(path)) == path.parent.name
+
+
 def test_cost_line_handles_a_run_with_no_predictions():
     assert cost_line({"rate": "2026", "usd": 0.0, "usdPerNote": None}) == (
         "cost at 2026: $0.0000 total, n/a/note"
