@@ -200,7 +200,7 @@ class Run:
     def __init__(self, cfg: dict[str, Any], out_dir: Path = RESULTS):
         self.cfg = cfg
         self.id = run_id(cfg)
-        self.dir = out_dir / self.id
+        self.dir = out_dir.resolve() / self.id  # the scorer runs from the repo root
         gold_all = read_jsonl(ROOT / cfg["gold"])
         self.gold = gold_all[: cfg["limit"]] if cfg["limit"] else gold_all
         self.pred_path = self.dir / "predictions.jsonl"

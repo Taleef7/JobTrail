@@ -282,3 +282,9 @@ def test_cost_line_handles_a_run_with_no_predictions():
     assert cost_line({"rate": "2026", "usd": 0.0, "usdPerNote": None}) == (
         "cost at 2026: $0.0000 total, n/a/note"
     )
+
+
+def test_a_relative_out_dir_is_made_absolute_for_the_scorer(gold, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    run = Run(local(gold), Path("runs"))
+    assert run.dir.is_absolute() and run.dir.parent == (tmp_path / "runs")
