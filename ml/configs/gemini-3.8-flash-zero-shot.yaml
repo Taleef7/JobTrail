@@ -1,0 +1,30 @@
+# The cloud ceiling (#72, run in #73). Prices: ai.google.dev/gemini-api/docs/pricing,
+# "Last updated 2026-10-01 UTC", standard paid tier, text; thinking bills as output.
+name: gemini-3.8-flash-zero-shot
+provider: gemini
+model:
+  id: gemini-3.8-flash
+prompt: zero-shot
+format: full
+grammar: true # responseJsonSchema = schema v2
+gold: data/dev.jsonl
+sampling:
+  # Google: "For all Gemini 3 models, we strongly recommend keeping the temperature
+  # parameter at its default value of 1.0" (docs/gemini-3); lower values can loop.
+  temperature: 1.0
+  seed: 42
+  max_tokens: null # thinking tokens count against it; a cap truncates answers
+cloud:
+  thinking_level: medium # the documented default for gemini-3.8-flash (docs/thinking)
+  rpm: 8
+  key_env: GEMINI_API_KEY
+  pricing:
+    source: https://ai.google.dev/gemini-api/docs/pricing
+    checked: 2026-10-02
+    rates:
+      - label: through 2026-12-31
+        input_per_mtok: 0.75
+        output_per_mtok: 3.75
+      - label: from 2027-01-01
+        input_per_mtok: 1.50
+        output_per_mtok: 7.50
