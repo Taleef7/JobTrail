@@ -1,0 +1,53 @@
+{
+  "name": "smollm2-135m-q8-zero-shot",
+  "provider": "llamacpp",
+  "model": {
+    "file": "ml/models/SmolLM2-135M-Instruct-Q8_0.gguf",
+    "url": "https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q8_0.gguf",
+    "sha256": "5a1395716f7913741cc51d98581b9b1228d80987a9f7d3664106742eb06bba83"
+  },
+  "prompt": "zero-shot",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/dev.jsonl",
+  "limit": null,
+  "sampling": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 512
+  },
+  "server": {
+    "build": "b9837",
+    "ctx": 4096,
+    "gpu_layers": 0,
+    "threads": null,
+    "chat_template_kwargs": {},
+    "reasoning_format": "none"
+  },
+  "identity": {
+    "settings": {
+      "provider": "llamacpp",
+      "model": {
+        "sha256": "5a1395716f7913741cc51d98581b9b1228d80987a9f7d3664106742eb06bba83"
+      },
+      "prompt": "zero-shot",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {
+        "temperature": 0.0,
+        "seed": 42,
+        "max_tokens": 512
+      },
+      "server": {
+        "build": "b9837",
+        "ctx": 4096,
+        "gpu_layers": 0,
+        "chat_template_kwargs": {}
+      }
+    },
+    "prompt_sha256": "2e3fd4abaf5528641f69ffd8ac945ead6c19f0ee88634a037edb53b104a64fd7",
+    "gold_sha256": "393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c"
+  }
+}

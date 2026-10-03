@@ -1,0 +1,20 @@
+# lfm2.5-350m-q8-zero-shot-free (#73 baseline ladder): see results/README.md
+name: lfm2.5-350m-q8-zero-shot-free
+provider: llamacpp
+model:
+  file: ml/models/LFM2.5-350M-Q8_0.gguf
+  url: https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/main/LFM2.5-350M-Q8_0.gguf
+  sha256: be036a757295e550098b85e13f6af2735d0fa73b41e1156a40c7d8e8e32a5766
+  bytes: 379217632
+prompt: zero-shot
+format: full
+grammar: false
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones

@@ -33,7 +33,7 @@ ML = Path(__file__).resolve().parents[1]
 ROOT = ML.parent
 RESULTS = ROOT / "results" / "runs"
 
-PROVIDERS = ("llamacpp", "gemini")
+PROVIDERS = ("llamacpp", "gemini", "agy")
 DEFAULTS: dict[str, Any] = {
     "prompt": "zero-shot",
     "format": "full",
@@ -43,10 +43,15 @@ DEFAULTS: dict[str, Any] = {
 }
 # `build` pins the llama.cpp release (e.g. "b9837"): grammar conversion, chat templates and
 # sampling can change between builds, so it is part of the run ID and checked at start.
+# reasoning_format: "none" keeps raw exactly as written. Qwen3 needs "deepseek": its
+# template pre-fills an empty <think></think>, which a grammar can't start with under "none".
 LLAMACPP_SERVER = {"build": None, "ctx": 4096, "gpu_layers": 0, "threads": None,
-                   "chat_template_kwargs": {}}  # fmt: skip
-GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None}
-MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}}
+                   "chat_template_kwargs": {}, "reasoning_format": "none"}  # fmt: skip
+GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None,
+                "batch_size": 1}  # fmt: skip
+# agy: a model through the Antigravity CLI on the owner's plan (no API key; #73).
+AGY_CLOUD = {"batch_size": 15}
+MODEL_KEYS = {"llamacpp": {"file", "url", "sha256", "bytes"}, "gemini": {"id"}, "agy": {"id"}}
 # Settings that don't change what the model writes stay out of the run ID.
 # The model file and gold are identified by their SHA-256, not their path or URL.
 NOT_IDENTITY = {
@@ -54,10 +59,13 @@ NOT_IDENTITY = {
     "gold",
     "model.file",
     "model.url",
+    "model.bytes",
     "cloud.rpm",
     "cloud.key_env",
     "cloud.pricing",
     "server.threads",
+    "cloud.batch_size",  # hashed below only when > 1, so unbatched run IDs stay as they were
+    "server.reasoning_format",  # hashed below only when not "none", for the same reason
 }
 
 
@@ -124,7 +132,7 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
         raise ConfigError("fine-tuned-short prompts expect compact output (format: compact)")
     if cfg["limit"] is not None and (not isinstance(cfg["limit"], int) or cfg["limit"] < 1):
         raise ConfigError(f"limit must be a positive integer or null, got {cfg['limit']!r}")
-    other = {"llamacpp": "cloud", "gemini": "server"}[cfg["provider"]]
+    other = {"llamacpp": "cloud", "gemini": "server", "agy": "server"}[cfg["provider"]]
     if other in raw:
         raise ConfigError(f"a {cfg['provider']} config has no {other!r} section")
     if cfg["provider"] == "llamacpp":
@@ -134,15 +142,35 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
         cfg["server"] = _merge(LLAMACPP_SERVER, cfg.get("server") or {})
         if not cfg["server"]["build"]:
             raise ConfigError("server.build must pin the llama.cpp release, e.g. b9837")
+    elif cfg["provider"] == "agy":
+        if not cfg["model"].get("id"):
+            raise ConfigError("agy model needs id")
+        if raw.get("sampling"):
+            raise ConfigError("agy doesn't expose sampling settings; leave sampling out")
+        if cfg["prompt"] not in ("zero-shot", "zero-shot-v2") or not cfg["grammar"]:
+            raise ConfigError("agy runs are zero-shot with grammar (batched structured output)")
+        cfg["sampling"] = {}
+        _known(raw.get("cloud"), AGY_CLOUD, "cloud")
+        cfg["cloud"] = _merge(AGY_CLOUD, cfg.get("cloud") or {})
+        n = cfg["cloud"]["batch_size"]
+        if not isinstance(n, int) or n < 1:
+            raise ConfigError(f"cloud.batch_size must be a positive integer, got {n!r}")
     else:
         if not cfg["model"].get("id"):
             raise ConfigError("gemini model needs id")
-        if cfg["prompt"] == "few-shot":
+        if cfg["prompt"].startswith("few-shot"):
             raise ConfigError("the cloud runner sends one system + one user turn; no few-shot")
         if "max_tokens" not in (raw.get("sampling") or {}):
             cfg["sampling"]["max_tokens"] = None  # thinking counts against the cap
         _known(raw.get("cloud"), GEMINI_CLOUD, "cloud")
         cfg["cloud"] = _merge(GEMINI_CLOUD, cfg.get("cloud") or {})
+        n = cfg["cloud"]["batch_size"]
+        if not isinstance(n, int) or n < 1:
+            raise ConfigError(f"cloud.batch_size must be a positive integer, got {n!r}")
+        if n > 1 and not cfg["grammar"]:
+            raise ConfigError("batched cloud runs need grammar: true to split the answer")
+        if n > 1 and cfg["prompt"] not in ("zero-shot", "zero-shot-v2"):
+            raise ConfigError("batched cloud runs send the zero-shot rules; use batch_size: 1")
     return {k: cfg[k] for k in KEYS if k in cfg}
 
 
@@ -180,6 +208,17 @@ def identity(cfg: dict[str, Any]) -> dict[str, Any]:
     }
     if cfg["grammar"]:
         ident["schema_sha256"] = sha256_file(extract.SCHEMAS[cfg["format"]])
+    fmt = (cfg.get("server") or {}).get("reasoning_format", "none")
+    if fmt != "none":
+        ident["reasoning_format"] = fmt
+    batch = (cfg.get("cloud") or {}).get("batch_size", 1)
+    if batch > 1:
+        note = hashlib.sha256(extract.BATCH_NOTE.encode()).hexdigest()
+        ident["batch"] = {"size": batch, "note_sha256": note,
+                          "shape_sha256": extract.batch_shape_sha()}  # fmt: skip
+    if cfg["provider"] == "agy":
+        version = extract.prompt_version(cfg["prompt"])
+        ident["agy_prompt_sha256"] = extract.agy_prompt_sha(cfg["format"], version)
     return ident
 
 
@@ -245,6 +284,29 @@ class Run:
 
     def todo(self) -> list[dict]:
         return [g for g in self.gold if g["id"] not in self.done]
+
+    def pending_batches(self, n: int) -> list[list[dict]]:
+        """Batches cut from the whole gold file, so a resumed run sends exactly the requests
+        the first try did (neighbouring notes are model input); those with a note to do."""
+        batches = [self.gold[k : k + n] for k in range(0, len(self.gold), n)]
+        return [b for b in batches if any(g["id"] not in self.done for g in b)]
+
+    def append_many(self, lines: list[dict[str, Any]]) -> None:
+        """A batch's predictions in one write, skipping notes an earlier try already saved.
+        A skipped line's usage moves to the first line kept, so every request is counted."""
+        kept = [dict(x) for x in lines if x["id"] not in self.done]
+        if not kept:
+            return
+        usage = dict(kept[0].get("usage") or {})
+        for x in lines:
+            if x["id"] in self.done:
+                for k, v in (x.get("usage") or {}).items():
+                    usage[k] = usage.get(k, 0) + v
+        if usage:
+            kept[0]["usage"] = usage
+        with self.pred_path.open("a", encoding="utf-8", newline="\n") as f:
+            f.write("".join(json.dumps(x) + "\n" for x in kept))
+        self.done.update(x["id"] for x in kept)
 
     def append(self, line: dict[str, Any]) -> None:
         with self.pred_path.open("a", encoding="utf-8", newline="\n") as f:

@@ -79,7 +79,8 @@ def free_port() -> int:
 def server_command(exe: str, model: Path, port: int, server: dict[str, Any], seed: int) -> list:
     cmd = [exe, "-m", str(model), "--host", "127.0.0.1", "--port", str(port), "-np", "1",
            "-c", str(server["ctx"]), "-ngl", str(server["gpu_layers"]), "--seed", str(seed),
-           "--reasoning-format", "none", "--no-webui"]  # fmt: skip
+           "--reasoning-format", server.get("reasoning_format", "none"),
+           "--no-webui"]  # fmt: skip
     if server.get("threads"):
         cmd += ["-t", str(server["threads"])]
     return cmd
@@ -187,5 +188,8 @@ class LlamaClient:
         u = data.get("usage", {})
         usage = {"promptTokens": u.get("prompt_tokens", 0),
                  "outputTokens": u.get("completion_tokens", 0)}  # fmt: skip
-        return Completion(choice["message"].get("content") or "", choice.get("finish_reason"),
-                          wall_ms, timings, usage)  # fmt: skip
+        msg = choice["message"]
+        text = msg.get("content") or ""
+        if msg.get("reasoning_content"):  # put any thinking back, so raw is all it wrote
+            text = f"<think>{msg['reasoning_content']}</think>{text}"
+        return Completion(text, choice.get("finish_reason"), wall_ms, timings, usage)

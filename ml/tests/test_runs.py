@@ -180,8 +180,10 @@ def test_every_committed_config_resolves():
             assert re.fullmatch(r"[0-9a-f]{64}", cfg["model"]["sha256"]), path.name
             assert cfg["model"]["url"].startswith("https://huggingface.co/"), path.name
             assert cfg["sampling"]["temperature"] == 0 and cfg["server"]["gpu_layers"] == 0
-        else:
+        elif cfg["provider"] == "gemini":
             assert cfg["cloud"]["pricing"]["rates"], path.name
+        else:
+            assert cfg["cloud"]["batch_size"] >= 1 and cfg["sampling"] == {}, path.name
 
 
 def _node24() -> bool:
@@ -325,6 +327,125 @@ def test_a_new_cloud_model_version_is_caught_before_it_mixes_into_a_run():
     assert not new_model_version(set(), "gemini-3.8-flash-001")  # first answer sets it
     assert not new_model_version({"gemini-3.8-flash-001"}, "gemini-3.8-flash-001")
     assert new_model_version({"gemini-3.8-flash-001"}, "gemini-3.8-flash-002")
+
+
+def test_batching_is_part_of_the_run_id_only_when_used(gold):
+    one = cloud(gold)
+    assert run_id(one) == run_id(cloud(gold, cloud={"batch_size": 1}))
+    assert run_id(one) != run_id(cloud(gold, cloud={"batch_size": 10}))
+    with pytest.raises(ConfigError, match="grammar"):
+        cloud(gold, grammar=False, cloud={"batch_size": 10})
+    with pytest.raises(ConfigError, match="batch_size"):
+        cloud(gold, cloud={"batch_size": 0})
+
+
+def test_a_reasoning_format_other_than_none_changes_the_run_id(gold):
+    assert run_id(local(gold)) == run_id(local(gold, server={"reasoning_format": "none"}))
+    assert run_id(local(gold)) != run_id(local(gold, server={"reasoning_format": "deepseek"}))
+
+
+def test_agy_configs_take_no_sampling_and_must_batch_structured_output(gold):
+    base = {
+        "name": "a",
+        "provider": "agy",
+        "gold": str(gold),
+        "model": {"id": "gemini-3.8-flash-high"},
+    }
+    cfg = resolve(base)
+    assert cfg["sampling"] == {} and cfg["cloud"] == {"batch_size": 15}
+    with pytest.raises(ConfigError, match="sampling"):
+        resolve({**base, "sampling": {"temperature": 0}})
+    with pytest.raises(ConfigError, match="zero-shot with grammar"):
+        resolve({**base, "grammar": False})
+    with pytest.raises(ConfigError, match="no 'server'"):
+        resolve({**base, "server": {"ctx": 1}})
+    assert run_id(cfg) != run_id(resolve({**base, "cloud": {"batch_size": 5}}))
+
+
+def test_the_whole_batched_request_and_the_agy_prompt_are_in_the_run_id(gold, monkeypatch):
+    from jobtrail_ml import extract
+
+    agy = resolve({"name": "a", "provider": "agy", "gold": str(gold),
+                   "model": {"id": "gemini-3.8-flash-high"}})  # fmt: skip
+    batched = cloud(gold, cloud={"batch_size": 10})
+    before = (run_id(agy), run_id(batched))
+    monkeypatch.setattr(extract, "AGY_TOOLS", extract.AGY_TOOLS + " Be brief.")
+    assert run_id(agy) != before[0]
+    monkeypatch.undo()
+
+    def renamed_keys(items):
+        return json.dumps([{"key": x["id"], "text": x["note"]} for x in items])
+
+    monkeypatch.setattr(extract, "batch_input", renamed_keys)
+    assert run_id(batched) != before[1] and run_id(agy) != before[0]
+
+
+def test_batching_requires_a_zero_shot_prompt(gold):
+    with pytest.raises(ConfigError, match="batch_size: 1"):
+        cloud(gold, prompt="fine-tuned-short", format="compact", cloud={"batch_size": 10})
+
+
+def test_a_resumed_batched_run_sends_the_same_batches(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    assert [[g["id"] for g in b] for b in run.pending_batches(2)] == [["d-1", "d-2"], ["d-3"]]
+    run.append_many([line(1)])  # a crash after part of the first batch
+    again = Run(local(gold), tmp_path)
+    assert [[g["id"] for g in b] for b in again.pending_batches(2)] == [["d-1", "d-2"], ["d-3"]]
+    again.append_many([line(1), line(2)])  # the whole batch is re-sent; d-1 isn't saved twice
+    ids = [json.loads(x)["id"] for x in again.pred_path.read_text(encoding="utf-8").splitlines()]
+    assert ids == ["d-1", "d-2"]
+
+
+def test_a_resent_batch_keeps_its_token_usage(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    first = {**line(1), "usage": {"promptTokens": 100}}
+    run.append_many([first])  # a crash after the batch's first line
+    again = Run(local(gold), tmp_path)
+    resent = [
+        {**line(1), "usage": {"promptTokens": 100}},
+        {**line(2), "usage": {"promptTokens": 0}},
+    ]
+    again.append_many(resent)
+    preds = [json.loads(x) for x in again.pred_path.read_text(encoding="utf-8").splitlines()]
+    assert sum(p["usage"]["promptTokens"] for p in preds) == 200  # both requests counted
+
+
+def test_agy_version_is_read_and_checked(monkeypatch):
+    import subprocess
+    from types import SimpleNamespace
+
+    from jobtrail_ml import agy
+
+    monkeypatch.setattr(agy.shutil, "which", lambda _: "agy")
+
+    def fake(stdout, stderr="", code=0):
+        out = SimpleNamespace(stdout=stdout, stderr=stderr, returncode=code)
+        monkeypatch.setattr(agy.subprocess, "run", lambda *a, **k: out)
+
+    fake("\n", "agy 1.2.16\n")
+    assert agy.version() == "1.2.16"
+    for bad in [("", ""), ("usage: agy [options]", "", 0), ("1.2.16", "", 2)]:
+        fake(*bad)
+        with pytest.raises(agy.AgyError):
+            agy.version()
+
+    def slow(*a, **k):
+        raise subprocess.TimeoutExpired("agy", 60)
+
+    monkeypatch.setattr(agy.subprocess, "run", slow)
+    with pytest.raises(agy.AgyError, match="timed out"):
+        agy.version()
+
+
+def test_committed_runs_keep_their_run_ids():
+    root = ML.parent
+    runs = sorted([*(root / "evidence" / "72" / "runs").glob("*/config.json"),
+                   *(root / "results" / "runs").glob("*/config.json")])  # fmt: skip
+    assert len(runs) > 6  # covers agy, batched, prompt-v2 and reasoning_format runs
+    for path in runs:  # a change to the identity must not orphan existing run folders
+        assert run_id(load_config(path)) == path.parent.name
 
 
 def test_cost_line_handles_a_run_with_no_predictions():

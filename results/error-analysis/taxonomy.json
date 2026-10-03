@@ -1,0 +1,151 @@
+{
+ "categories": [
+  {
+   "key": "kit-unit-convention",
+   "name": "Debatable 'kit' unit convention scored as an error",
+   "definition": "The model keeps a name-final 'kit' inside the material name and sets unit null ('1 drywall patch kit'). The gold sets unit 'kit' because LABELING lists 'kit' as a unit word. Both carry the same information, and the convention is debatable: 'kit' is the item's head noun, not a package word said separately. The scorer's exact unit compare still counts it as an error. These are the only gold_suspect and scorer_artifact cases (5, all from the Gemini ceiling). All 8 kit-named materials in the dev gold use unit 'kit'. Fix: settle the convention, either by stating it in the prompt (as v2 does) or by relabeling to null, and have the scorer treat a unit equal to the name's last token as equal to null.",
+   "include_when": "Name and quantity match, the model's unit is null, the gold unit equals the last token of the material name (in this set always 'kit'), and the note says no separate package word next to the number.",
+   "exclude_when": "A separately said package or measure word left null, such as '1 pack of cloths' or '2 boxes of screws' -> materials-rule-gap. A wrong non-null unit on a kit, such as 'feet' -> ungrounded-fill. The kit entry missing entirely -> materials-rule-gap if it was a supply-house pickup, otherwise field-slot-routing. A wrong kit quantity from '2 no 1' -> spoken-modifier-misresolved.",
+   "source": "label-or-scorer",
+   "example_ids": [
+    "ceiling:d-0011",
+    "ceiling:d-0059",
+    "ceiling:d-0063",
+    "ceiling:d-0066"
+   ]
+  },
+  {
+   "key": "prompt-example-copied",
+   "name": "Prompt or few-shot text copied into the record",
+   "definition": "A string or number in the output comes word for word, or nearly so, from the v1 system prompt or a few-shot gold record, and the note does not support it. From the prompt: the 'Replaced kitchen sink P-trap' example, the unfilled 'Picked up <part> at the supply house' template, descriptors such as 'noun phrases' or 'A problem found and fixed', and the trade list. From the few-shot records: fs-3's 'Call customer tomorrow to confirm', 'Snaked bathroom sink drain' and 'No parts needed', and fs-1's 150 minutes. Across whole runs this is large. LFM2-Extract zero-shot writes the P-trap example on 69 of 110 dev notes and the '<part>' template on 76. LFM2.5 few-shot adds fs-3's 'Call ... tomorrow to confirm' on 42 of 110. Fix: <placeholders> instead of concrete examples, a note that the few-shot jobs are unrelated (both are in v2), and a few-shot set where no single example (fs-3) serves as the default answer.",
+   "include_when": "A list item, material name, string or laborMinutes value matches a span of the v1 prompt or a few-shot gold record and has no support in the note. A swapped noun still counts ('Call homeowner tomorrow to confirm'). Includes prompt descriptors echoed as values ('Noun phrase'), the trade list entered as materials, a few-shot labor total (150), and copies that land in any field. Count it even when the fuzzy scorer gives it partial credit: the '<part>' template matched the gold supply-house item at Dice 0.67-0.73.",
+   "exclude_when": "jobType, even when it matches a copied example's trade -> trade-boundary-undefined or trade-run-default. customerApproved true/false on a silent note, since a boolean can't be traced to one example -> ungrounded-fill. Invented text or numbers that match no prompt span -> ungrounded-fill. A value that is correct for the note and only resembles an example (a real P-trap job) is not an error. A repetition loop that leaves the JSON unclosed -> output-collapse, but copied items written before the loop still count here.",
+   "source": "prompt",
+   "example_ids": [
+    "lfm2-350m-extract-zero-shot:d-0076",
+    "lfm2-350m-extract-zero-shot:d-0016",
+    "lfm2.5-350m-few-shot:d-0061",
+    "lfm2.5-350m-few-shot:d-0068",
+    "llama3.2-1b-few-shot:d-0092"
+   ]
+  },
+  {
+   "key": "trade-boundary-undefined",
+   "name": "Trade boundary the v1 prompt never defines",
+   "definition": "jobType lands on a neighbouring trade that a cue word in the note's main task makes plausible. The gold follows an item in the Covers column of LABELING's trades table, which the v1 prompt never prints: v1 gives bare trade names and glosses only 'general (handyman tasks)'. Under that table, TV and bracket mounting, furniture assembly, door stops and drywall patches are general, not carpentry. Water heaters are plumbing, not appliance. Dishwasher and dryer parts (drain pumps, vents) are appliance, not plumbing. Furnace parts and thermostats are hvac. Llama 1B few-shot labels 11 of the 12 general dev notes carpentry. Fix: put each trade's coverage in the prompt, as v2 does.",
+   "include_when": "All four hold: jobType is wrong and non-null; the predicted trade is not the run's default label (see trade-run-default); a cue word in the main task fits the predicted trade (wall, stud, wood, door, bracket, drain, heater, furnace); and the gold trade comes from an explicit Covers item in LABELING that v1 leaves out.",
+   "exclude_when": "Send these to trade-run-default: jobType null; the run's default label (plumbing for LFM2-Extract zero-shot, general for LFM2.5 few-shot), even on a covers-table case such as LFM2-Extract's plumbing for a dishwasher drain pump; a trade no word in the note supports, such as painting labeled cleaning or roofing labeled carpentry.",
+   "source": "prompt",
+   "example_ids": [
+    "llama3.2-1b-few-shot:d-0031",
+    "llama3.2-1b-few-shot:d-0082",
+    "llama3.2-1b-few-shot:d-0069",
+    "lfm2.5-350m-few-shot:d-0108",
+    "lfm2.5-350m-few-shot:d-0061"
+   ]
+  },
+  {
+   "key": "trade-run-default",
+   "name": "Run-default or unsupported trade on a clear note",
+   "definition": "jobType does not follow the note. On notes whose trade is clear from v1's trade names alone, the model returns its run's default label, null, or a trade no word in the note supports. Defaults in these runs: LFM2-Extract zero-shot says plumbing on 81 of 94 parsed dev outputs (plumbing is listed first and is the P-trap example's trade). LFM2.5 few-shot says general on 52 of 110, labels 11 of 12 painting notes cleaning, and never outputs painting or appliance. Llama 1B zero-shot returns null on all 110 notes. Its grammar-free run also returns null on all 68 outputs it parses, so this is not a grammar artifact. Gold has no trade above 12%. This is a capacity failure. Fix: fine-tune on trade-balanced data and use few-shot examples covering more than the three trades v1 shows (electrical, hvac, plumbing). For the null collapse, use few-shot prompting (Llama few-shot never returns null) or a grammar without the null branch.",
+   "include_when": "jobType is wrong and one of these holds: (a) null on a note with a clear trade; (b) the run's default label, meaning a trade it outputs on at least 40% of its parsed outputs whatever the note; (c) a trade that no cue word in the note supports (painting -> cleaning, roofing -> carpentry or general, electrical -> plumbing, a P-trap job -> general). Check (a) and (b) before trade-boundary-undefined.",
+   "exclude_when": "A keyword-plausible trade on a case LABELING's Covers column settles and v1 omits, when the prediction is not the run's default (TV mount -> carpentry, water heater -> appliance, LFM2.5's dishwasher drain pump -> plumbing) -> trade-boundary-undefined.",
+   "source": "model",
+   "example_ids": [
+    "lfm2.5-350m-few-shot:d-0073",
+    "lfm2.5-350m-few-shot:d-0054",
+    "lfm2-350m-extract-zero-shot:d-0010",
+    "llama3.2-1b-few-shot:d-0088",
+    "llama3.2-1b-zero-shot:d-0062"
+   ]
+  },
+  {
+   "key": "issue-without-finding",
+   "name": "Job's own task or chatter listed as an issue",
+   "definition": "issuesFound gets an entry the note never reports finding. Typical entries: the job's own task or its object; a descriptive or defect word on the thing being repaired ('cracked cover plates' from 'replaced cracked cover plates', 'old bracket holes' from 'patched the old bracket holes'); the work verb ('stained'); or off-site chatter ('traffic', 'steep driveway'). v1 says only 'The job's own task is not also an issue'. It leaves out LABELING's counter-example ('patched the drywall hole' gives no issue) and the found/noticed cue. The Gemini ceiling makes this error in 6 of its 13 failures. Small models also make it by mirroring work items into issuesFound. Fix: prompt wording. v2 says issues need a found/noticed cue and that words describing the thing being repaired are not issues.",
+   "include_when": "An extra issuesFound entry, with no found/noticed/turned-out cue in the note for it, whose content is one of these: the job's own task in any wording (its object, a defect adjective on that object, the task restated, a mirrored work item such as 'Replaced missing shingles' or 'heating element replaced', or the bare work verb), or travel or scene-setting chatter.",
+   "exclude_when": "Issue entries taken from a material, a follow-up, approval, raw note sentences or a dump of every noun in the note; or a real finding split, merged, swapped with its fix, or missed -> field-slot-routing. Prompt or few-shot text as an issue ('Noun phrase', 'Problem found and fixed', 'No parts needed') -> prompt-example-copied. A generic problem with no source in the note ('Poor quality') -> ungrounded-fill.",
+   "source": "prompt",
+   "example_ids": [
+    "ceiling:d-0022",
+    "ceiling:d-0037",
+    "ceiling:d-0077",
+    "lfm2.5-350m-few-shot:d-0004",
+    "llama3.2-1b-zero-shot:d-0073"
+   ]
+  },
+  {
+   "key": "materials-rule-gap",
+   "name": "Materials rules v1 omits or never demonstrates",
+   "definition": "The output follows v1 and its few-shot examples but breaks one of two LABELING materials rules that v1 doesn't spell out. First, a part picked up at the supply house is also billed as a material; v1 only says the trip is a work item. Second, a package or measure word said with the amount is the unit; v1 names no unit words, and all three few-shot materials have unit null. Llama few-shot leaves 66% of its units null, against 51% in the dev gold. Fix: v2's materials clause (supply-house parts are materials, plus an explicit unit-word list), and few-shot examples that show a billed pickup and non-null units.",
+   "include_when": "Either of these: (1) a part the note says was picked up at the supply house is missing from materials, whether or not its 'Picked up X' work item is there, especially when it has no digit ('an in-wall cable kit', 'tile cleaner'); (2) unit null where the note says a separate package or measure word with the amount ('1 pack of', '2 boxes of', 'one tube of', '1 bottle of', '1 roll', '4 feet').",
+   "exclude_when": "Unit null where the gold unit is the name's last word ('drywall patch kit') -> kit-unit-convention. A missing 'Picked up X' work item, or a missing counted material that was not a supply-house pickup -> field-slot-routing. A material lost to a negation or self-correction -> spoken-modifier-misresolved. A unit filled where gold is null, or a wrong non-null unit -> ungrounded-fill.",
+   "source": "prompt",
+   "example_ids": [
+    "ceiling:d-0072",
+    "ceiling:d-0097",
+    "llama3.2-1b-few-shot:d-0012",
+    "llama3.2-1b-few-shot:d-0044"
+   ]
+  },
+  {
+   "key": "field-slot-routing",
+   "name": "Note content routed to the wrong field or slot",
+   "definition": "Real note content lands in the wrong field or material slot, or is duplicated, split, merged or dropped. Common forms: every clause narrated as a work item ('Used 6 wire nuts', 'Found glass shard', 'Client gave final go-ahead', 'Drive out to house'); past work mirrored into followUps; materials, follow-ups or note sentences put in issuesFound; an issue and its fix swapped or merged; one task split or paraphrased twice; a task object with no number billed as a material; counted materials dropped because they sit in the task clause or come after the first item; name, quantity or unit spans bound to the wrong material. v1 already states the rules these break. This is a small-model segmentation failure, to fix with fine-tuning data that maps each clause to exactly one field.",
+   "include_when": "An extra, missing, duplicated, split, merged or misplaced item whose text comes from the note itself, in any list field or material slot. Includes: a missing work item for a task or for the supply-house pickup; a missed explicit 'found' issue; an uncounted task object (railing post, heating element, dryer vent, thermostat, pump) added as a material; a counted material dropped, or the material list cut short ('using 1 TV wall mount and 1 in-wall cable kit' -> []); a material name truncated or replaced by another note word ('painters tape' -> 'paint'), carrying its quantity phrase ('1 roll of foil tape'), or attached to another material's or the issue's slot ('2 bundles' labeled 'chimney flashing sealant'); the same material entered twice.",
+   "exclude_when": "An issue that is the job's own task or chatter -> issue-without-finding. A supply-house part missing from materials -> materials-rule-gap. An item lost or kept because of a negation or self-correction -> spoken-modifier-misresolved. Prompt or few-shot text -> prompt-example-copied. Content with no source in the note, including a fix the note never states -> ungrounded-fill.",
+   "source": "model",
+   "example_ids": [
+    "lfm2.5-350m-few-shot:d-0066",
+    "llama3.2-1b-few-shot:d-0033",
+    "llama3.2-1b-few-shot:d-0019",
+    "lfm2.5-350m-few-shot:d-0063",
+    "lfm2.5-350m-few-shot:d-0053"
+   ]
+  },
+  {
+   "key": "ungrounded-fill",
+   "name": "Value invented where the note is silent",
+   "definition": "Where the note says nothing (no time, no approval, no follow-up, no number or measure word, or 'didn't use any materials'), the model fills in its own value or entry instead of null or []. No note span or prompt text supports it. This is a grounding failure. LFM2.5 few-shot sets customerApproved on all 16 approval-silent dev notes (12 false, 4 true). It also fills a unit on 81% of its materials, against 49% in the gold. Fix: fine-tune on approval-absent, no-materials and no-time notes, and on 'some X' and plain-count materials.",
+   "include_when": "Any of: customerApproved true or false when the note never mentions approval; laborMinutes when the note gives no time; a quantity for 'some X'; a unit not said with the quantity (filler 'pieces', 'units' or 'unit'; the item's own noun such as 'bolts', 'boards', 'pump' or 'supply lines'; a neighbouring material's unit; 'feet' on a count or a kit); placeholder text for an empty list ('no future actions'); work items, issues, follow-ups or materials with no source in the note, including materials invented despite 'didn't use any materials' and a fix for a problem the note only reports finding.",
+   "exclude_when": "Text or numbers traceable to the prompt or a few-shot example -> prompt-example-copied. Real note content in the wrong field -> field-slot-routing. A stated package word dropped to null -> materials-rule-gap or kit-unit-convention. A material the note names as negated but that is kept with quantity > 0 -> spoken-modifier-misresolved; kept with quantity 0 -> output-collapse.",
+   "source": "model",
+   "example_ids": [
+    "lfm2.5-350m-few-shot:d-0026",
+    "lfm2.5-350m-few-shot:d-0047",
+    "llama3.2-1b-few-shot:d-0047",
+    "llama3.2-1b-zero-shot:d-0016",
+    "lfm2.5-350m-few-shot:d-0064"
+   ]
+  },
+  {
+   "key": "spoken-modifier-misresolved",
+   "name": "Self-corrections, negations and stated times resolved wrong",
+   "definition": "The note states the value, but the model resolves a spoken modifier, or the time arithmetic, wrongly. With a self-correction like '2, no 1', it keeps the retracted number, pastes the correction into the name, or reads it as a negation and drops the item. With a negation, it keeps the negated material or spreads 'didn't need X' to another material. With time, it computes laborMinutes wrong: hours not converted, the half hour lost, a separately stated segment dropped or mis-summed, or an explicit minute value changed. These cases match the eval's self-correction, negation, hours-phrasing and extra-labor tags. Fix: fine-tune on those tags. For time, also have the model emit the time spans and convert and sum them in code.",
+   "include_when": "A wrong quantity, a missing or renamed material, or a kept negated material (quantity > 0), where a self-correction or negation in the note governs that value. Or a wrong or null laborMinutes on a note that states its time: '3 hours' -> 3; 'about an hour and a half' -> 1 or null; 'two and a half hours' -> 105; 90 + 'another 30' -> 30; 85 + 45 -> 85 or 110; 'in 65 minutes' -> 70.",
+   "exclude_when": "laborMinutes on a note with no time, approval set on a silent note, or materials invented despite 'no materials' -> ungrounded-fill. laborMinutes equal to a few-shot total (150) -> prompt-example-copied. A negated material kept with quantity 0 -> output-collapse. An item dropped with no correction or negation cue nearby -> field-slot-routing. A retracted time narrated as a work item ('Took 0.75 hours') -> field-slot-routing.",
+   "source": "model",
+   "example_ids": [
+    "lfm2.5-350m-few-shot:d-0003",
+    "lfm2.5-350m-few-shot:d-0036",
+    "lfm2.5-350m-few-shot:d-0015",
+    "llama3.2-1b-few-shot:d-0076",
+    "llama3.2-1b-few-shot:d-0077"
+   ]
+  },
+  {
+   "key": "output-collapse",
+   "name": "Record fails to parse or validate",
+   "definition": "The output is not a valid record, so the whole note scores as wrong. Causes: a repetition loop runs to the token limit and leaves the JSON unclosed (16 of 110 LFM2-Extract zero-shot dev outputs stop on length and don't parse); a JSON key name leaks into an array; or a value the schema forbids appears, such as quantity 0 (5 more LFM2-Extract records and 1 Llama zero-shot record). Fix this in inference: a repetition penalty and a token budget, a grammar that enforces quantity > 0, and a post-processor that drops entries with a non-positive quantity (quantity 0 is sometimes how a model marks a negated material).",
+   "include_when": "The record fails to parse or to validate against the schema, whatever the upstream cause: unclosed JSON from a loop, key names inside values, or quantity 0 (including a negated or duplicated material written with quantity 0).",
+   "exclude_when": "Content errors inside a schema-valid record -> the other categories; copied text written before a loop still counts as prompt-example-copied. jobType null or constant across a run, which is schema-valid -> trade-run-default.",
+   "source": "model",
+   "example_ids": [
+    "lfm2-350m-extract-zero-shot:d-0036",
+    "lfm2-350m-extract-zero-shot:d-0073",
+    "lfm2-350m-extract-zero-shot:d-0062",
+    "llama3.2-1b-zero-shot:d-0036"
+   ]
+  }
+ ]
+}

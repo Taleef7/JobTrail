@@ -81,6 +81,21 @@ def test_server_errors_and_dropped_connections_are_retried_then_raised():
         c.chat([], schema=None, sampling=SAMPLING)
 
 
+def test_reasoning_the_server_split_off_goes_back_into_raw():
+    resp = httpx.Response(200, json={
+        "choices": [{"message": {"content": "{}", "reasoning_content": "hmm"},
+                     "finish_reason": "stop"}], "timings": TIMINGS, "usage": {},
+    })  # fmt: skip
+    c, _ = client([resp])
+    assert c.chat([], schema=None, sampling=SAMPLING).text == "<think>hmm</think>{}"
+
+
+def test_reasoning_format_comes_from_the_config():
+    cmd = server_command("s", Path("m"), 1, {"ctx": 1, "gpu_layers": 0,
+                                              "reasoning_format": "deepseek"}, 1)  # fmt: skip
+    assert "--reasoning-format deepseek" in " ".join(cmd)
+
+
 def test_a_bad_request_is_not_retried():
     c, seen = client([httpx.Response(400, text="bad schema"), reply()])
     with pytest.raises(LlamaError, match="HTTP 400"):

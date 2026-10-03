@@ -1,0 +1,23 @@
+# qwen3-0.6b-q4km-zero-shot (#73 baseline ladder): see results/README.md
+name: qwen3-0.6b-q4km-zero-shot
+provider: llamacpp
+model:
+  file: ml/models/Qwen3-0.6B-Q4_K_M.gguf
+  url: https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf
+  sha256: ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+  bytes: 396705472
+prompt: zero-shot
+format: full
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones
+  reasoning_format: deepseek # see runs.py: Qwen3's empty think block
+  chat_template_kwargs:
+    enable_thinking: false # direct JSON; thinking costs phone time

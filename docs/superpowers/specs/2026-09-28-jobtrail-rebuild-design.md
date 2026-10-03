@@ -101,6 +101,12 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
    **Measured (#110):** on iPhone 16 Pro web, LFM2-350M-Extract Q8_0 (380 MB) runs from cache, and one model fits per page load. Each new candidate is validated by its own iPhone run.
 4. **Ceiling:** cloud model with structured output (quality, $/note, latency).
 
+**Measured (#73, `docs/RESULTS.md`):**
+- **Zero-edit on test:** rules 0%; models of 400 MB or less at most 4% on either split; Qwen3-1.7B 19.0%; the Gemini 3.8 Flash ceiling 92.6%.
+- **Verdict:** GO for fine-tuning.
+- **M2 candidates:** LFM2.5-350M (main; QAD-Q4_0, 219 MB, for the iPhone web), Granite 4.0-H-350M (Apache-2.0 hedge), Qwen3-0.6B (Android), and optionally LFM2.5-230M.
+- **M2 must hold some job templates out of training**, because test, dev and training data share the same 27 templates.
+
 ### Quantization study
 Fine-tuned winner(s) exported at F16, Q8_0, Q6_K, Q4_K_M, Q4_0; constrained decoding on vs off. Measure accuracy vs size vs speed — on the Redmi Note 9S specifically (Cortex-A76 dotprod may favor Q4_0/Q8_0 kernels; test, don't assume).
 
