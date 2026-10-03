@@ -2,6 +2,7 @@
  "reviewer": "gemini",
  "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
  "batch": "b17",
+ "prompt_sha256": "90779fcf551d4f0fc13b4d5cfc8dd458c5481a4f1dca83b6743b566940a73e89",
  "usage": {
   "input_tokens": 27765,
   "output_tokens": 30147,

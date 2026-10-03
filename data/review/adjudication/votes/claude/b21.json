@@ -1,14 +1,81 @@
-{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b21", "usage": {}, "decisions": [
-{"id": "d-0076", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0077", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0078", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0079", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0080", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0081", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0082", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0083", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0084", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0085", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0086", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0087", "action": "accept", "gold": null, "comment": ""}
-]}
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b21",
+ "prompt_sha256": "774f8d9367d7df74b1bec08779e77652c0708a95961ecd7f670e63a7cb1148ad",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "d-0076",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0077",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0078",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0079",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0080",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0081",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0082",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0083",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0084",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0085",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0086",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0087",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

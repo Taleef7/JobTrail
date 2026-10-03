@@ -1,14 +1,118 @@
-{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b02", "usage": {}, "decisions": [
-{"id": "t-0013", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0014", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0015", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0016", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0017", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0018", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0019", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0020", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0021", "action": "accept", "gold": null, "comment": "Loose neutrals and the tripping breaker are the objects of the job's own tasks with no finding reported, so no issues; key is correct."},
-{"id": "t-0022", "action": "edit", "gold": {"jobType": "painting", "workPerformed": ["Painted front door"], "issuesFound": [], "materials": [{"name": "exterior satin paint", "quantity": 2, "unit": "quart"}, {"name": "sanding sponge", "quantity": 2, "unit": null}], "laborMinutes": 80, "customerApproved": null, "followUps": ["Sand the peeling trim"]}, "comment": "Added follow-up to sand the peeling trim ('still gotta handle that'); peeling trim is not reported as found, so no issue."},
-{"id": "t-0023", "action": "edit", "gold": {"jobType": "hvac", "workPerformed": ["Replaced furnace thermostat", "Fixed corroded thermostat wiring", "Changed furnace filter"], "issuesFound": ["Thermostat wiring corroded"], "materials": [], "laborMinutes": 75, "customerApproved": true, "followUps": []}, "comment": "Added the wiring fix to workPerformed, since a found-and-fixed problem is also work performed."},
-{"id": "t-0024", "action": "accept", "gold": null, "comment": ""}
-]}
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b02",
+ "prompt_sha256": "b8e499e29d779500753d5dd18abd3a12dd5db5104568beb54d300515f379b73d",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0013",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0014",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0015",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0016",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0017",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0018",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0019",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0020",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0021",
+   "action": "accept",
+   "gold": null,
+   "comment": "Loose neutrals and the tripping breaker are the objects of the job's own tasks with no finding reported, so no issues; key is correct."
+  },
+  {
+   "id": "t-0022",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Painted front door"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 80,
+    "customerApproved": null,
+    "followUps": [
+     "Sand the peeling trim"
+    ]
+   },
+   "comment": "Added follow-up to sand the peeling trim ('still gotta handle that'); peeling trim is not reported as found, so no issue."
+  },
+  {
+   "id": "t-0023",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Fixed corroded thermostat wiring",
+     "Changed furnace filter"
+    ],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "materials": [],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the wiring fix to workPerformed, since a found-and-fixed problem is also work performed."
+  },
+  {
+   "id": "t-0024",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

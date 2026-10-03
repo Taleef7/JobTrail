@@ -186,6 +186,17 @@ def check_votes(item_ids: list[str], reviewer: str, votes: Iterable[Vote]) -> di
     return by_id
 
 
+def check_vote_file(meta: dict[str, Any], reviewer: str, batch: str, prompt_sha256: str) -> None:
+    """A vote file must say which reviewer, model, batch and prompt it answers, so a file
+    in the wrong folder, or one cast under different instructions, is never counted."""
+    want = {"reviewer": reviewer, "model": REVIEWERS[reviewer], "batch": batch,
+            "prompt_sha256": prompt_sha256}  # fmt: skip
+    wrong = {k: meta.get(k) for k, v in want.items() if meta.get(k) != v}
+    if wrong:
+        raise ValueError(f"{reviewer} {batch}: vote file has {wrong}, expected "
+                         f"{ {k: want[k] for k in wrong} }")  # fmt: skip
+
+
 def _canon(gold: dict) -> str:
     return json.dumps({k: gold[k] for k in GOLD_KEYS}, sort_keys=True)
 

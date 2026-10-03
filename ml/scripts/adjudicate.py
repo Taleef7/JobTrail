@@ -39,6 +39,7 @@ from jobtrail_ml.adjudicate import (  # noqa: E402
     aggregate,
     apply_overrides,
     batches,
+    check_vote_file,
     check_votes,
     contested,
     prompt,
@@ -90,12 +91,25 @@ def plan(reviewer: str | None = None) -> tuple[list[tuple[str, list[dict]]], str
     return [(f"b{i + 1:02d}", b) for i, b in enumerate(batches(items, rules))], rules
 
 
+def recorded_batches(reviewer: str) -> list[dict]:
+    """The batches as reviewed: names, ids and prompt hashes from batches.json (b01...)
+    or tiebreak.json (t01...), not recomputed from today's rules."""
+    path = TIEBREAK_FILE if reviewer == TIEBREAK else OUT / "batches.json"
+    return json.loads(path.read_text(encoding="utf-8"))["batches"]
+
+
+def read_vote_file(reviewer: str, batch: dict) -> dict[str, dict]:
+    """One batch's votes, checked against the manifest: reviewer, model, batch, prompt, ids."""
+    path = OUT / "votes" / reviewer / f"{batch['batch']}.json"
+    meta = json.loads(path.read_text(encoding="utf-8"))
+    check_vote_file(meta, reviewer, batch["batch"], batch["prompt_sha256"])
+    return check_votes(batch["ids"], reviewer, meta["decisions"])
+
+
 def load_votes(reviewer: str) -> dict[str, dict]:
     got: dict[str, dict] = {}
-    for name, b in plan(reviewer)[0]:
-        path = OUT / "votes" / reviewer / f"{name}.json"
-        decisions = json.loads(path.read_text(encoding="utf-8"))["decisions"]
-        got.update(check_votes([x["id"] for x in b], reviewer, decisions))
+    for batch in recorded_batches(reviewer):
+        got.update(read_vote_file(reviewer, batch))
     return got
 
 
@@ -105,9 +119,12 @@ def write_json(path: Path, obj) -> None:
                     newline="\n")  # fmt: skip
 
 
+def sha256(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def manifest(bs: list[tuple[str, list[dict]]], rules: str) -> list[dict]:
-    return [{"batch": name, "ids": [x["id"] for x in b],
-             "prompt_sha256": hashlib.sha256(prompt(rules, b).encode()).hexdigest()}
+    return [{"batch": name, "ids": [x["id"] for x in b], "prompt_sha256": sha256(prompt(rules, b))}
             for name, b in bs]  # fmt: skip
 
 
@@ -168,11 +185,14 @@ CLIS = {
 }
 
 
-def valid_votes(path: Path, ids: list[str], reviewer: str) -> bool:
+def valid_votes(path: Path, ids: list[str], reviewer: str, sha: str) -> bool:
+    """Reuse a vote file only if it answers today's prompt for this batch."""
     if not path.exists():
         return False
     try:
-        check_votes(ids, reviewer, json.loads(path.read_text(encoding="utf-8"))["decisions"])
+        meta = json.loads(path.read_text(encoding="utf-8"))
+        check_vote_file(meta, reviewer, path.stem, sha)
+        check_votes(ids, reviewer, meta["decisions"])
     except (ValueError, KeyError, json.JSONDecodeError) as e:
         print(f"  {path.name}: invalid ({e}); redoing")
         return False
@@ -188,8 +208,9 @@ def cmd_run(args) -> None:
         if args.only and name not in args.only.split(","):
             continue
         path = OUT / "votes" / args.reviewer / f"{name}.json"
-        if not valid_votes(path, ids, args.reviewer):
-            todo.append((name, ids, prompt(rules, b), path))
+        text = prompt(rules, b)
+        if not valid_votes(path, ids, args.reviewer, sha256(text)):
+            todo.append((name, ids, text, path))
 
     def one(job) -> str:
         name, ids, text, path = job
@@ -204,7 +225,7 @@ def cmd_run(args) -> None:
                     print(f"  {args.reviewer} {name} attempt {attempt}: {e}")
                     continue
             write_json(path, {"reviewer": args.reviewer, "model": REVIEWERS[args.reviewer],
-                              "batch": name, "usage": usage,
+                              "batch": name, "prompt_sha256": sha256(text), "usage": usage,
                               "decisions": result["decisions"]})  # fmt: skip
             return f"{name} ok"
         return f"{name} FAILED"
@@ -216,16 +237,14 @@ def cmd_run(args) -> None:
 
 
 def cmd_check(args) -> None:
-    """Validate a reviewer's vote files (all batches, or --only)."""
-    bs, _ = plan(args.reviewer)
+    """Validate a reviewer's vote files against the manifest (all batches, or --only)."""
     bad = 0
-    for name, b in bs:
+    for batch in recorded_batches(args.reviewer):
+        name = batch["batch"]
         if args.only and name not in args.only.split(","):
             continue
-        path = OUT / "votes" / args.reviewer / f"{name}.json"
         try:
-            check_votes([x["id"] for x in b], args.reviewer,
-                        json.loads(path.read_text(encoding="utf-8"))["decisions"])  # fmt: skip
+            read_vote_file(args.reviewer, batch)
             print(f"{name}: ok")
         except (OSError, ValueError, KeyError, TypeError) as e:
             bad += 1

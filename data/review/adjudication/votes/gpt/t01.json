@@ -2,6 +2,7 @@
  "reviewer": "gpt",
  "model": "gpt-oss-120b-medium (Antigravity CLI 1.2)",
  "batch": "t01",
+ "prompt_sha256": "69bf9c7fe5ffca32cb2f35a5fad5babec835e8377857de36842e3b4cbab28728",
  "usage": {
   "input_tokens": 384229,
   "output_tokens": 15772,

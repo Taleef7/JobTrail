@@ -27,18 +27,18 @@ Code: `ml/jobtrail_ml/adjudicate.py`, `ml/scripts/adjudicate.py`. The decision r
 - **What each saw:** the note, the draft key, the tags, and the earlier flags and panel notes as concerns that might be wrong. Each answered accept, edit (full corrected key) or reject (ambiguous note).
 - **How it was decided:** a key is final when two reviewers agree on it, using the scorer's zero-edit test both ways. Two rejects, or no agreement, reject the note.
 
-| File (in `adjudication/`)             | What                                                                                                                     |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `batches.json`                        | The 23 batches (b01–b23) every-draft reviewers saw, with each prompt's SHA-256 and the rules' SHA-256                    |
-| `vote.schema.json`                    | The response schema every reviewer answered with                                                                         |
-| `votes/{gemini,claude}/bNN.json`      | One vote per draft: `{id, action, gold, comment}`                                                                        |
-| `tiebreak.json`, `votes/gpt/t01.json` | The 5 unsettled drafts and the tie-breaker's votes                                                                       |
-| `decisions.jsonl`                     | One decision per draft, with every vote; the input to `ml/scripts/freeze_eval.py`                                        |
-| `stats.json`                          | Votes per reviewer, agreement with the final key, tie-breaks                                                             |
-| `overrides.jsonl`                     | 2 decisions changed after the vote to apply the supply-house rule to all 41 such drafts, each with its reason            |
-| `sensitivity.json`                    | How the originally planned reviewers would have decided on the 132 drafts they all covered, vs the final keys            |
-| `pilot/`                              | A one-batch pilot under the earlier `LABELING.md`. It exposed three ambiguous rules, which were clarified before the run |
-| `superseded/`                         | Partial runs by models the owner later swapped out (`gemini-3.1-pro-high`, `gpt-6-astra`); not used                      |
+| File (in `adjudication/`)             | What                                                                                                                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `batches.json`                        | The 23 batches (b01–b23) every-draft reviewers saw, with each prompt's SHA-256 and the rules' SHA-256                                                                                 |
+| `vote.schema.json`                    | The response schema every reviewer answered with                                                                                                                                      |
+| `votes/{gemini,claude}/bNN.json`      | One vote per draft (`{id, action, gold, comment}`), plus the reviewer, model, batch and the SHA-256 of the prompt answered. `decide` refuses a file that doesn't match `batches.json` |
+| `tiebreak.json`, `votes/gpt/t01.json` | The 5 unsettled drafts and the tie-breaker's votes                                                                                                                                    |
+| `decisions.jsonl`                     | One decision per draft, with every vote; the input to `ml/scripts/freeze_eval.py`                                                                                                     |
+| `stats.json`                          | Votes per reviewer, agreement with the final key, tie-breaks                                                                                                                          |
+| `overrides.jsonl`                     | 2 decisions changed after the vote to apply the supply-house rule to all 41 such drafts, each with its reason                                                                         |
+| `sensitivity.json`                    | How the originally planned reviewers would have decided on the 132 drafts they all covered, vs the final keys                                                                         |
+| `pilot/`                              | A one-batch pilot under the earlier `LABELING.md`. It exposed three ambiguous rules, which were clarified before the run                                                              |
+| `superseded/`                         | Partial runs by models the owner later swapped out (`gemini-3.1-pro-high`, `gpt-6-astra`); not used                                                                                   |
 
 `stats.json` in this folder (written by the freeze step) has the outcomes by reason, the fields corrected and the change rate of clean drafts.
 

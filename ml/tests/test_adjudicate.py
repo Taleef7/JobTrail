@@ -13,6 +13,7 @@ from jobtrail_ml.adjudicate import (
     aggregate,
     apply_overrides,
     batches,
+    check_vote_file,
     check_votes,
     cmdline_cost,
     contested,
@@ -202,6 +203,18 @@ def test_the_committed_batch_manifest_names_the_reviewers_used():
 
     path = Path(__file__).resolve().parents[2] / "data/review/adjudication/batches.json"
     assert json.loads(path.read_text(encoding="utf-8"))["reviewers"] == REVIEWERS
+
+
+def test_a_vote_file_must_match_its_reviewer_model_batch_and_prompt():
+    meta = {"reviewer": "gemini", "model": REVIEWERS["gemini"], "batch": "b01",
+            "prompt_sha256": "abc"}  # fmt: skip
+    check_vote_file(meta, "gemini", "b01", "abc")
+    for bad in ({"reviewer": "claude"}, {"model": "other"}, {"batch": "b02"},
+                {"prompt_sha256": "stale"}):  # fmt: skip
+        with pytest.raises(ValueError, match="vote file has"):
+            check_vote_file({**meta, **bad}, "gemini", "b01", "abc")
+    with pytest.raises(ValueError, match="vote file has"):  # Gemini's file in Claude's folder
+        check_vote_file(meta, "claude", "b01", "abc")
 
 
 def test_two_agreeing_reviewers_settle_a_draft_without_the_tiebreaker():

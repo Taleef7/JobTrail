@@ -1,14 +1,81 @@
-{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b06", "usage": {}, "decisions": [
-{"id": "t-0061", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0062", "action": "accept", "gold": null, "comment": "The skipped bracket-hole patch is unfinished work, and the note never states a planned return, so followUps stays empty."},
-{"id": "t-0063", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0064", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0065", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0066", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0067", "action": "accept", "gold": null, "comment": "The stain was fetched for this deck staining job, so it counts as used under the supply-house rule; the concern does not hold."},
-{"id": "t-0068", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0069", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0070", "action": "accept", "gold": null, "comment": "The picked-up thermostat is the one installed, so it is a material; the old unit being shot is the job's own reason, not a separate found issue."},
-{"id": "t-0071", "action": "accept", "gold": null, "comment": ""},
-{"id": "t-0072", "action": "accept", "gold": null, "comment": ""}
-]}
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b06",
+ "prompt_sha256": "538d4df651787b8f8af4ee26933862b5bc9e459e00af7f52b504fad239556d63",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0061",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0062",
+   "action": "accept",
+   "gold": null,
+   "comment": "The skipped bracket-hole patch is unfinished work, and the note never states a planned return, so followUps stays empty."
+  },
+  {
+   "id": "t-0063",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0064",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0065",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0066",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0067",
+   "action": "accept",
+   "gold": null,
+   "comment": "The stain was fetched for this deck staining job, so it counts as used under the supply-house rule; the concern does not hold."
+  },
+  {
+   "id": "t-0068",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0069",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0070",
+   "action": "accept",
+   "gold": null,
+   "comment": "The picked-up thermostat is the one installed, so it is a material; the old unit being shot is the job's own reason, not a separate found issue."
+  },
+  {
+   "id": "t-0071",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0072",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

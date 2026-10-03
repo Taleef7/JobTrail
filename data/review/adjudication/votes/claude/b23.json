@@ -1,13 +1,104 @@
-{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b23", "usage": {}, "decisions": [
-{"id": "d-0100", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0101", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0102", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0103", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0104", "action": "edit", "gold": {"jobType": "hvac", "workPerformed": ["Replaced furnace thermostat", "Replaced clogged furnace filter"], "issuesFound": ["Filter completely clogged"], "materials": [{"name": "furnace filter", "quantity": 1, "unit": null}, {"name": "wire nut", "quantity": 2, "unit": null}, {"name": "programmable thermostat", "quantity": 1, "unit": null}], "laborMinutes": 65, "customerApproved": true, "followUps": []}, "comment": "Added the missing work item for swapping out the clogged furnace filter (found-and-fixed issue)."},
-{"id": "d-0105", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0106", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0107", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0108", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0109", "action": "accept", "gold": null, "comment": ""},
-{"id": "d-0110", "action": "accept", "gold": null, "comment": ""}
-]}
+{
+ "reviewer": "claude",
+ "model": "claude-opus-5-5 (subagent)",
+ "batch": "b23",
+ "prompt_sha256": "4072a50e9f13b2a69d2f1e97523f73f833e34a90b3c2888e578114e56d24ddc5",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "d-0100",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0101",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0102",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0103",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0104",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Replaced clogged furnace filter"
+    ],
+    "issuesFound": [
+     "Filter completely clogged"
+    ],
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "wire nut",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "programmable thermostat",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the missing work item for swapping out the clogged furnace filter (found-and-fixed issue)."
+  },
+  {
+   "id": "d-0105",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0106",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0107",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0108",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0109",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "d-0110",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

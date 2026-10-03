@@ -1,6 +1,7 @@
 """#71: the freeze check CI runs. Once data/FROZEN.md exists, every file it lists must
 hash to the recorded SHA-256 and hold the recorded number of valid, disjoint records."""
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -22,6 +23,23 @@ FROZEN = pytest.mark.skipif(not (DATA / "FROZEN.md").exists(), reason="not froze
 @FROZEN
 def test_frozen_files_are_unchanged_valid_and_disjoint():
     assert check_frozen(DATA) == []
+
+
+# Pinned here rather than read from FROZEN.md, so a change can't edit a frozen file and
+# its FROZEN.md row together and still pass: changing a frozen set means editing this test.
+PINNED = {
+    "test.jsonl": ("ceefa18c4113bc8e4052b680225b90530e4671d6cc012f201d5e9adab3ad71d4", 163),
+    "dev.jsonl": ("393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679", 110),
+}
+
+
+@FROZEN
+def test_frozen_sets_match_the_digests_pinned_in_this_test():
+    rows = {name: (digest, n) for name, n, digest in
+            frozen_rows((DATA / "FROZEN.md").read_text(encoding="utf-8"))}  # fmt: skip
+    for name, (digest, n) in PINNED.items():
+        assert hashlib.sha256((DATA / name).read_bytes()).hexdigest() == digest, name
+        assert rows[name] == (digest, n), f"FROZEN.md row for {name} differs from the pin"
 
 
 @FROZEN
