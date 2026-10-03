@@ -1,0 +1,34 @@
+{
+  "id": "gemini-3.8-flash-zero-shot-dev-b94fe71b",
+  "env": {
+    "runtime": "gemini-api gemini-3.8-flash",
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "note": "cloud runs are seeded but not bit-reproducible"
+  },
+  "started": "2026-10-03T00:38:19+00:00",
+  "status": "quota",
+  "finished": "2026-10-03T00:42:43+00:00",
+  "predictions": 7,
+  "usage": {
+    "promptTokens": 2948,
+    "outputTokens": 792,
+    "thoughtsTokens": 2981
+  },
+  "cost": [
+    {
+      "rate": "through 2026-12-31",
+      "usd": 0.01636,
+      "usdPerNote": 0.00233711
+    },
+    {
+      "rate": "from 2027-01-01",
+      "usd": 0.032719,
+      "usdPerNote": 0.00467421
+    }
+  ]
+}
