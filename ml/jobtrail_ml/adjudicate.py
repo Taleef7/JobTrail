@@ -22,10 +22,9 @@ from .freeze import GOLD_KEYS, SCHEMA_PATH, draft_hash
 from .review import MODELS as PANEL_MODELS
 from .review import SPLITS
 
-# Models chosen by the owner's subscriptions (2026-10-02): gpt-6.1-sol, the first choice, is
-# not available to Codex on a ChatGPT account, so the GPT reviewer is gpt-5.6-sol.
+# Models chosen by the owner, run on their subscriptions (2026-10-02).
 REVIEWERS = {
-    "gpt": "gpt-5.6-sol (Codex CLI 0.153, reasoning effort high)",
+    "gpt": "gpt-6.1-sol (Codex CLI 0.160, reasoning effort high)",
     "gemini": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
     "claude": "claude-opus-5-5 (subagent)",
 }

@@ -111,7 +111,7 @@ def exe(name: str) -> str:
 def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     out = cwd / "last.json"
     proc = subprocess.run(
-        [exe("codex"), "exec", "-m", "gpt-5.6-sol", "-c", "model_reasoning_effort=high",
+        [exe("codex"), "exec", "-m", "gpt-6.1-sol", "-c", "model_reasoning_effort=high",
          "-s", "read-only", "--skip-git-repo-check", "--ephemeral",
          "--output-schema", str(schema), "-o", str(out), "-"],
         input=text, cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
