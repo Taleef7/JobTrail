@@ -78,6 +78,7 @@ def main() -> int:
     out = args.out_dir
     for s in SPLITS:
         write_jsonl(out / f"{s}.jsonl", frozen[s])
+    (out / "review").mkdir(parents=True, exist_ok=True)
     (out / "review" / "stats.json").write_text(
         json.dumps(stats, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )
