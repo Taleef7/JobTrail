@@ -23,7 +23,17 @@ uv run python scripts/run_llamacpp.py --config configs/gemma3-270m-q8-zero-shot.
 | `lfm2-350m-extract-q4-zero-shot-dev-24c06892` | zero-shot | on      |        79.1% |   15.5% |        51.8% |        0.583 |   1.64 s |
 | `smollm2-135m-q8-zero-shot-dev-45f9e556`      | zero-shot | on      |         1.8% |      0% |         0.9% |        0.045 |   2.70 s |
 
-Zero-edit is 0% for every untuned model, as #110 found on the demo notes. `report.json` in each folder has every metric, by tag and per record.
+Zero-edit is 0% for every untuned model, as #110 found on the demo notes.
+
+**Score reports are not committed:** each is about 5,000 lines and is rebuilt exactly from the committed predictions. Their SHA-256 are in [`checks.json`](checks.json) `reportSha256`. To get every metric by tag and per record, rebuild one and compare:
+
+```bash
+cd ml
+uv run python scripts/score_run.py ../evidence/72/runs/<run id>   # writes report.json
+sha256sum ../evidence/72/runs/<run id>/report.json             # = checks.json reportSha256
+```
+
+All five were deleted and rebuilt this way, and every hash matched.
 
 ## Determinism and resume
 

@@ -116,5 +116,12 @@
       "p50WallMs": 2700.409,
       "cost": null
     }
-  ]
+  ],
+  "reportSha256": {
+    "gemma3-270m-q8-few-shot-dev-a37cf646": "70839da9bc243bc7a35937b6b024f4ef0813d927982d07ba9df76a3fa68393e1",
+    "gemma3-270m-q8-zero-shot-dev-658e5cd9": "88b80b46d3ec77bf40aa89b9686ddd3052aeb27ed73058cb6813e09bd6cefd96",
+    "gemma3-270m-q8-zero-shot-free-dev-3d0aba8d": "42092539082a128974839712a149dd7a6be6717b9b89fbe999c919f4a6cbe826",
+    "lfm2-350m-extract-q4-zero-shot-dev-24c06892": "42b7e3b89e94b3a307ad59cb0a9ac8429c1eafa5e27692847c71cf27932503f9",
+    "smollm2-135m-q8-zero-shot-dev-45f9e556": "878345a3080ac424466cd656e984ded82210eb96e8264c959e6b0d871b8bfe8a"
+  }
 }
