@@ -4,6 +4,7 @@ Usage (from ml/):
   uv run python scripts/adjudicate.py prepare               # batches + response schema
   uv run python scripts/adjudicate.py prompts --out DIR     # one prompt file per batch
   uv run python scripts/adjudicate.py run gpt|gemini [--only b01,b02] [--jobs 3]
+  uv run python scripts/adjudicate.py check gpt|gemini|claude [--only b01]
   uv run python scripts/adjudicate.py decide [--reviewed-at ISO]
 
 Votes land in data/review/adjudication/votes/<reviewer>/<batch>.json. `run` drives the
@@ -15,6 +16,7 @@ is skipped. `decide` needs every reviewer's vote on every draft.
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -99,10 +101,17 @@ def cmd_prompts(args) -> None:
     print(f"{len(bs)} prompts -> {args.out}")
 
 
+def exe(name: str) -> str:
+    path = shutil.which(name)  # codex is an npm .cmd shim on Windows
+    if not path:
+        raise RuntimeError(f"{name} not found on PATH")
+    return path
+
+
 def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     out = cwd / "last.json"
     proc = subprocess.run(
-        ["codex", "exec", "-m", "gpt-6-astra", "-c", "model_reasoning_effort=high",
+        [exe("codex"), "exec", "-m", "gpt-6-astra", "-c", "model_reasoning_effort=high",
          "-s", "read-only", "--skip-git-repo-check", "--ephemeral",
          "--output-schema", str(schema), "-o", str(out), "-"],
         input=text, cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
@@ -114,7 +123,7 @@ def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
 
 def _gemini(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     proc = subprocess.run(
-        ["agy", "--model", "gemini-3.1-pro-high", "--json-schema", str(schema),
+        [exe("agy"), "--model", "gemini-3.1-pro-high", "--json-schema", str(schema),
          "--output-format", "json", "--print-timeout", "1500s", f"-p={text}"],
         cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
     )  # fmt: skip
@@ -175,6 +184,25 @@ def cmd_run(args) -> None:
             print(f"  {args.reviewer} {msg}", flush=True)
 
 
+def cmd_check(args) -> None:
+    """Validate a reviewer's vote files (all batches, or --only)."""
+    bs, _ = plan()
+    bad = 0
+    for i, b in enumerate(bs):
+        name = batch_name(i)
+        if args.only and name not in args.only.split(","):
+            continue
+        path = OUT / "votes" / args.reviewer / f"{name}.json"
+        try:
+            check_votes([x["id"] for x in b], args.reviewer,
+                        json.loads(path.read_text(encoding="utf-8"))["decisions"])  # fmt: skip
+            print(f"{name}: ok")
+        except (OSError, ValueError, KeyError, TypeError) as e:
+            bad += 1
+            print(f"{name}: {type(e).__name__}: {e}")
+    sys.exit(1 if bad else 0)
+
+
 def cmd_decide(args) -> None:
     drafts, panel = load()
     bs, _ = plan()
@@ -210,6 +238,10 @@ def main() -> None:
     r.add_argument("--only", help="comma-separated batch names, e.g. b01,b02")
     r.add_argument("--jobs", type=int, default=2)
     r.set_defaults(fn=cmd_run)
+    c = sub.add_parser("check")
+    c.add_argument("reviewer", choices=sorted(REVIEWERS))
+    c.add_argument("--only")
+    c.set_defaults(fn=cmd_check)
     d = sub.add_parser("decide")
     d.add_argument("--reviewed-at")
     d.set_defaults(fn=cmd_decide)

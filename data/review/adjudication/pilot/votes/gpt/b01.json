@@ -1,0 +1,263 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b01",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0001",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced missing shingles",
+     "Applied roofing cement to lifted ridge shingles"
+    ],
+    "issuesFound": [
+     "Lifted shingles on the ridge",
+     "Missing shingles"
+    ],
+    "materials": [
+     {
+      "name": "roofing cement",
+      "quantity": null,
+      "unit": null
+     },
+     {
+      "name": "shingles",
+      "quantity": null,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Inspect again after the next storm"
+    ]
+   },
+   "comment": "Added the cement application, missing-shingle issue, and installed shingles."
+  },
+  {
+   "id": "t-0002",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0003",
+   "action": "edit",
+   "gold": {
+    "jobType": "general",
+    "workPerformed": [
+     "Patched drywall hole",
+     "Installed door stop"
+    ],
+    "issuesFound": [
+     "Drywall hole"
+    ],
+    "materials": [],
+    "laborMinutes": 100,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the drywall hole as an issue that was fixed."
+  },
+  {
+   "id": "t-0004",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Painted bedroom walls",
+     "Patched nail holes"
+    ],
+    "issuesFound": [
+     "Water stain on the ceiling corner",
+     "Nail holes"
+    ],
+    "materials": [
+     {
+      "name": "spackle",
+      "quantity": 1,
+      "unit": "tub"
+     },
+     {
+      "name": "painter's tape",
+      "quantity": 1,
+      "unit": "roll"
+     },
+     {
+      "name": "interior eggshell paint",
+      "quantity": 3,
+      "unit": "gallon"
+     }
+    ],
+    "laborMinutes": 130,
+    "customerApproved": true,
+    "followUps": [
+     "Touch up after the furniture is back"
+    ]
+   },
+   "comment": "Added the nail holes as an issue that was fixed."
+  },
+  {
+   "id": "t-0005",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0006",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters",
+     "Fixed pulled-out gutter hanger using six gutter hangers"
+    ],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 6,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 80,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the completed gutter-hanger repair."
+  },
+  {
+   "id": "t-0007",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0008",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0009",
+   "action": "edit",
+   "gold": {
+    "jobType": "carpentry",
+    "workPerformed": [
+     "Installed closet shelving",
+     "Patched old bracket holes"
+    ],
+    "issuesFound": [
+     "Old bracket holes"
+    ],
+    "materials": [
+     {
+      "name": "drywall anchor",
+      "quantity": 6,
+      "unit": null
+     },
+     {
+      "name": "closet shelving",
+      "quantity": null,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 55,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the repaired bracket holes and explicitly installed closet shelving."
+  },
+  {
+   "id": "t-0010",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Installed ceiling light fixture"
+    ],
+    "issuesFound": [
+     "Ceiling box not rated for the fixture"
+    ],
+    "materials": [
+     {
+      "name": "14 gauge wire",
+      "quantity": 28,
+      "unit": "foot"
+     },
+     {
+      "name": "wire nut",
+      "quantity": 5,
+      "unit": null
+     },
+     {
+      "name": "ceiling light fixture",
+      "quantity": null,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 65,
+    "customerApproved": true,
+    "followUps": [
+     "Pick a dimmer model later"
+    ]
+   },
+   "comment": "Singularized the wire unit, added the installed fixture, and removed the unspecified follow-up actor."
+  },
+  {
+   "id": "t-0011",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced missing shingles"
+    ],
+    "issuesFound": [
+     "Missing shingles"
+    ],
+    "materials": [
+     {
+      "name": "roofing cement",
+      "quantity": 1,
+      "unit": "tube"
+     },
+     {
+      "name": "architectural shingle",
+      "quantity": 2,
+      "unit": "bundle"
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": [
+     "Inspect again after the next storm"
+    ]
+   },
+   "comment": "Added missing shingles as an issue that was fixed."
+  },
+  {
+   "id": "t-0012",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Replaced missing shingles",
+     "Resealed chimney flashing"
+    ],
+    "issuesFound": [
+     "Missing shingles"
+    ],
+    "materials": [],
+    "laborMinutes": 90,
+    "customerApproved": false,
+    "followUps": []
+   },
+   "comment": "Added missing shingles as an issue that was fixed."
+  }
+ ]
+}
