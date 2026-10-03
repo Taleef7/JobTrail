@@ -43,7 +43,7 @@ Invoicing/payments, cloud sync, accounts, multi-user crews, direct QuickBooks/Jo
 JobTrail/
   packages/core/   TS: Zod schema v2 (single source of truth) → JSON Schema; compact output codec;
                    scorer (the ONLY scorer); rule-based baseline; price matching; missed-billables rules
-  data/            JSONL: test set (human-verified, frozen + hashed), dev set; scenario matrix
+  data/            JSONL: test set (model-adjudicated, frozen + hashed), dev set; scenario matrix
   ml/              Python (uv): data generation, fine-tuning, GGUF export/quantization, batch inference
   apps/mobile/     Expo SDK 57 (New Arch), expo-sqlite, llama.rn, STT — THE PRODUCT (Android-first)
   apps/web/        Vite + React: live in-browser demo (wllama) + results/evidence pages → Vercel
@@ -79,7 +79,7 @@ Removed from legacy: `confidence` (self-reported confidence is noise), `missingF
 
 ### Data
 - **Scenario matrix:** trades × note style (terse, rambling, spoken with fillers) × hard cases (hours as "hour and a half", negations "didn't sign", self-corrections "two, no three", multiple materials, no materials, supply-house trips, mentions of extra labor).
-- **Test set (~200, frozen, never trained or tuned on):** ~150 synthetic (teacher-drafted, **human-verified** labels) + ~50 spoken notes role-played by the owner (see §10), transcribed by the app's STT on the Note 9S, labeled. Spoken vs synthetic reported **separately**.
+- **Test set (~200, frozen, never trained or tuned on):** ~150 synthetic (teacher-drafted labels; **revised 2026-10-02:** checked by a cross-family model review instead of a human, the owner's decision, see `docs/DATA_CARD.md`; 163 frozen) + ~50 spoken notes role-played by the owner (see §10), transcribed by the app's STT on the Note 9S, labeled. Spoken vs synthetic reported **separately**.
 - **Dev set (~100):** for prompt/model iteration and error analysis.
 - **Train set (3–5k synthetic):** teacher-generated notes + labels; kept only if schema-valid and two independent teacher labelings agree; n-gram leakage check against test/dev; published to HF Datasets.
 
