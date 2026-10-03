@@ -93,6 +93,7 @@ def runs() -> list[dict]:
             "model": cfg["model"].get("id") or Path(cfg["model"]["file"]).stem,
             "prompt": cfg["prompt"], "grammar": cfg["grammar"], "n": r["overall"]["n"],
             "batch": (cfg.get("cloud") or {}).get("batch_size", 1),
+            "sizeMB": model_mb(cfg),
             # agy runs on a subscription: no price of its own (RESULTS uses the API estimate)
             "usdPerNote": cost[0]["usdPerNote"] if cost else (
                 None if cfg["provider"] == "agy" else 0.0),
@@ -114,6 +115,13 @@ def runs() -> list[dict]:
     return rows
 
 
+def model_mb(cfg: dict) -> int | None:
+    if cfg["provider"] != "llamacpp":
+        return None
+    path = ROOT / cfg["model"]["file"]
+    return round(path.stat().st_size / 1e6) if path.exists() else None
+
+
 def usd(v) -> str:
     return "–" if v is None else f"${v:.4f}"
 
@@ -124,12 +132,15 @@ def pct(v) -> str:
 
 def markdown(rows: list[dict], split: str) -> str:
     head = (
-        "| Rung | Model | Prompt | Grammar | n | Zero-edit | Schema-valid | jobType "
+        "| Rung | Model | MB | Prompt | Grammar | n | Zero-edit | Schema-valid | jobType "
         "| laborMinutes | Approved | Materials F1 | Work F1 | Issues F1 | Follow-ups F1 "
         "| Hallucination | p50 | $/note |"
     )
-    lines = [head, "|" + " --- |" * 4 + " ---: |" * 13]
-    for r in rows:
+    lines = [head, "| --- | --- | ---: | --- | --- |" + " ---: |" * 13]
+    order = {"rules": 0, "local": 1, "cloud": 2}
+    ranked = sorted(rows, key=lambda r: (order[r["rung"]], r.get("sizeMB") or 0, r["model"],
+                                         r["prompt"], str(r["grammar"])))  # fmt: skip
+    for r in ranked:
         if r["split"] != split:
             continue
         m = r["metrics"]
@@ -140,7 +151,8 @@ def markdown(rows: list[dict], split: str) -> str:
         )
         grammar = {True: "on", False: "off", None: "–"}[r["grammar"]]
         lines.append(
-            f"| {r['rung']} | {r['model']} | {r['prompt']} | {grammar} | {r['n']} | "
+            f"| {r['rung']} | {r['model']} | {r.get('sizeMB') or '–'} | {r['prompt']} | "
+            f"{grammar} | {r['n']} | "
             f"{pct(m['zeroEditRate'])} | {pct(m['schemaValidRate'])} | "
             f"{pct(m['jobTypeAccuracy'])} | "
             f"{pct(m['laborMinutesAccuracy'])} | {pct(m['customerApprovedAccuracy'])} | "
@@ -150,10 +162,27 @@ def markdown(rows: list[dict], split: str) -> str:
     return "\n".join(lines)
 
 
+TAGS = ("hours-phrasing", "negation", "self-correction", "multiple-materials", "no-materials",
+        "supply-house-trip", "extra-labor", "approval-absent")  # fmt: skip
+
+
+def tag_table(rows: list[dict], picks: list[str]) -> str:
+    """Zero-edit per hard-case tag for chosen test runs (run-name prefixes)."""
+    chosen = [next(r for r in rows if r["split"] == "test" and r["run"].startswith(p))
+              for p in picks]  # fmt: skip
+    names = [r["run"].rsplit("-test-", 1)[0] for r in chosen]
+    lines = ["| Tag | " + " | ".join(names) + " |", "| --- |" + " ---: |" * len(chosen)]
+    for t in TAGS:
+        cells = [pct(r["byTag"].get(t, {}).get("zeroEditRate")) for r in chosen]
+        lines.append(f"| {t} | " + " | ".join(cells) + " |")
+    return "\n".join(lines)
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
     ap.add_argument("--markdown", action="store_true")
+    ap.add_argument("--tags", nargs="*", help="run-name prefixes for a per-tag test table")
     args = ap.parse_args()
     rows = runs()
     out = ROOT / "results" / "summary.json"
@@ -162,6 +191,8 @@ def main() -> int:
     if args.markdown:
         for split in ("test", "dev"):
             print(f"\n### {split}\n\n{markdown(rows, split)}")
+    if args.tags:
+        print(f"\n### per tag (test, zero-edit)\n\n{tag_table(rows, args.tags)}")
     return 0
 
 
