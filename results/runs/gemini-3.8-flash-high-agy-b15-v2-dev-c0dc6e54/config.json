@@ -1,0 +1,37 @@
+{
+  "name": "gemini-3.8-flash-high-agy-b15-v2",
+  "provider": "agy",
+  "model": {
+    "id": "gemini-3.8-flash-high"
+  },
+  "prompt": "zero-shot-v2",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/dev.jsonl",
+  "limit": null,
+  "sampling": {},
+  "cloud": {
+    "batch_size": 15
+  },
+  "identity": {
+    "settings": {
+      "provider": "agy",
+      "model": {
+        "id": "gemini-3.8-flash-high"
+      },
+      "prompt": "zero-shot-v2",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {},
+      "cloud": {}
+    },
+    "prompt_sha256": "8e0244a76072fe4109430eb4a3ae0e23526f86037dc3f224360b57e3dd2e2335",
+    "gold_sha256": "393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c",
+    "batch": {
+      "size": 15,
+      "note_sha256": "ae39e9f11c4a0b01f398277b9c763f157e1fa0f5680b86ea4ecdbafdcad5f784"
+    }
+  }
+}

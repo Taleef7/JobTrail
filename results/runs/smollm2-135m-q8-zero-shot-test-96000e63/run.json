@@ -1,0 +1,31 @@
+{
+  "id": "smollm2-135m-q8-zero-shot-test-96000e63",
+  "env": {
+    "runtime": "llama.cpp b9837-b3fed31b9",
+    "threads": null,
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "chatTemplateCaps": {
+      "supports_object_arguments": false,
+      "supports_parallel_tool_calls": false,
+      "supports_preserve_reasoning": false,
+      "supports_string_content": true,
+      "supports_system_role": true,
+      "supports_tool_calls": false,
+      "supports_tools": false,
+      "supports_typed_content": false
+    }
+  },
+  "started": "2026-10-03T02:04:27+00:00",
+  "status": "complete",
+  "finished": "2026-10-03T02:11:51+00:00",
+  "predictions": 163,
+  "usage": {
+    "promptTokens": 71856,
+    "outputTokens": 82349
+  }
+}

@@ -186,7 +186,9 @@ def main() -> int:
     args = ap.parse_args()
     rows = runs()
     out = ROOT / "results" / "summary.json"
-    out.write_text(json.dumps({"runs": rows}, indent=1) + "\n", encoding="utf-8", newline="\n")
+    # One run per line: diffable, and a fraction of the size of an indented dump.
+    body = ",\n".join(json.dumps(r, ensure_ascii=False) for r in rows)
+    out.write_text('{"runs": [\n' + body + "\n]}\n", encoding="utf-8", newline="\n")
     print(f"{len(rows)} runs -> {out}")
     if args.markdown:
         for split in ("test", "dev"):

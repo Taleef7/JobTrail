@@ -1,0 +1,22 @@
+{
+  "id": "gemini-3.8-flash-high-agy-b15-v2-test-aec1ded4",
+  "env": {
+    "runtime": "agy gemini-3.8-flash-high",
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "note": "agent harness, owner's plan: no API key, latency or price"
+  },
+  "started": "2026-10-03T04:21:59+00:00",
+  "status": "complete",
+  "finished": "2026-10-03T04:53:10+00:00",
+  "predictions": 163,
+  "usage": {
+    "promptTokens": 392055,
+    "outputTokens": 533414,
+    "thoughtsTokens": 511847
+  }
+}

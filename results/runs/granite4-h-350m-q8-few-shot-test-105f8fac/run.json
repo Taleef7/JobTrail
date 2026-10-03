@@ -1,0 +1,31 @@
+{
+  "id": "granite4-h-350m-q8-few-shot-test-105f8fac",
+  "env": {
+    "runtime": "llama.cpp b9837-b3fed31b9",
+    "threads": null,
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "chatTemplateCaps": {
+      "supports_object_arguments": true,
+      "supports_parallel_tool_calls": true,
+      "supports_preserve_reasoning": false,
+      "supports_string_content": true,
+      "supports_system_role": true,
+      "supports_tool_calls": true,
+      "supports_tools": true,
+      "supports_typed_content": false
+    }
+  },
+  "started": "2026-10-03T06:12:14+00:00",
+  "status": "complete",
+  "finished": "2026-10-03T06:20:09+00:00",
+  "predictions": 163,
+  "usage": {
+    "promptTokens": 135344,
+    "outputTokens": 13859
+  }
+}
