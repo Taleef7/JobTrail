@@ -1,0 +1,127 @@
+{
+  "determinism": {
+    "run": "gemma3-270m-q8-zero-shot-dev-658e5cd9",
+    "runA": "clean, one go",
+    "runB": "same config, separate folder, killed after 100 s then resumed",
+    "notes": 110,
+    "rawIdentical": 110,
+    "runBResumes": 1,
+    "runBDuplicateIds": 0
+  },
+  "rescoring": {
+    "run": "gemma3-270m-q8-zero-shot-dev-658e5cd9",
+    "reportSha256Before": "88b80b46d3ec77bf40aa89b9686ddd3052aeb27ed73058cb6813e09bd6cefd96",
+    "reportSha256After": "88b80b46d3ec77bf40aa89b9686ddd3052aeb27ed73058cb6813e09bd6cefd96",
+    "identical": true
+  },
+  "runs": [
+    {
+      "run": "gemini-3.8-flash-zero-shot-dev-b94fe71b",
+      "status": "quota",
+      "n": 7,
+      "prompt": "zero-shot",
+      "grammar": true,
+      "schemaValid": null,
+      "zeroEdit": null,
+      "jobType": null,
+      "laborMinutes": null,
+      "materialsF1": null,
+      "workF1": null,
+      "p50WallMs": null,
+      "cost": [
+        {
+          "rate": "through 2026-12-31",
+          "usd": 0.01636,
+          "usdPerNote": 0.00233711
+        },
+        {
+          "rate": "from 2027-01-01",
+          "usd": 0.032719,
+          "usdPerNote": 0.00467421
+        }
+      ]
+    },
+    {
+      "run": "gemma3-270m-q8-few-shot-dev-a37cf646",
+      "status": "complete",
+      "n": 110,
+      "prompt": "few-shot",
+      "grammar": true,
+      "schemaValid": 1,
+      "zeroEdit": 0,
+      "jobType": 0.32727272727272727,
+      "laborMinutes": 0.5818181818181818,
+      "materialsF1": 0.04419889502762431,
+      "workF1": 0.5174418604651163,
+      "p50WallMs": 828.986,
+      "cost": null
+    },
+    {
+      "run": "gemma3-270m-q8-zero-shot-dev-658e5cd9",
+      "status": "complete",
+      "n": 110,
+      "prompt": "zero-shot",
+      "grammar": true,
+      "schemaValid": 0.990909090909091,
+      "zeroEdit": 0,
+      "jobType": 0.2,
+      "laborMinutes": 0.6545454545454545,
+      "materialsF1": 0.7418546365914788,
+      "workF1": 0.07719298245614035,
+      "p50WallMs": 1697.383,
+      "cost": null
+    },
+    {
+      "run": "gemma3-270m-q8-zero-shot-free-dev-3d0aba8d",
+      "status": "complete",
+      "n": 110,
+      "prompt": "zero-shot",
+      "grammar": false,
+      "schemaValid": 0,
+      "zeroEdit": 0,
+      "jobType": 0,
+      "laborMinutes": 0,
+      "materialsF1": 0,
+      "workF1": 0,
+      "p50WallMs": 887.439,
+      "cost": null
+    },
+    {
+      "run": "lfm2-350m-extract-q4-zero-shot-dev-24c06892",
+      "status": "complete",
+      "n": 110,
+      "prompt": "zero-shot",
+      "grammar": true,
+      "schemaValid": 0.7909090909090909,
+      "zeroEdit": 0,
+      "jobType": 0.15454545454545454,
+      "laborMinutes": 0.5181818181818182,
+      "materialsF1": 0.583132530120482,
+      "workF1": 0.34204275534441797,
+      "p50WallMs": 1639.499,
+      "cost": null
+    },
+    {
+      "run": "smollm2-135m-q8-zero-shot-dev-45f9e556",
+      "status": "complete",
+      "n": 110,
+      "prompt": "zero-shot",
+      "grammar": true,
+      "schemaValid": 0.01818181818181818,
+      "zeroEdit": 0,
+      "jobType": 0,
+      "laborMinutes": 0.00909090909090909,
+      "materialsF1": 0.04519774011299435,
+      "workF1": 0.033707865168539325,
+      "p50WallMs": 2700.409,
+      "cost": null
+    }
+  ],
+  "reportSha256": {
+    "gemma3-270m-q8-few-shot-dev-a37cf646": "70839da9bc243bc7a35937b6b024f4ef0813d927982d07ba9df76a3fa68393e1",
+    "gemma3-270m-q8-zero-shot-dev-658e5cd9": "88b80b46d3ec77bf40aa89b9686ddd3052aeb27ed73058cb6813e09bd6cefd96",
+    "gemma3-270m-q8-zero-shot-free-dev-3d0aba8d": "42092539082a128974839712a149dd7a6be6717b9b89fbe999c919f4a6cbe826",
+    "lfm2-350m-extract-q4-zero-shot-dev-24c06892": "42b7e3b89e94b3a307ad59cb0a9ac8429c1eafa5e27692847c71cf27932503f9",
+    "smollm2-135m-q8-zero-shot-dev-45f9e556": "878345a3080ac424466cd656e984ded82210eb96e8264c959e6b0d871b8bfe8a"
+  }
+}
