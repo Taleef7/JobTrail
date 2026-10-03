@@ -10,7 +10,7 @@ Usage (from ml/):
   uv run python scripts/adjudicate.py decide [--reviewed-at ISO]
 
 Votes land in data/review/adjudication/votes/<reviewer>/<batch>.json. `run` drives the
-Antigravity CLI (Gemini) and the Codex CLI (GPT); the Claude votes are written by Opus
+Antigravity CLI (Gemini 3.8 Flash and GPT-OSS 120B); the Claude votes are written by Opus
 subagents from the same prompt files. Gemini and Claude vote on every draft (batches
 b01...); GPT votes only on the drafts they leave unsettled (tiebreak.json, batches
 t01...). `run` is resumable: a batch with a valid vote file is skipped.
@@ -140,28 +140,15 @@ def cmd_prompts(args) -> None:
 
 
 def exe(name: str) -> str:
-    path = shutil.which(name)  # codex is an npm .cmd shim on Windows
+    path = shutil.which(name)  # resolves .cmd and .exe shims on Windows
     if not path:
         raise RuntimeError(f"{name} not found on PATH")
     return path
 
 
-def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
-    out = cwd / "last.json"
+def _agy(model: str, text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     proc = subprocess.run(
-        [exe("codex"), "exec", "-m", "gpt-6.1-sol", "-c", "model_reasoning_effort=high",
-         "-s", "read-only", "--skip-git-repo-check", "--ephemeral",
-         "--output-schema", str(schema), "-o", str(out), "-"],
-        input=text, cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
-    )  # fmt: skip
-    if proc.returncode != 0 or not out.exists():
-        raise RuntimeError(f"codex exit {proc.returncode}: {proc.stderr[-400:]}")
-    return json.loads(out.read_text(encoding="utf-8")), {}
-
-
-def _gemini(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
-    proc = subprocess.run(
-        [exe("agy"), "--model", "gemini-3.8-flash-high", "--json-schema", str(schema),
+        [exe("agy"), "--model", model, "--json-schema", str(schema),
          "--output-format", "json", "--print-timeout", "1500s", f"-p={text}"],
         cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
     )  # fmt: skip
@@ -173,7 +160,10 @@ def _gemini(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     return body["structured_output"], body.get("usage", {})
 
 
-CLIS = {"gpt": _gpt, "gemini": _gemini}
+CLIS = {
+    "gpt": lambda text, schema, cwd: _agy("gpt-oss-120b-medium", text, schema, cwd),
+    "gemini": lambda text, schema, cwd: _agy("gemini-3.8-flash-high", text, schema, cwd),
+}
 
 
 def valid_votes(path: Path, ids: list[str], reviewer: str) -> bool:

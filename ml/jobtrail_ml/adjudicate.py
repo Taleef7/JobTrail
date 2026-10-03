@@ -27,9 +27,11 @@ from .freeze import GOLD_KEYS, SCHEMA_PATH, draft_hash
 from .review import MODELS as PANEL_MODELS
 from .review import SPLITS
 
-# Models chosen by the owner, run on their subscriptions (2026-10-02).
+# Models chosen by the owner, run on their subscriptions (2026-10-02). The tie-breaker is
+# OpenAI's open-weights GPT-OSS via Antigravity: a third model family without waiting
+# hours for the Codex quota to reset (owner request).
 REVIEWERS = {
-    "gpt": "gpt-6.1-sol (Codex CLI 0.160, reasoning effort high)",
+    "gpt": "gpt-oss-120b-medium (Antigravity CLI 1.2)",
     "gemini": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
     "claude": "claude-opus-5-5 (subagent)",
 }
