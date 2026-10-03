@@ -1,9 +1,10 @@
-"""#71 step 2: turn the drafts + the owner's /label/ decisions into frozen test/dev sets.
+"""#71 step 2: turn the drafts + one decision per draft into frozen test/dev sets.
 
-Every queued draft needs exactly one decision whose draftHash still matches (the
-note and key the owner saw). Accepted and edited drafts become human-verified;
-rejected ones are dropped; drafts that were never queued are kept on the model
-panel's verdict and marked as such.
+Every draft needs exactly one decision whose draftHash still matches (the note and
+key the reviewer saw). Accepted and edited drafts are kept; rejected ones are
+dropped. A record is `verified` only when a human made its decision; the owner
+declined manual review (2026-10-02), so the decisions come from the cross-family
+model adjudication in adjudicate.py and every record says so in `review`.
 """
 
 from __future__ import annotations
@@ -56,21 +57,25 @@ def _validator() -> Draft202012Validator:
     return Draft202012Validator(json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
 
 
-def _check(drafts, queue, decisions) -> dict[str, dict]:
+METHODS = ("human", "adjudicated")
+
+
+def _check(drafts, decisions) -> dict[str, dict]:
     by_draft = {d["id"]: d for d in drafts}
-    queued = {q["id"] for q in queue}
     by_id: dict[str, dict] = {}
     for x in decisions:
         if x["id"] in by_id:
             raise ValueError(f"duplicate decision {x['id']}")
-        if x["id"] not in queued:
-            raise ValueError(f"{x['id']} was not queued for review")
+        if x["id"] not in by_draft:
+            raise ValueError(f"{x['id']} is not a draft")
         if x["draftHash"] != draft_hash(by_draft[x["id"]]):
             raise ValueError(f"{x['id']}: the draft changed since it was reviewed")
         if x["action"] not in ("accept", "edit", "reject"):
             raise ValueError(f"{x['id']}: unknown action {x['action']}")
+        if x.get("method", "human") not in METHODS:
+            raise ValueError(f"{x['id']}: unknown review method {x['method']}")
         by_id[x["id"]] = x
-    missing = sorted(queued - set(by_id))
+    missing = sorted(set(by_draft) - set(by_id))
     if missing:
         raise ValueError(f"no decision for {', '.join(missing[:10])}")
     validator = _validator()
@@ -83,31 +88,29 @@ def _check(drafts, queue, decisions) -> dict[str, dict]:
     return by_id
 
 
-def apply_decisions(drafts: list[dict], queue: list[dict], decisions: list[dict]) -> dict:
-    by_id = _check(drafts, queue, decisions)
-    reasons = {q["id"]: q["reasons"] for q in queue}
+def apply_decisions(drafts: list[dict], decisions: list[dict]) -> dict:
+    by_id = _check(drafts, decisions)
     out: dict[str, Any] = {"test": [], "dev": [], "rejected": []}
     for d in sorted(drafts, key=lambda d: d["id"]):
         split = d["meta"]["split"]
-        x = by_id.get(d["id"])
-        if x and x["action"] == "reject":
+        x = by_id[d["id"]]
+        if x["action"] == "reject":
             out["rejected"].append({"id": d["id"], "split": split, "comment": x["comment"]})
             continue
+        method = x.get("method", "human")
         rec = {k: d[k] for k in RECORD_KEYS}
-        if x:
-            rec["gold"] = x["gold"] if x["action"] == "edit" else d["gold"]
-            rec["verified"] = True
-            rec["review"] = {
-                "method": "human",
-                "action": x["action"],
-                "reasons": reasons[d["id"]],
-                "reviewedAt": x["reviewedAt"],
-            }
-            if x["comment"]:
-                rec["review"]["comment"] = x["comment"]
-        else:
-            rec["verified"] = False
-            rec["review"] = {"method": "panel"}
+        rec["gold"] = x["gold"] if x["action"] == "edit" else d["gold"]
+        rec["verified"] = method == "human"
+        rec["review"] = {
+            "method": method,
+            "action": x["action"],
+            "reasons": x.get("reasons", []),
+            "reviewedAt": x["reviewedAt"],
+        }
+        if x["comment"]:
+            rec["review"]["comment"] = x["comment"]
+        if "votes" in x:
+            rec["review"]["votes"] = {r: v["action"] for r, v in x["votes"].items()}
         out[split].append(rec)
     return out
 
@@ -123,16 +126,19 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return (max(0.0, center - margin), min(1.0, center + margin))
 
 
-def review_stats(drafts: list[dict], queue: list[dict], decisions: list[dict]) -> dict:
-    by_id = _check(drafts, queue, decisions)
+def review_stats(drafts: list[dict], decisions: list[dict]) -> dict:
+    """Outcomes overall and by why a draft was suspect: a fidelity flag (#70), a panel
+    problem (#71 step 1), or nothing (clean). How often a clean draft still changed
+    estimates the error rate of drafts no check flagged."""
+    by_id = _check(drafts, decisions)
     drafts_by_id = {d["id"]: d for d in drafts}
     actions = Counter(x["action"] for x in by_id.values())
     by_reason: dict[str, dict[str, int]] = {}
-    for q in queue:
-        for r in q["reasons"]:
+    for x in by_id.values():
+        for r in x.get("reasons") or ["clean"]:
             row = by_reason.setdefault(r, {"n": 0, "accept": 0, "edit": 0, "reject": 0})
             row["n"] += 1
-            row[by_id[q["id"]]["action"]] += 1
+            row[x["action"]] += 1
     fields = Counter(
         k
         for x in by_id.values()
@@ -140,19 +146,18 @@ def review_stats(drafts: list[dict], queue: list[dict], decisions: list[dict]) -
         for k in GOLD_KEYS
         if x["gold"][k] != drafts_by_id[x["id"]]["gold"][k]
     )
-    audit = by_reason.get("audit", {"n": 0, "edit": 0, "reject": 0})
-    k, n = audit["edit"] + audit["reject"], audit["n"]
+    clean = by_reason.get("clean", {"n": 0, "edit": 0, "reject": 0})
+    k, n = clean["edit"] + clean["reject"], clean["n"]
     lo, hi = wilson(k, n)
     return {
         "drafts": len(drafts),
-        "reviewed": len(by_id),
         "accepted": actions["accept"],
         "edited": actions["edit"],
         "rejected": actions["reject"],
-        "by_reason": by_reason,
+        "by_reason": dict(sorted(by_reason.items())),
         "fields_edited": dict(sorted(fields.items())),
-        "audit_error": {"k": k, "n": n, "rate": k / n if n else None, "ci95": [lo, hi]},
-        "panel_only": len(drafts) - len(queue),
+        "clean_changed": {"k": k, "n": n, "rate": k / n if n else None, "ci95": [lo, hi]},
+        "methods": dict(Counter(x.get("method", "human") for x in by_id.values())),
     }
 
 

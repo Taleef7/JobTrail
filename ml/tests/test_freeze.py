@@ -15,16 +15,12 @@ def draft(i, split="test", gold=GOLD):
             "meta": {"split": split, "flags": []}}  # fmt: skip
 
 
-def queued(d, reasons):
-    return {"id": d["id"], "split": d["meta"]["split"], "note": d["note"], "gold": d["gold"],
-            "tags": d["tags"], "flags": [], "panel": [], "reasons": reasons}  # fmt: skip
-
-
-def decision(d, action, gold=None, comment=""):
+def decision(d, action, gold=None, comment="", method="adjudicated", reasons=()):
     return {"id": d["id"], "split": d["meta"]["split"], "action": action,
             "gold": gold if action == "edit" else (None if action == "reject" else d["gold"]),
-            "comment": comment, "reviewedAt": "2026-10-01T00:00:00Z",
-            "draftHash": draft_hash(d), "draft": d["gold"]}  # fmt: skip
+            "comment": comment, "reviewedAt": "2026-10-02T00:00:00Z",
+            "draftHash": draft_hash(d), "draft": d["gold"], "method": method,
+            "reasons": list(reasons)}  # fmt: skip
 
 
 def test_draft_hash_matches_the_label_page():
@@ -44,56 +40,80 @@ def test_draft_hash_uses_schema_key_order_not_dict_order():
 D = [draft(1), draft(2), draft(3), draft(4), draft(1, "dev")]
 
 
-def test_applies_accept_edit_reject_and_keeps_unqueued_drafts_as_panel_verified():
-    q = [queued(D[0], ["fidelity"]), queued(D[1], ["panel"]), queued(D[2], ["audit"])]
+def test_applies_accept_edit_reject_with_adjudicated_provenance():
     edited = {**GOLD, "laborMinutes": 60}
-    decs = [decision(D[0], "accept"), decision(D[1], "edit", edited),
-            decision(D[2], "reject", comment="ambiguous")]  # fmt: skip
-    out = apply_decisions(D, q, decs)
+    votes = {
+        "gpt": {"action": "edit"},
+        "gemini": {"action": "edit"},
+        "claude": {"action": "accept"},
+    }
+    decs = [decision(D[0], "accept", reasons=["fidelity"]),
+            {**decision(D[1], "edit", edited), "votes": votes},
+            decision(D[2], "reject", comment="ambiguous"),
+            decision(D[3], "accept"), decision(D[4], "accept")]  # fmt: skip
+    out = apply_decisions(D, decs)
     test = {r["id"]: r for r in out["test"]}
     assert set(test) == {"t-0001", "t-0002", "t-0004"}  # t-0003 rejected
-    assert test["t-0001"]["verified"] is True and test["t-0001"]["review"]["method"] == "human"
-    assert test["t-0002"]["gold"] == edited and test["t-0002"]["review"]["action"] == "edit"
-    assert test["t-0004"]["verified"] is False and test["t-0004"]["review"] == {"method": "panel"}
+    assert test["t-0001"]["verified"] is False
+    assert test["t-0001"]["review"] == {"method": "adjudicated", "action": "accept",
+                                        "reasons": ["fidelity"],
+                                        "reviewedAt": "2026-10-02T00:00:00Z"}  # fmt: skip
+    assert test["t-0002"]["gold"] == edited
+    assert test["t-0002"]["review"]["votes"] == {
+        "gpt": "edit",
+        "gemini": "edit",
+        "claude": "accept",
+    }
     assert set(test["t-0001"]) == {"id", "note", "gold", "source", "tags", "verified", "review"}
     assert [r["id"] for r in out["dev"]] == ["d-0001"]
     assert out["rejected"] == [{"id": "t-0003", "split": "test", "comment": "ambiguous"}]
 
 
-def test_refuses_missing_duplicate_stale_or_unqueued_decisions():
-    q = [queued(D[0], ["fidelity"]), queued(D[1], ["audit"])]
-    ok = [decision(D[0], "accept"), decision(D[1], "accept")]
-    with pytest.raises(ValueError, match="no decision for t-0002"):
-        apply_decisions(D, q, ok[:1])
+def test_only_a_human_decision_makes_a_record_verified():
+    decs = [decision(d, "accept", method="human" if i == 0 else "adjudicated")
+            for i, d in enumerate(D)]  # fmt: skip
+    out = apply_decisions(D, decs)
+    assert [r["verified"] for r in out["test"]] == [True, False, False, False]
+
+
+def test_refuses_missing_duplicate_stale_or_unknown_decisions():
+    ok = [decision(d, "accept") for d in D]
+    with pytest.raises(ValueError, match="no decision for t-0004"):
+        apply_decisions(D, ok[:3] + ok[4:])
     with pytest.raises(ValueError, match="duplicate decision t-0001"):
-        apply_decisions(D, q, [*ok, ok[0]])
+        apply_decisions(D, [*ok, ok[0]])
     stale = {**ok[1], "draftHash": "deadbeef"}
     with pytest.raises(ValueError, match="t-0002.*changed since it was reviewed"):
-        apply_decisions(D, q, [ok[0], stale])
-    with pytest.raises(ValueError, match="t-0004 was not queued"):
-        apply_decisions(D, q, [*ok, decision(D[3], "accept")])
+        apply_decisions(D, [ok[0], stale, *ok[2:]])
+    with pytest.raises(ValueError, match="t-0099 is not a draft"):
+        apply_decisions(D, [*ok, {**ok[0], "id": "t-0099"}])
+    with pytest.raises(ValueError, match="unknown review method"):
+        apply_decisions(D, [{**ok[0], "method": "vibes"}, *ok[1:]])
 
 
 def test_refuses_an_edited_key_that_is_not_valid_schema_v2():
-    q = [queued(D[0], ["fidelity"])]
     bad = decision(D[0], "edit", {**GOLD, "laborMinutes": -5})
     with pytest.raises(ValueError, match="t-0001.*laborMinutes"):
-        apply_decisions(D, q, [bad])
+        apply_decisions(D, [bad, *(decision(d, "accept") for d in D[1:])])
 
 
-def test_stats_report_edit_rate_by_reason_and_the_audit_error_rate():
-    q = [queued(D[0], ["fidelity", "panel"]), queued(D[1], ["audit"]), queued(D[2], ["audit"])]
+def test_stats_report_outcomes_by_reason_and_how_often_clean_drafts_changed():
     decs = [
-        decision(D[0], "edit", {**GOLD, "followUps": ["Check leaks"]}),
+        decision(
+            D[0], "edit", {**GOLD, "followUps": ["Check leaks"]}, reasons=["fidelity", "panel"]
+        ),
         decision(D[1], "accept"),
         decision(D[2], "edit", {**GOLD, "laborMinutes": 45}),
+        decision(D[3], "reject", comment="ambiguous"),
+        decision(D[4], "accept", method="human"),
     ]
-    s = review_stats(D, q, decs)
-    assert s["reviewed"] == 3 and s["edited"] == 2 and s["rejected"] == 0
-    assert s["by_reason"]["audit"] == {"n": 2, "accept": 1, "edit": 1, "reject": 0}
-    assert s["audit_error"]["k"] == 1 and s["audit_error"]["n"] == 2
+    s = review_stats(D, decs)
+    assert (s["accepted"], s["edited"], s["rejected"]) == (2, 2, 1)
+    assert s["by_reason"]["clean"] == {"n": 4, "accept": 2, "edit": 1, "reject": 1}
+    assert s["by_reason"]["fidelity"] == {"n": 1, "accept": 0, "edit": 1, "reject": 0}
+    assert s["clean_changed"]["k"] == 2 and s["clean_changed"]["n"] == 4
     assert s["fields_edited"] == {"followUps": 1, "laborMinutes": 1}
-    assert s["panel_only"] == 2  # t-0004 and d-0001
+    assert s["methods"] == {"adjudicated": 4, "human": 1}
 
 
 def test_wilson_interval():

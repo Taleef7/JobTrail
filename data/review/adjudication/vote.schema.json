@@ -1,0 +1,160 @@
+{
+ "type": "object",
+ "properties": {
+  "decisions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "action": {
+      "type": "string",
+      "enum": [
+       "accept",
+       "edit",
+       "reject"
+      ]
+     },
+     "gold": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "jobType": {
+          "anyOf": [
+           {
+            "type": "string",
+            "enum": [
+             "plumbing",
+             "electrical",
+             "hvac",
+             "carpentry",
+             "appliance",
+             "cleaning",
+             "painting",
+             "roofing",
+             "general"
+            ]
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "workPerformed": {
+          "type": "array",
+          "items": {
+           "type": "string",
+           "minLength": 1
+          }
+         },
+         "issuesFound": {
+          "type": "array",
+          "items": {
+           "type": "string",
+           "minLength": 1
+          }
+         },
+         "materials": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "name": {
+             "type": "string",
+             "minLength": 1
+            },
+            "quantity": {
+             "anyOf": [
+              {
+               "type": "number",
+               "exclusiveMinimum": 0
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "unit": {
+             "anyOf": [
+              {
+               "type": "string",
+               "minLength": 1
+              },
+              {
+               "type": "null"
+              }
+             ]
+            }
+           },
+           "required": [
+            "name",
+            "quantity",
+            "unit"
+           ],
+           "additionalProperties": false
+          }
+         },
+         "laborMinutes": {
+          "anyOf": [
+           {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1440
+           },
+           {
+            "type": "null"
+           }
+          ]
+         },
+         "customerApproved": {
+          "type": [
+           "boolean",
+           "null"
+          ]
+         },
+         "followUps": {
+          "type": "array",
+          "items": {
+           "type": "string",
+           "minLength": 1
+          }
+         }
+        },
+        "required": [
+         "jobType",
+         "workPerformed",
+         "issuesFound",
+         "materials",
+         "laborMinutes",
+         "customerApproved",
+         "followUps"
+        ],
+        "additionalProperties": false
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "comment": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "action",
+     "gold",
+     "comment"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "required": [
+  "decisions"
+ ],
+ "additionalProperties": false
+}
