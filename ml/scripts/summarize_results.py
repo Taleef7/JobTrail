@@ -87,11 +87,15 @@ def runs() -> list[dict]:
         cost = meta.get("cost") or []
         row = {
             "run": d.name, "split": split,
-            "rung": "cloud" if cfg["provider"] == "gemini" else "local",
+            "rung": "local" if cfg["provider"] == "llamacpp" else "cloud",
+            "via": {"llamacpp": "llama.cpp", "gemini": "Gemini API", "agy": "Antigravity CLI"}[
+                cfg["provider"]],
             "model": cfg["model"].get("id") or Path(cfg["model"]["file"]).stem,
             "prompt": cfg["prompt"], "grammar": cfg["grammar"], "n": r["overall"]["n"],
             "batch": (cfg.get("cloud") or {}).get("batch_size", 1),
-            "usdPerNote": cost[0]["usdPerNote"] if cost else 0.0,
+            # agy runs on a subscription: no price of its own (RESULTS uses the API estimate)
+            "usdPerNote": cost[0]["usdPerNote"] if cost else (
+                None if cfg["provider"] == "agy" else 0.0),
             "usdPerNote2027": cost[1]["usdPerNote"] if len(cost) > 1 else None,
             "loops": sum(p.get("finishReason") == "length"
                          for p in read_jsonl(d / "predictions.jsonl")),
@@ -108,6 +112,10 @@ def runs() -> list[dict]:
             }
         rows.append(row)
     return rows
+
+
+def usd(v) -> str:
+    return "–" if v is None else f"${v:.4f}"
 
 
 def pct(v) -> str:
@@ -138,7 +146,7 @@ def markdown(rows: list[dict], split: str) -> str:
             f"{pct(m['laborMinutesAccuracy'])} | {pct(m['customerApprovedAccuracy'])} | "
             f"{m['materialsF1']:.3f} | {m['workPerformedF1']:.3f} | {m['issuesFoundF1']:.3f} | "
             f"{m['followUpsF1']:.3f} | {pct(m['hallucinationRate'])} | {p50} | "
-            f"${r['usdPerNote']:.4f} |")  # fmt: skip
+            f"{usd(r['usdPerNote'])} |")  # fmt: skip
     return "\n".join(lines)
 
 
