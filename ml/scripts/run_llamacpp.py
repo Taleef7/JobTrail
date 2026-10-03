@@ -63,7 +63,8 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> None:
     run.dir.mkdir(parents=True, exist_ok=True)
     with LlamaServer(model, cfg["server"], s["seed"], run.dir / "server.log") as server:
         server.check_build(cfg["server"]["build"])
-        run.open({"runtime": f"llama.cpp {server.build}", "host": host(),
+        run.open({"runtime": f"llama.cpp {server.build}", "threads": cfg["server"]["threads"],
+                  "host": host(),
                   "chatTemplateCaps": server.props.get("chat_template_caps")})  # fmt: skip
         client = LlamaClient(server.url)
         # Warm-up, not recorded: the first request after a load is cold.

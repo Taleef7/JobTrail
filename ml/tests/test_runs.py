@@ -15,6 +15,7 @@ from jobtrail_ml.runs import (
     cost_line,
     gemini_usage,
     load_config,
+    new_model_version,
     read_jsonl,
     resolve,
     run_id,
@@ -310,6 +311,20 @@ def test_finishing_a_complete_run_again_keeps_its_times(gold, tmp_path):
     (run.dir / "run.json").unlink()
     Run(local(gold), tmp_path).finish("incomplete", score_it=False)  # rebuilt, no crash
     assert json.loads((run.dir / "run.json").read_text(encoding="utf-8"))["status"] == "complete"
+
+
+def test_resuming_with_a_different_thread_count_is_refused(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "llama.cpp b1", "threads": None})
+    run.append(line(1))
+    with pytest.raises(RuntimeError, match="threads"):
+        Run(local(gold), tmp_path).open({"runtime": "llama.cpp b1", "threads": 8})
+
+
+def test_a_new_cloud_model_version_is_caught_before_it_mixes_into_a_run():
+    assert not new_model_version(set(), "gemini-3.8-flash-001")  # first answer sets it
+    assert not new_model_version({"gemini-3.8-flash-001"}, "gemini-3.8-flash-001")
+    assert new_model_version({"gemini-3.8-flash-001"}, "gemini-3.8-flash-002")
 
 
 def test_cost_line_handles_a_run_with_no_predictions():

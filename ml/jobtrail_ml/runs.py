@@ -61,6 +61,10 @@ NOT_IDENTITY = {
 }
 
 
+# A resume must match these, or one report would mix runtimes or thread counts (timings).
+RESUME_PINNED = ("runtime", "threads")
+
+
 class ConfigError(ValueError):
     pass
 
@@ -220,11 +224,12 @@ class Run:
         if meta_path.exists() and self.done:
             self.meta = json.loads(meta_path.read_text(encoding="utf-8"))
             before = self.meta["env"]
-            if before.get("runtime") != env.get("runtime"):
-                raise RuntimeError(
-                    f"{self.dir.name} was started with {before.get('runtime')}, now "
-                    f"{env.get('runtime')}; delete the folder to start over"
-                )
+            for key in RESUME_PINNED:
+                if before.get(key) != env.get(key):
+                    raise RuntimeError(
+                        f"{self.dir.name} was started with {key} {before.get(key)!r}, now "
+                        f"{env.get(key)!r}; delete the folder to start over"
+                    )
             # Keep where and when the run started; each resume is logged on its own.
             self.meta.setdefault("resumes", []).append({"at": now, "env": env})
         else:
@@ -318,6 +323,12 @@ def cost(usage: dict[str, int], pricing: dict[str, Any] | None, n: int) -> list[
         out.append({"rate": rate["label"], "usd": round(usd, 6),
                     "usdPerNote": round(usd / n, 8) if n else None})  # fmt: skip
     return out
+
+
+def new_model_version(seen: set[str], version: str | None) -> bool:
+    """A cloud model id can resolve to a new backend version between resumed days; one
+    run must not mix versions."""
+    return bool(seen) and version not in seen
 
 
 def cost_line(c: dict[str, Any]) -> str:

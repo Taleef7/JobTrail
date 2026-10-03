@@ -30,6 +30,7 @@ from jobtrail_ml.runs import (  # noqa: E402
     gemini_usage,
     host,
     load_config,
+    new_model_version,
     read_jsonl,
     usage_totals,
 )
@@ -81,7 +82,7 @@ def main() -> int:
     if report:
         print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
     print(run.dir)
-    return 0 if status != "quota" else 3
+    return {"quota": 3, "version-changed": 4}.get(status, 0)
 
 
 def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
@@ -93,6 +94,7 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
     schema = extract.schema(cfg["format"]) if cfg["grammar"] else None
     if schema:
         schema = {k: v for k, v in schema.items() if k != "$schema"}
+    seen = {p["modelVersion"] for p in read_jsonl(run.pred_path) if p.get("modelVersion")}
     try:
         for i, g in enumerate(todo, 1):
             msgs = extract.messages(g["note"], cfg["prompt"], cfg["format"])
@@ -102,6 +104,13 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
                                 json_schema=schema, thinking_level=c["thinking_level"],
                                 max_output_tokens=s["max_tokens"],
                                 allow_unfinished=True)  # fmt: skip
+            if new_model_version(seen, r.model_version):
+                print(
+                    f"{model} now answers as {r.model_version}, not {sorted(seen)}: start a "
+                    "new run (delete the folder) rather than mix versions in one report"
+                )
+                return "version-changed"
+            seen.add(r.model_version)
             run.append({"id": g["id"], "raw": r.text, "format": cfg["format"], "model": model,
                         "modelVersion": r.model_version,
                         "timings": {"wallMs": round(r.wall_ms or 0, 3)},
