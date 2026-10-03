@@ -12,8 +12,10 @@ from jobtrail_ml.runs import (
     ConfigError,
     Run,
     cost,
+    cost_line,
     gemini_usage,
     load_config,
+    read_jsonl,
     resolve,
     run_id,
     score_run,
@@ -39,7 +41,8 @@ def local(gold_path, **kw):
     raw = {"name": "m", "provider": "llamacpp", "gold": str(gold_path),
            "model": {"file": "ml/models/m.gguf", "url": "https://x/m.gguf",
                      "sha256": SHA}}  # fmt: skip
-    return resolve({**raw, **kw})
+    server = {"build": "b9837", **kw.pop("server", {})}
+    return resolve({**raw, "server": server, **kw})
 
 
 def cloud(gold_path, **kw):
@@ -197,3 +200,85 @@ def test_a_complete_run_is_scored_by_the_core_scorer(gold, tmp_path):
     assert report["run"] == run.id and report["overall"]["n"] == 3
     assert report["overall"]["zeroEditRate"] == pytest.approx(2 / 3)
     assert json.loads((run.dir / "report.json").read_text(encoding="utf-8")) == report
+
+
+@pytest.mark.parametrize(
+    ("section", "typo"),
+    [("sampling", {"temprature": 0.2}), ("server", {"gpu_layer": 9}),
+     ("model", {"file": "m.gguf", "sha256": SHA, "sha": "x"})],
+)  # fmt: skip
+def test_misspelled_nested_settings_are_refused(gold, section, typo):
+    with pytest.raises(ConfigError, match=f"unknown {section} key"):
+        local(gold, **{section: typo})
+
+
+def test_misspelled_cloud_settings_are_refused(gold):
+    with pytest.raises(ConfigError, match="unknown cloud key"):
+        cloud(gold, cloud={"thinking": "high"})
+
+
+def test_a_llamacpp_config_must_pin_the_build(gold):
+    raw = {"name": "m", "provider": "llamacpp", "gold": str(gold),
+           "model": {"file": "m.gguf", "sha256": SHA}}  # fmt: skip
+    with pytest.raises(ConfigError, match="server.build"):
+        resolve(raw)
+    assert run_id(local(gold)) != run_id(local(gold, server={"build": "b9900"}))
+
+
+def test_int_and_float_spellings_of_a_setting_give_the_same_run_id(gold):
+    a = local(gold, sampling={"temperature": 0, "seed": 42, "max_tokens": 512})
+    b = local(gold, sampling={"temperature": 0.0, "seed": 42.0, "max_tokens": 512.0})
+    assert a == b and run_id(a) == run_id(b)
+
+
+def test_every_committed_config_serializes_as_plain_json():
+    for path in sorted((ML / "configs").glob("*.yaml")):
+        json.dumps(load_config(path))  # no default=: dates etc. must already be strings
+
+
+def test_a_resume_keeps_the_start_and_logs_each_resume(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "llama.cpp b1", "host": {"cpu": "first"}})
+    run.append(line(1))
+    first = json.loads((run.dir / "run.json").read_text(encoding="utf-8"))
+    again = Run(local(gold), tmp_path)
+    again.open({"runtime": "llama.cpp b1", "host": {"cpu": "second"}})
+    meta = json.loads((run.dir / "run.json").read_text(encoding="utf-8"))
+    assert meta["started"] == first["started"] and meta["env"]["host"] == {"cpu": "first"}
+    assert [r["env"]["host"]["cpu"] for r in meta["resumes"]] == ["second"]
+
+
+def test_a_finished_run_can_be_finished_again_without_reopening(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    run.append(line(1))
+    run.finish("incomplete", score_it=False)
+    later = Run(local(gold), tmp_path)
+    later.finish("incomplete", score_it=False)  # no open(): reads the existing run.json
+    assert json.loads((run.dir / "run.json").read_text(encoding="utf-8"))["predictions"] == 1
+
+
+def test_rescoring_refuses_a_gold_file_that_changed_since_the_run(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    for i in (1, 2, 3):
+        run.append(line(i))
+    gold.write_text(gold.read_text(encoding="utf-8").replace("Note 1", "Note one"),
+                    encoding="utf-8")  # fmt: skip
+    with pytest.raises(RuntimeError, match="changed since the run"):
+        score_run(run.dir)
+
+
+def test_model_text_with_unicode_line_separators_survives_a_resume(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    run.append(line(1, raw='{"note": "a\u2028b\u0085c"}'))
+    assert run.pred_path.read_bytes().isascii()
+    assert read_jsonl(run.pred_path)[0]["raw"] == '{"note": "a\u2028b\u0085c"}'
+    assert [g["id"] for g in Run(local(gold), tmp_path).todo()] == ["d-2", "d-3"]
+
+
+def test_cost_line_handles_a_run_with_no_predictions():
+    assert cost_line({"rate": "2026", "usd": 0.0, "usdPerNote": None}) == (
+        "cost at 2026: $0.0000 total, n/a/note"
+    )

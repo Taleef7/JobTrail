@@ -26,6 +26,7 @@ from jobtrail_ml.runs import (  # noqa: E402
     ROOT,
     Run,
     cost,
+    cost_line,
     gemini_usage,
     host,
     load_config,
@@ -35,8 +36,9 @@ from jobtrail_ml.runs import (  # noqa: E402
 
 
 def api_key(name: str) -> str:
-    if os.environ.get(name):
-        return os.environ[name]
+    value = os.environ.get(name, "").strip()  # a stray CR/space would end up in an error
+    if value:
+        return value
     env = ML / ".env"
     if env.exists():
         for line in env.read_text(encoding="utf-8").splitlines():
@@ -97,7 +99,7 @@ def main() -> int:
     priced = cost(usage_totals(preds), c["pricing"], len(preds))
     report = run.finish(status, {"cost": priced}, score_it=not args.no_score)
     for p in priced:
-        print(f"cost at {p['rate']}: ${p['usd']:.4f} total, ${p['usdPerNote']:.6f}/note")
+        print(cost_line(p))
     if report:
         print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
     print(run.dir)

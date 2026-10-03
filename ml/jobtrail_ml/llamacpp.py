@@ -101,7 +101,7 @@ class LlamaServer:
         self.props: dict[str, Any] = {}
 
     def __enter__(self) -> LlamaServer:
-        self._log = self.log.open("w", encoding="utf-8")
+        self._log = self.log.open("a", encoding="utf-8")  # a resume keeps the earlier log
         self.proc = subprocess.Popen(self.cmd, stdout=self._log, stderr=subprocess.STDOUT)
         deadline = time.monotonic() + self.startup_s
         with httpx.Client(timeout=5) as c:
@@ -128,6 +128,11 @@ class LlamaServer:
             except subprocess.TimeoutExpired:
                 self.proc.kill()
         self._log.close()
+
+    def check_build(self, pinned: str) -> None:
+        """Refuse to run on a llama.cpp release other than the one the config pins."""
+        if not self.build.startswith(f"{pinned}-") and self.build != pinned:
+            raise LlamaError(f"config pins llama.cpp {pinned}, but llama-server is {self.build}")
 
     @property
     def build(self) -> str:
@@ -175,8 +180,8 @@ class LlamaClient:
         t = data.get("timings", {})
         timings = {"wallMs": round(wall_ms, 3)}
         if "prompt_ms" in t:
-            # TTFT ~ prefill + one decode step (the server reports no first-token time).
-            timings["ttftMs"] = round(t["prompt_ms"] + t.get("predicted_per_token_ms", 0), 3)
+            # llama-server stops prompt_ms when the first token is sampled: server-side TTFT.
+            timings["ttftMs"] = round(t["prompt_ms"], 3)
             timings["prefillTokPerSec"] = round(t.get("prompt_per_second", 0), 3)
             timings["decodeTokPerSec"] = round(t.get("predicted_per_second", 0), 3)
         u = data.get("usage", {})

@@ -8,7 +8,13 @@ import httpx
 import pytest
 
 from jobtrail_ml.gemini import GeminiClient
-from jobtrail_ml.llamacpp import LlamaClient, LlamaError, ensure_model, server_command
+from jobtrail_ml.llamacpp import (
+    LlamaClient,
+    LlamaError,
+    LlamaServer,
+    ensure_model,
+    server_command,
+)
 
 SAMPLING = {"temperature": 0, "seed": 42, "max_tokens": 512}
 TIMINGS = {"prompt_n": 46, "prompt_ms": 9.0, "prompt_per_second": 5000.0,
@@ -60,7 +66,7 @@ def test_timings_usage_and_finish_reason_come_back():
     c, _ = client([reply('{"a": 1}', finish="length")])
     r = c.chat([], schema=None, sampling=SAMPLING)
     assert (r.text, r.finish_reason) == ('{"a": 1}', "length")
-    assert r.timings == {"wallMs": 1.0, "ttftMs": 11.0, "prefillTokPerSec": 5000.0,
+    assert r.timings == {"wallMs": 1.0, "ttftMs": 9.0, "prefillTokPerSec": 5000.0,
                          "decodeTokPerSec": 500.0}  # fmt: skip
     assert r.usage == {"promptTokens": 46, "outputTokens": 20}
 
@@ -150,3 +156,14 @@ def test_gemini_default_mode_still_raises_on_unfinished_answers():
 
     with pytest.raises(GeminiError, match="MAX_TOKENS"):
         gemini([candidate("x", "MAX_TOKENS")]).generate("m", "s", "u")
+
+
+def test_the_server_must_be_the_pinned_llama_cpp_build(tmp_path):
+    server = LlamaServer(Path("m.gguf"), {"ctx": 1, "gpu_layers": 0}, 1, tmp_path / "log",
+                         exe="llama-server")  # fmt: skip
+    server.props = {"build_info": "b9837-b3fed31b9"}
+    server.check_build("b9837")
+    with pytest.raises(LlamaError, match="pins llama.cpp b9900"):
+        server.check_build("b9900")
+    with pytest.raises(LlamaError, match="pins llama.cpp b983"):
+        server.check_build("b983")  # a prefix of another build is not that build

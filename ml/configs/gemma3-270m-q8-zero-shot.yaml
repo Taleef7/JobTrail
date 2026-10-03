@@ -14,5 +14,6 @@ sampling:
   seed: 42
   max_tokens: 512
 server:
+  build: b9837 # llama.cpp release; checked at start
   ctx: 4096
   gpu_layers: 0 # CPU only, like the phones

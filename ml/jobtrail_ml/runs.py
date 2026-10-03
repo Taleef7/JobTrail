@@ -41,8 +41,12 @@ DEFAULTS: dict[str, Any] = {
     "limit": None,
     "sampling": {"temperature": 0.0, "seed": 42, "max_tokens": 512},
 }
-LLAMACPP_SERVER = {"ctx": 4096, "gpu_layers": 0, "threads": None, "chat_template_kwargs": {}}
+# `build` pins the llama.cpp release (e.g. "b9837"): grammar conversion, chat templates and
+# sampling can change between builds, so it is part of the run ID and checked at start.
+LLAMACPP_SERVER = {"build": None, "ctx": 4096, "gpu_layers": 0, "threads": None,
+                   "chat_template_kwargs": {}}  # fmt: skip
 GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None}
+MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}}
 # Settings that don't change what the model writes stay out of the run ID.
 # The model file and gold are identified by their SHA-256, not their path or URL.
 NOT_IDENTITY = {
@@ -98,7 +102,16 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
             raise ConfigError(f"config needs {key!r}")
     if raw["provider"] not in PROVIDERS:
         raise ConfigError(f"provider must be one of {PROVIDERS}, got {raw['provider']!r}")
+    _known(raw.get("sampling"), DEFAULTS["sampling"], "sampling")
+    _known(raw.get("model"), MODEL_KEYS[raw["provider"]], "model")
     cfg = _merge(DEFAULTS, raw)
+    s = cfg["sampling"]
+    try:  # 0 and 0.0 are the same setting, so they must give the same run ID
+        s["temperature"] = float(s["temperature"])
+        s["seed"] = int(s["seed"])
+        s["max_tokens"] = None if s["max_tokens"] is None else int(s["max_tokens"])
+    except (TypeError, ValueError) as e:
+        raise ConfigError(f"sampling: {e}") from e
     if cfg["prompt"] not in extract.VARIANTS:
         raise ConfigError(f"prompt must be one of {extract.VARIANTS}, got {cfg['prompt']!r}")
     if cfg["format"] not in extract.FORMATS:
@@ -110,7 +123,10 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
     if cfg["provider"] == "llamacpp":
         if not {"file", "sha256"} <= set(cfg["model"]):
             raise ConfigError("llamacpp model needs file and sha256 (and url to download it)")
+        _known(raw.get("server"), LLAMACPP_SERVER, "server")
         cfg["server"] = _merge(LLAMACPP_SERVER, cfg.get("server") or {})
+        if not cfg["server"]["build"]:
+            raise ConfigError("server.build must pin the llama.cpp release, e.g. b9837")
     else:
         if not cfg["model"].get("id"):
             raise ConfigError("gemini model needs id")
@@ -118,8 +134,16 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
             raise ConfigError("the cloud runner sends one system + one user turn; no few-shot")
         if "max_tokens" not in (raw.get("sampling") or {}):
             cfg["sampling"]["max_tokens"] = None  # thinking counts against the cap
+        _known(raw.get("cloud"), GEMINI_CLOUD, "cloud")
         cfg["cloud"] = _merge(GEMINI_CLOUD, cfg.get("cloud") or {})
     return {k: cfg[k] for k in KEYS if k in cfg}
+
+
+def _known(section: dict | None, allowed, where: str) -> None:
+    """A misspelled setting would be ignored by the runner yet hashed into the run ID."""
+    extra = sorted(set(section or {}) - set(allowed))
+    if extra:
+        raise ConfigError(f"unknown {where} key(s): {', '.join(extra)}")
 
 
 def sha256_file(path: Path) -> str:
@@ -160,12 +184,14 @@ def run_id(cfg: dict[str, Any]) -> str:
 def read_jsonl(path: Path) -> list[dict]:
     if not path.exists():
         return []
-    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+    # Split on newlines only: str.splitlines also breaks on U+2028 and friends inside strings.
+    return [json.loads(x) for x in path.read_text(encoding="utf-8").split("\n") if x.strip()]
 
 
 def write_json(path: Path, obj: Any) -> None:
-    path.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
-                    newline="\n")  # fmt: skip
+    # default=str: YAML dates (e.g. pricing.checked) are written as text instead of failing.
+    path.write_text(json.dumps(obj, indent=2, ensure_ascii=False, default=str) + "\n",
+                    encoding="utf-8", newline="\n")  # fmt: skip
 
 
 class Run:
@@ -179,31 +205,32 @@ class Run:
         self.gold = gold_all[: cfg["limit"]] if cfg["limit"] else gold_all
         self.pred_path = self.dir / "predictions.jsonl"
         self.done = read_done_ids(self.pred_path)  # drops a line cut off by a crash
+        self.meta: dict[str, Any] | None = None
 
     def open(self, env: dict[str, Any]) -> None:
         """Create the folder, or resume it if it was made in the same environment."""
         self.dir.mkdir(parents=True, exist_ok=True)
         meta_path = self.dir / "run.json"
-        if meta_path.exists():
-            before = json.loads(meta_path.read_text(encoding="utf-8"))["env"]
-            changed = {k for k in ("runtime",) if before.get(k) != env.get(k)}
-            if changed and self.done:
+        now = datetime.now(UTC).isoformat(timespec="seconds")
+        if meta_path.exists() and self.done:
+            self.meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            before = self.meta["env"]
+            if before.get("runtime") != env.get("runtime"):
                 raise RuntimeError(
                     f"{self.dir.name} was started with {before.get('runtime')}, now "
                     f"{env.get('runtime')}; delete the folder to start over"
                 )
+            # Keep where and when the run started; each resume is logged on its own.
+            self.meta.setdefault("resumes", []).append({"at": now, "env": env})
+        else:
+            self.meta = {"id": self.id, "env": env, "started": now}
+        self.meta["status"] = "running"
         write_json(self.dir / "config.json", {**self.cfg, "identity": identity(self.cfg)})
         if self.cfg["limit"]:
             (self.dir / "gold.jsonl").write_text(
                 "".join(json.dumps(g, ensure_ascii=False) + "\n" for g in self.gold),
                 encoding="utf-8", newline="\n",
             )  # fmt: skip
-        self.meta = {
-            "id": self.id,
-            "env": env,
-            "started": datetime.now(UTC).isoformat(timespec="seconds"),
-            "status": "running",
-        }
         write_json(meta_path, self.meta)
 
     def todo(self) -> list[dict]:
@@ -211,7 +238,7 @@ class Run:
 
     def append(self, line: dict[str, Any]) -> None:
         with self.pred_path.open("a", encoding="utf-8", newline="\n") as f:
-            f.write(json.dumps(line, ensure_ascii=False) + "\n")
+            f.write(json.dumps(line) + "\n")  # ASCII, so no raw line separators from models
         self.done.add(line["id"])
 
     @property
@@ -220,6 +247,8 @@ class Run:
 
     def finish(self, status: str, extra: dict[str, Any] | None = None, score_it: bool = True):
         preds = read_jsonl(self.pred_path)
+        if self.meta is None:  # nothing was left to run, so open() was skipped
+            self.meta = json.loads((self.dir / "run.json").read_text(encoding="utf-8"))
         self.meta.update({
             "status": "complete" if self.complete else status,
             "finished": datetime.now(UTC).isoformat(timespec="seconds"),
@@ -242,21 +271,29 @@ def usage_totals(preds: list[dict]) -> dict[str, int]:
 
 
 def gold_path(run_dir: Path) -> Path:
+    """The gold the run was made against: its saved subset, or the gold file if unchanged."""
     cfg = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
     subset = run_dir / "gold.jsonl"
-    return subset if subset.exists() else ROOT / cfg["gold"]
+    if subset.exists():
+        return subset
+    path = ROOT / cfg["gold"]
+    want = cfg["identity"]["gold_sha256"]
+    if sha256_file(path) != want:
+        raise RuntimeError(f"{run_dir.name}: {cfg['gold']} changed since the run (sha256 was "
+                           f"{want[:12]}); rerun the config instead of re-scoring")  # fmt: skip
+    return path
 
 
 def score_run(run_dir: Path) -> dict:
     """Score a finished run with the core scorer; refuses a run with notes still missing."""
-    gold = read_jsonl(gold_path(run_dir))
+    path = gold_path(run_dir)
+    gold = read_jsonl(path)
     done = {p["id"] for p in read_jsonl(run_dir / "predictions.jsonl")}
     missing = [g["id"] for g in gold if g["id"] not in done]
     if missing:
         raise RuntimeError(f"{run_dir.name}: {len(missing)} notes have no prediction yet "
                            f"(e.g. {missing[0]}); rerun to resume")  # fmt: skip
-    return score(gold_path(run_dir), run_dir / "predictions.jsonl", run_dir / "report.json",
-                 run_dir.name)  # fmt: skip
+    return score(path, run_dir / "predictions.jsonl", run_dir / "report.json", run_dir.name)
 
 
 def cost(usage: dict[str, int], pricing: dict[str, Any] | None, n: int) -> list[dict]:
@@ -271,6 +308,11 @@ def cost(usage: dict[str, int], pricing: dict[str, Any] | None, n: int) -> list[
         out.append({"rate": rate["label"], "usd": round(usd, 6),
                     "usdPerNote": round(usd / n, 8) if n else None})  # fmt: skip
     return out
+
+
+def cost_line(c: dict[str, Any]) -> str:
+    per = "n/a" if c["usdPerNote"] is None else f"${c['usdPerNote']:.6f}"
+    return f"cost at {c['rate']}: ${c['usd']:.4f} total, {per}/note"
 
 
 def gemini_usage(meta: dict[str, Any]) -> dict[str, int]:

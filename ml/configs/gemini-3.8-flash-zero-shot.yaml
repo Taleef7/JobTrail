@@ -20,7 +20,7 @@ cloud:
   key_env: GEMINI_API_KEY
   pricing:
     source: https://ai.google.dev/gemini-api/docs/pricing
-    checked: 2026-10-02
+    checked: "2026-10-02"
     rates:
       - label: through 2026-12-31
         input_per_mtok: 0.75
