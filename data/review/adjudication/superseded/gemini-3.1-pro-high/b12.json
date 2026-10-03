@@ -1,0 +1,86 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b12",
+ "usage": {
+  "input_tokens": 14707,
+  "output_tokens": 12307,
+  "thinking_tokens": 11938,
+  "cache_read_tokens": 8128,
+  "total_tokens": 27014
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0133"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0134"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0135"
+  },
+  {
+   "action": "reject",
+   "comment": "The note contradicts itself by stating cracked cover plates were replaced but also that a cover plate wasn't needed.",
+   "gold": null,
+   "id": "t-0136"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0137"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0138"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0139"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0140"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0141"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0142"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0143"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0144"
+  }
+ ]
+}

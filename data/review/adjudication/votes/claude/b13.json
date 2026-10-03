@@ -1,0 +1,14 @@
+{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b13", "usage": {}, "decisions": [
+{"id": "t-0145", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0146", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0147", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0148", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0149", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0150", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0151", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0152", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0153", "action": "accept", "gold": null, "comment": "Pet stains are not reported as found, so issuesFound stays empty despite the automated concern."},
+{"id": "t-0154", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0155", "action": "accept", "gold": null, "comment": "laborMinutes 85 is the hour plus the extra 25 minutes, as the extra-labor rule requires."},
+{"id": "t-0156", "action": "accept", "gold": null, "comment": ""}
+]}

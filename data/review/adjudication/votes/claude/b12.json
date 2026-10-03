@@ -1,0 +1,20 @@
+{
+  "reviewer": "claude",
+  "model": "claude-opus-5-5 (subagent)",
+  "batch": "b12",
+  "usage": {},
+  "decisions": [
+    {"id": "t-0133", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0134", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0135", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0136", "action": "reject", "gold": null, "comment": "Note says cracked cover plates were replaced yet also that the cover plate wasn't needed, and never says the supply-house electrical tape was used, so the work and materials are not settled by the rules."},
+    {"id": "t-0137", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0138", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0139", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0140", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0141", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0142", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0143", "action": "accept", "gold": null, "comment": ""},
+    {"id": "t-0144", "action": "accept", "gold": null, "comment": ""}
+  ]
+}

@@ -1,0 +1,110 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b08",
+ "usage": {
+  "input_tokens": 52444,
+  "output_tokens": 21066,
+  "thinking_tokens": 19957,
+  "cache_read_tokens": 44336,
+  "total_tokens": 73510
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0085"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0086"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0087"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0088"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0089"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0090"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0091"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Put in fresh parts' to workPerformed since 'fresh parts' has no number and acts as the object of a task.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Filter completely clogged"
+    ],
+    "jobType": "hvac",
+    "laborMinutes": null,
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "wire nut",
+      "quantity": 5,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Put in fresh parts"
+    ]
+   },
+   "id": "t-0092"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0093"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0094"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0095"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0096"
+  }
+ ]
+}

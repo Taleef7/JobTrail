@@ -1,0 +1,14 @@
+{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b04", "usage": {}, "decisions": [
+{"id": "t-0037", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0038", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0039", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0040", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0041", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0042", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0043", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0044", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0045", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0046", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0047", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0048", "action": "accept", "gold": null, "comment": ""}
+]}

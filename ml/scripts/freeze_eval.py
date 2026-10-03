@@ -1,14 +1,14 @@
-"""#71 step 2: freeze the eval sets from the drafts and the owner's /label/ decisions.
+"""#71 step 2: freeze the eval sets from the drafts and one decision per draft.
 
 Usage (from ml/):
-  uv run python scripts/freeze_eval.py path/to/label-decisions.jsonl [--out-dir DIR]
+  uv run python scripts/freeze_eval.py [DECISIONS.jsonl] [--out-dir DIR]
 
-Writes (under DIR, default: the repo's data/):
+DECISIONS defaults to data/review/adjudication/decisions.jsonl (the cross-family model
+adjudication; the owner declined manual review). Writes, under DIR (default data/):
   test.jsonl, dev.jsonl            frozen gold records, each with `verified` and `review`
-  review/decisions.jsonl           the owner's decisions, as downloaded (provenance)
-  review/stats.json                edit rate by reason, fields edited, audit error rate
+  review/stats.json                outcomes by reason, fields edited, clean-draft change rate
   FROZEN.md                        SHA-256 of each frozen file; CI fails if one changes
-Refuses to run unless every queued item has exactly one decision for the current draft.
+Refuses to run unless every draft has exactly one decision for its current note and key.
 """
 
 import argparse
@@ -63,23 +63,21 @@ go into a new versioned file whose hash is appended here.
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("decisions", type=Path)
+    ap.add_argument("decisions", type=Path, nargs="?",
+                    default=DATA / "review" / "adjudication" / "decisions.jsonl")  # fmt: skip
     ap.add_argument("--out-dir", type=Path, default=DATA)
     args = ap.parse_args()
 
     drafts = [d for s in SPLITS for d in read_jsonl(DATA / "drafts" / f"{s}.jsonl")]
-    queue = read_jsonl(DATA / "review" / "queue.jsonl")
     decisions = read_jsonl(args.decisions)
-    frozen = apply_decisions(drafts, queue, decisions)
-    stats = review_stats(drafts, queue, decisions)
+    frozen = apply_decisions(drafts, decisions)
+    stats = review_stats(drafts, decisions)
     stats["rejected_notes"] = frozen["rejected"]
     stats["counts"] = {s: len(frozen[s]) for s in SPLITS}
 
     out = args.out_dir
     for s in SPLITS:
         write_jsonl(out / f"{s}.jsonl", frozen[s])
-    order = {q["id"]: i for i, q in enumerate(queue)}
-    write_jsonl(out / "review" / "decisions.jsonl", sorted(decisions, key=lambda x: order[x["id"]]))
     (out / "review" / "stats.json").write_text(
         json.dumps(stats, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )

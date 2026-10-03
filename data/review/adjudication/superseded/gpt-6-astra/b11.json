@@ -1,0 +1,123 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b11",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0121",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Installed furnace filter"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 70,
+    "customerApproved": true,
+    "followUps": [
+     "Schedule fall tune-up"
+    ]
+   },
+   "comment": "Added the furnace filter installation to workPerformed."
+  },
+  {
+   "id": "t-0122",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0123",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters",
+     "Repaired gutter hanger pulled out of the fascia"
+    ],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 3,
+      "unit": null
+     },
+     {
+      "name": "gutter sealant",
+      "quantity": 1,
+      "unit": "tube"
+     }
+    ],
+    "laborMinutes": 70,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the repair of the pulled-out gutter hanger to workPerformed."
+  },
+  {
+   "id": "t-0124",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0125",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0126",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0127",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0128",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0129",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0130",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0131",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0132",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

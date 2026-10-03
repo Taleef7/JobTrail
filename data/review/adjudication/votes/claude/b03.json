@@ -1,0 +1,14 @@
+{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b03", "usage": {}, "decisions": [
+{"id": "t-0025", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0026", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0027", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0028", "action": "accept", "gold": null, "comment": "Cracked cover plates are the job's own task, not a found issue, so issuesFound stays empty."},
+{"id": "t-0029", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0030", "action": "accept", "gold": null, "comment": "Cover plates carry a number (3) so they are a material; GFCI outlets have no number so they stay work only; cracked plates are the task, not an issue."},
+{"id": "t-0031", "action": "accept", "gold": null, "comment": "The undone filter cleaning is negated work with no stated future action, so no follow-up."},
+{"id": "t-0032", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0033", "action": "accept", "gold": null, "comment": "The tripping breaker is the task's own object, not a separately found issue."},
+{"id": "t-0034", "action": "accept", "gold": null, "comment": ""},
+{"id": "t-0035", "action": "accept", "gold": null, "comment": "The drywall hole is the job's own task, not an issue."},
+{"id": "t-0036", "action": "accept", "gold": null, "comment": ""}
+]}

@@ -1,0 +1,116 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b15",
+ "usage": {
+  "input_tokens": 26021,
+  "output_tokens": 8929,
+  "thinking_tokens": 7745,
+  "cache_read_tokens": 30046,
+  "total_tokens": 34950
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0004"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0005"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0006"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0007"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0008"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0009"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0010"
+  },
+  {
+   "action": "edit",
+   "comment": "Set unit to null for the drywall patch kit since 'kit' is already included in the item's name.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Return to paint the patch"
+    ],
+    "issuesFound": [],
+    "jobType": "general",
+    "laborMinutes": 70,
+    "materials": [
+     {
+      "name": "drywall patch kit",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "door stop",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "joint compound",
+      "quantity": null,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Patched drywall hole",
+     "Installed door stop",
+     "Picked up door stop at the supply house"
+    ]
+   },
+   "id": "d-0011"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0012"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0013"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0014"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0015"
+  }
+ ]
+}

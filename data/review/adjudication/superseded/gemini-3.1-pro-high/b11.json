@@ -1,0 +1,163 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b11",
+ "usage": {
+  "input_tokens": 14725,
+  "output_tokens": 7727,
+  "thinking_tokens": 7065,
+  "cache_read_tokens": 8128,
+  "total_tokens": 22452
+ },
+ "decisions": [
+  {
+   "action": "edit",
+   "comment": "Added 'Put in new furnace filter' to workPerformed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Schedule fall tune-up"
+    ],
+    "issuesFound": [],
+    "jobType": "hvac",
+    "laborMinutes": 70,
+    "materials": [
+     {
+      "name": "furnace filter",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Put in new furnace filter"
+    ]
+   },
+   "id": "t-0121"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0122"
+  },
+  {
+   "action": "edit",
+   "comment": "Added fixing the pulled-out hanger to workPerformed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Gutter hanger pulled out of the fascia"
+    ],
+    "jobType": "roofing",
+    "laborMinutes": 70,
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 3,
+      "unit": null
+     },
+     {
+      "name": "gutter sealant",
+      "quantity": 1,
+      "unit": "tube"
+     }
+    ],
+    "workPerformed": [
+     "Cleaned gutters",
+     "Fixed pulled-out gutter hanger"
+    ]
+   },
+   "id": "t-0123"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0124"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0125"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0126"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0127"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0128"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0129"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0130"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0131"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed redundant unit 'kit' from the material name.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Check for leaks next week"
+    ],
+    "issuesFound": [],
+    "jobType": "plumbing",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "plumber's tape",
+      "quantity": 1,
+      "unit": "roll"
+     },
+     {
+      "name": "PVC P-trap",
+      "quantity": 1,
+      "unit": "kit"
+     },
+     {
+      "name": "braided supply line",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "slip joint washer",
+      "quantity": 4,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced kitchen sink P-trap",
+     "Tightened supply line connections"
+    ]
+   },
+   "id": "t-0132"
+  }
+ ]
+}

@@ -111,7 +111,7 @@ def exe(name: str) -> str:
 def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     out = cwd / "last.json"
     proc = subprocess.run(
-        [exe("codex"), "exec", "-m", "gpt-6-astra", "-c", "model_reasoning_effort=high",
+        [exe("codex"), "exec", "-m", "gpt-5.6-sol", "-c", "model_reasoning_effort=high",
          "-s", "read-only", "--skip-git-repo-check", "--ephemeral",
          "--output-schema", str(schema), "-o", str(out), "-"],
         input=text, cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
@@ -123,7 +123,7 @@ def _gpt(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
 
 def _gemini(text: str, schema: Path, cwd: Path) -> tuple[dict, dict]:
     proc = subprocess.run(
-        [exe("agy"), "--model", "gemini-3.1-pro-high", "--json-schema", str(schema),
+        [exe("agy"), "--model", "gemini-3.8-flash-high", "--json-schema", str(schema),
          "--output-format", "json", "--print-timeout", "1500s", f"-p={text}"],
         cwd=cwd, capture_output=True, text=True, encoding="utf-8", timeout=1800,
     )  # fmt: skip
@@ -164,7 +164,8 @@ def cmd_run(args) -> None:
     def one(job) -> str:
         name, ids, text, path = job
         for attempt in range(1, 3):
-            with tempfile.TemporaryDirectory() as tmp:
+            # agy can keep a handle on its working folder after it exits (Windows)
+            with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
                 try:
                     result, usage = CLIS[args.reviewer](text, schema, Path(tmp))
                     check_votes(ids, args.reviewer, result["decisions"])

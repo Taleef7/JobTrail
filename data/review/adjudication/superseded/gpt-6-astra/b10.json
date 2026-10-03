@@ -1,0 +1,158 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b10",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0109",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0110",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced blower motor capacitor",
+     "Cleared condensate drain line",
+     "Picked up condensate pan tablets at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "run capacitor",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 100,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed condensate pan tablets from materials because the note only says they were picked up."
+  },
+  {
+   "id": "t-0111",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0112",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0113",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0114",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0115",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0116",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0117",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Installed ceiling light fixture",
+     "Added a new wall switch",
+     "Installed fan-rated ceiling box"
+    ],
+    "issuesFound": [
+     "Ceiling box not rated for the fixture"
+    ],
+    "materials": [
+     {
+      "name": "single pole switch",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 90,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added ceiling box installation as work and removed the unquantified task object from materials."
+  },
+  {
+   "id": "t-0118",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dryer heating element",
+     "Picked up dryer heating element at the supply house",
+     "Left note recommending annual vent cleaning"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "foil tape",
+      "quantity": 1,
+      "unit": "roll"
+     },
+     {
+      "name": "dryer heating element",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": null,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Moved the completed recommendation from follow-ups to work performed."
+  },
+  {
+   "id": "t-0119",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0120",
+   "action": "edit",
+   "gold": {
+    "jobType": "roofing",
+    "workPerformed": [
+     "Cleaned gutters",
+     "Secured gutters"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 5,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added securing the gutters as a distinct completed task."
+  }
+ ]
+}

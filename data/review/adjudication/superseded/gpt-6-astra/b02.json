@@ -1,0 +1,162 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b02",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0013",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0014",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0015",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0016",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0017",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0018",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0019",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0020",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0021",
+   "action": "edit",
+   "gold": {
+    "jobType": "electrical",
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Tightened panel neutral connections"
+    ],
+    "issuesFound": [
+     "Loose panel neutral connections"
+    ],
+    "materials": [
+     {
+      "name": "20 amp breaker",
+      "quantity": 2,
+      "unit": null
+     },
+     {
+      "name": "12 gauge wire",
+      "quantity": 7,
+      "unit": "feet"
+     }
+    ],
+    "laborMinutes": 60,
+    "customerApproved": true,
+    "followUps": [
+     "Recommend panel replacement quote"
+    ]
+   },
+   "comment": "Added the loose panel neutral connections as a reported problem that was fixed."
+  },
+  {
+   "id": "t-0022",
+   "action": "edit",
+   "gold": {
+    "jobType": "painting",
+    "workPerformed": [
+     "Painted front door"
+    ],
+    "issuesFound": [],
+    "materials": [
+     {
+      "name": "exterior satin paint",
+      "quantity": 2,
+      "unit": "quart"
+     },
+     {
+      "name": "sanding sponge",
+      "quantity": 2,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 80,
+    "customerApproved": null,
+    "followUps": [
+     "Sand peeling trim"
+    ]
+   },
+   "comment": "Added the explicitly unfinished sanding task as a follow-up."
+  },
+  {
+   "id": "t-0023",
+   "action": "edit",
+   "gold": {
+    "jobType": "hvac",
+    "workPerformed": [
+     "Replaced furnace thermostat",
+     "Repaired thermostat wiring",
+     "Changed furnace filter"
+    ],
+    "issuesFound": [
+     "Thermostat wiring corroded"
+    ],
+    "materials": [],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the explicitly completed thermostat wiring repair."
+  },
+  {
+   "id": "t-0024",
+   "action": "edit",
+   "gold": {
+    "jobType": "plumbing",
+    "workPerformed": [
+     "Inspected unit",
+     "Replaced water heater anode rod"
+    ],
+    "issuesFound": [
+     "Anode rod eaten through"
+    ],
+    "materials": [
+     {
+      "name": "magnesium anode rod",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 85,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Added the explicitly performed unit inspection."
+  }
+ ]
+}

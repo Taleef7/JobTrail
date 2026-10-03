@@ -1,0 +1,151 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b09",
+ "usage": {
+  "input_tokens": 16008,
+  "output_tokens": 13389,
+  "thinking_tokens": 12712,
+  "cache_read_tokens": 12165,
+  "total_tokens": 29397
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0097"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0098"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0099"
+  },
+  {
+   "action": "edit",
+   "comment": "Added the verb 'Remind' to the follow-up action to match the text.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Remind customer to stay off the deck for 48 hours"
+    ],
+    "issuesFound": [],
+    "jobType": "painting",
+    "laborMinutes": 90,
+    "materials": [
+     {
+      "name": "deck cleaner",
+      "quantity": 1,
+      "unit": "gallon"
+     }
+    ],
+    "workPerformed": [
+     "Stained deck",
+     "Pressure washed deck"
+    ]
+   },
+   "id": "t-0100"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed issue because the note says the cracked boot was the reason for the job, not found on site.",
+   "gold": {
+    "customerApproved": null,
+    "followUps": [
+     "Check the attic for dampness next week"
+    ],
+    "issuesFound": [],
+    "jobType": "roofing",
+    "laborMinutes": 50,
+    "materials": [],
+    "workPerformed": [
+     "Replaced plumbing vent boot",
+     "Resealed exposed nail heads"
+    ]
+   },
+   "id": "t-0101"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed wire from materials because the note does not say it was used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Loose neutral on the bus bar"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 65,
+    "materials": [],
+    "workPerformed": [
+     "Replaced tripping breaker",
+     "Picked up 12 gauge wire at the supply house"
+    ]
+   },
+   "id": "t-0102"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Pulled up unit' to workPerformed as it is a distinct task.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Return to replace subfloor section"
+    ],
+    "issuesFound": [],
+    "jobType": "plumbing",
+    "laborMinutes": 80,
+    "materials": [
+     {
+      "name": "wax ring",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Pulled up unit",
+     "Replaced toilet wax ring",
+     "Reset toilet"
+    ]
+   },
+   "id": "t-0103"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0104"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0105"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0106"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0107"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0108"
+  }
+ ]
+}

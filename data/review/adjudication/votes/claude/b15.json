@@ -1,0 +1,14 @@
+{"reviewer": "claude", "model": "claude-opus-5-5 (subagent)", "batch": "b15", "usage": {}, "decisions": [
+{"id": "d-0004", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0005", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0006", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0007", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0008", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0009", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0010", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0011", "action": "accept", "gold": null, "comment": "Unit concern dismissed: 'kit' is a listed package word said with the quantity in '1 drywall patch kit'."},
+{"id": "d-0012", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0013", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0014", "action": "accept", "gold": null, "comment": ""},
+{"id": "d-0015", "action": "accept", "gold": null, "comment": ""}
+]}

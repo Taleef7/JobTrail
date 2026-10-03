@@ -1,0 +1,117 @@
+{
+ "reviewer": "gpt",
+ "model": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
+ "batch": "b05",
+ "usage": {},
+ "decisions": [
+  {
+   "id": "t-0049",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0050",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0051",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0052",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced dishwasher drain pump",
+     "Cleaned dishwasher filter",
+     "Picked up hose clamp at the supply house"
+    ],
+    "issuesFound": [],
+    "materials": [],
+    "laborMinutes": 75,
+    "customerApproved": true,
+    "followUps": []
+   },
+   "comment": "Removed the hose clamp from materials because the note only says it was picked up, not used."
+  },
+  {
+   "id": "t-0053",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0054",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0055",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0056",
+   "action": "edit",
+   "gold": {
+    "jobType": "appliance",
+    "workPerformed": [
+     "Replaced refrigerator defrost timer"
+    ],
+    "issuesFound": [
+     "Evaporator coil iced over"
+    ],
+    "materials": [
+     {
+      "name": "defrost timer",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "door gasket",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "laborMinutes": 240,
+    "customerApproved": null,
+    "followUps": [
+     "Tell customer to call back if the freezer ices again"
+    ]
+   },
+   "comment": "Changed the follow-up to the stated task of telling the customer to call back if icing recurs."
+  },
+  {
+   "id": "t-0057",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0058",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0059",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  },
+  {
+   "id": "t-0060",
+   "action": "accept",
+   "gold": null,
+   "comment": ""
+  }
+ ]
+}

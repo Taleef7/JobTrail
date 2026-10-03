@@ -1,0 +1,123 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b07",
+ "usage": {
+  "input_tokens": 26237,
+  "output_tokens": 9982,
+  "thinking_tokens": 8981,
+  "cache_read_tokens": 28487,
+  "total_tokens": 36219
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0073"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0074"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0075"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0076"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0077"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0078"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0079"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0080"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0081"
+  },
+  {
+   "action": "edit",
+   "comment": "Added 'Shot old drain pump' to issuesFound to reflect the problem reported in the note.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Shot old drain pump"
+    ],
+    "jobType": "appliance",
+    "laborMinutes": 120,
+    "materials": [
+     {
+      "name": "hose clamp",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "dishwasher drain pump",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced dishwasher drain pump"
+    ]
+   },
+   "id": "t-0082"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0083"
+  },
+  {
+   "action": "edit",
+   "comment": "Changed follow-up action from 'Recommend' to 'Send quote' to accurately reflect the note.",
+   "gold": {
+    "customerApproved": null,
+    "followUps": [
+     "Send quote for panel replacement"
+    ],
+    "issuesFound": [
+     "Scorched breaker terminal"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 60,
+    "materials": [],
+    "workPerformed": [
+     "Replaced tripping breaker"
+    ]
+   },
+   "id": "t-0084"
+  }
+ ]
+}

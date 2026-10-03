@@ -1,0 +1,117 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+ "batch": "b05",
+ "usage": {
+  "input_tokens": 31718,
+  "output_tokens": 14353,
+  "thinking_tokens": 13091,
+  "cache_read_tokens": 30802,
+  "total_tokens": 46071
+ },
+ "decisions": [
+  {
+   "action": "edit",
+   "comment": "The note does not use a finding word for the doorknob hole, so it is not an issue found.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Return to paint the patch"
+    ],
+    "issuesFound": [],
+    "jobType": "general",
+    "laborMinutes": 50,
+    "materials": [
+     {
+      "name": "door stop",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Patched drywall hole",
+     "Installed door stop"
+    ]
+   },
+   "id": "t-0049"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0050"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0051"
+  },
+  {
+   "action": "edit",
+   "comment": "The note mentions picking up the hose clamp but does not state that it was used, so it is not a material.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "appliance",
+    "laborMinutes": 75,
+    "materials": [],
+    "workPerformed": [
+     "Replaced dishwasher drain pump",
+     "Cleaned dishwasher filter",
+     "Picked up hose clamp at the supply house"
+    ]
+   },
+   "id": "t-0052"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0053"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0054"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0055"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0056"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0057"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0058"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0059"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0060"
+  }
+ ]
+}
