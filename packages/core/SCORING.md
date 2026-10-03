@@ -51,7 +51,7 @@ Measured on the #70 drafts (`data/drafts/pilot-4`, rules baseline and gold-as-pr
 
 **Known misses, erring toward "ungrounded":** "the" is not a count ("replaced the thermostat" leaves _thermostat: 1_ ungrounded; the demo report's one ungrounded check is this case), and long modifier runs exceed the reach ("a brand new 40-gallon water heater"). **Known false grounding:** any shared name token counts, so "a hole in the drywall" grounds _drywall patch kit: 1_. Grounding is a lookup, not proof.
 
-`ml/jobtrail_ml/fidelity.py` (#70) deliberately differs. Its fidelity flags check the _plan_ against the note written from it, as pointers for a human reviewer who reads every note anyway (#71). There, "a"/"an" counts as 1 note-wide: a missed flag costs little, and a false one costs review time. Here, a false "grounded" hides a real hallucination inside a headline number, so the scorer takes the stricter rule.
+`ml/jobtrail_ml/fidelity.py` (#70) deliberately differs. Its fidelity flags check the _plan_ against the note written from it, as pointers for a reviewer who reads every note anyway: in #71 the model reviewers saw them as concerns. There, "a"/"an" counts as 1 note-wide: a missed flag costs little, and a false one costs review time. Here, a false "grounded" hides a real hallucination inside a headline number, so the scorer takes the stricter rule.
 
 ## The fuzzy matcher
 

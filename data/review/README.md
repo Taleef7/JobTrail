@@ -18,7 +18,7 @@ The check is reading comprehension, not trade knowledge: does the note say exact
 
 ## Step 2: cross-family adjudication (2026-10-02)
 
-Code: `ml/jobtrail_ml/adjudicate.py`, `ml/scripts/adjudicate.py`. The decision rule was committed before any vote.
+Code: `ml/jobtrail_ml/adjudicate.py`, `ml/scripts/adjudicate.py`. The decision rule was committed before any vote. Which models reviewed, and GPT's tie-break role, changed afterwards; the data card dates each change and measures its effect.
 
 - **Who reviewed:**
   - **Gemini 3.8 Flash (High)**, via the Antigravity CLI, reviewed all 275.
@@ -35,9 +35,11 @@ Code: `ml/jobtrail_ml/adjudicate.py`, `ml/scripts/adjudicate.py`. The decision r
 | `tiebreak.json`, `votes/gpt/t01.json` | The 5 unsettled drafts and the tie-breaker's votes                                                                       |
 | `decisions.jsonl`                     | One decision per draft, with every vote; the input to `ml/scripts/freeze_eval.py`                                        |
 | `stats.json`                          | Votes per reviewer, agreement with the final key, tie-breaks                                                             |
+| `overrides.jsonl`                     | 2 decisions changed after the vote to apply the supply-house rule to all 41 such drafts, each with its reason            |
+| `sensitivity.json`                    | How the originally planned reviewers would have decided on the 132 drafts they all covered, vs the final keys            |
 | `pilot/`                              | A one-batch pilot under the earlier `LABELING.md`. It exposed three ambiguous rules, which were clarified before the run |
 | `superseded/`                         | Partial runs by models the owner later swapped out (`gemini-3.1-pro-high`, `gpt-6-astra`); not used                      |
 
 `stats.json` in this folder (written by the freeze step) has the outcomes by reason, the fields corrected and the change rate of clean drafts.
 
-Reproduce (from `ml/`): `uv run python scripts/adjudicate.py decide`, then `uv run python scripts/freeze_eval.py`.
+Reproduce (from `ml/`): `uv run python scripts/adjudicate.py decide`, then `uv run python scripts/freeze_eval.py --out-dir <scratch>`, and compare hashes with `data/FROZEN.md`. The freeze step refuses to overwrite `data/` without `--refreeze`.

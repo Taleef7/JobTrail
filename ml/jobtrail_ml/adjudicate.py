@@ -260,6 +260,26 @@ def _candidate(draft: Draft, vote: Vote) -> dict | None:
     return draft["gold"] if vote["action"] == "accept" else vote["gold"]
 
 
+def apply_overrides(decisions: list[dict], overrides: list[dict], drafts: list[Draft]) -> None:
+    """Rule-based corrections made after the vote, each with its reason (in place).
+
+    An override restores the draft key (accept) or rejects the note when a LABELING.md
+    rule was applied two ways across drafts; the voted decision is kept under
+    `override.was`, and each vote's agreesWithKey is redone against the new key.
+    """
+    by_id = {x["id"]: x for x in decisions}
+    by_draft = {d["id"]: d for d in drafts}
+    for o in overrides:
+        x = by_id[o["id"]]
+        if o["action"] not in ("accept", "reject"):
+            raise ValueError(f"override {o['id']}: action must be accept or reject")
+        x["override"] = {"reason": o["reason"], "was": {"action": x["action"], "gold": x["gold"]}}
+        x["action"] = o["action"]
+        x["gold"] = by_draft[o["id"]]["gold"] if o["action"] == "accept" else None
+        for v in x["votes"].values():
+            v["agreesWithKey"] = o["action"] == "accept" and v["action"] == "accept"
+
+
 def contested(drafts: list[Draft], votes: dict[str, dict[str, Vote]], agree: Agree) -> list[str]:
     """Drafts the FIRST reviewers leave without a majority: the tie-breaker's work list."""
     first = {r: votes[r] for r in FIRST}
@@ -285,5 +305,6 @@ def adjudication_stats(decisions: list[dict]) -> dict[str, Any]:
         "agreesWithFinalKey": agreed,
         "finalKeySupport": dict(sorted(support.items())),
         "tiebreaks": sum(TIEBREAK in x["votes"] for x in decisions),
+        "overrides": [x["id"] for x in decisions if "override" in x],
         "unresolved": sum(x["comment"] == NO_MAJORITY for x in decisions),
     }

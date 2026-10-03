@@ -22,13 +22,18 @@
  },
  "agreesWithFinalKey": {
   "gpt": 4,
-  "gemini": 272,
-  "claude": 270
+  "gemini": 270,
+  "claude": 268
  },
  "finalKeySupport": {
-  "2/2": 269,
+  "0/2": 2,
+  "2/2": 267,
   "2/3": 4
  },
  "tiebreaks": 5,
+ "overrides": [
+  "t-0102",
+  "t-0110"
+ ],
  "unresolved": 1
 }

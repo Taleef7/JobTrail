@@ -1,7 +1,7 @@
 {
   "drafts": 275,
-  "accepted": 259,
-  "edited": 14,
+  "accepted": 261,
+  "edited": 12,
   "rejected": 2,
   "by_reason": {
     "clean": {
@@ -18,15 +18,14 @@
     },
     "panel": {
       "n": 17,
-      "accept": 3,
-      "edit": 12,
+      "accept": 5,
+      "edit": 10,
       "reject": 2
     }
   },
   "fields_edited": {
     "followUps": 1,
     "issuesFound": 3,
-    "materials": 2,
     "workPerformed": 9
   },
   "clean_changed": {

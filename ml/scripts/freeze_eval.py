@@ -15,7 +15,6 @@ import argparse
 import hashlib
 import json
 import sys
-from datetime import UTC, datetime
 from pathlib import Path
 
 ML = Path(__file__).resolve().parents[1]
@@ -66,6 +65,7 @@ def main() -> int:
     ap.add_argument("decisions", type=Path, nargs="?",
                     default=DATA / "review" / "adjudication" / "decisions.jsonl")  # fmt: skip
     ap.add_argument("--out-dir", type=Path, default=DATA)
+    ap.add_argument("--refreeze", action="store_true", help="overwrite an existing freeze")
     args = ap.parse_args()
 
     drafts = [d for s in SPLITS for d in read_jsonl(DATA / "drafts" / f"{s}.jsonl")]
@@ -76,6 +76,10 @@ def main() -> int:
     stats["counts"] = {s: len(frozen[s]) for s in SPLITS}
 
     out = args.out_dir
+    if (out / "FROZEN.md").exists() and not args.refreeze:
+        raise SystemExit(f"{out} is already frozen (FROZEN.md exists). To check the freeze, run "
+                         "with --out-dir <scratch folder> and compare hashes; --refreeze only "
+                         "before the freeze is merged.")  # fmt: skip
     for s in SPLITS:
         write_jsonl(out / f"{s}.jsonl", frozen[s])
     (out / "review").mkdir(parents=True, exist_ok=True)
@@ -83,7 +87,7 @@ def main() -> int:
         json.dumps(stats, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )
     counts = {f"{s}.jsonl": len(frozen[s]) for s in SPLITS}
-    today = datetime.now(UTC).date().isoformat()
+    today = max(x["reviewedAt"] for x in decisions)[:10]  # reproducible, unlike now()
     (out / "FROZEN.md").write_text(frozen_md(out, counts, today), encoding="utf-8", newline="\n")
     problems = check_frozen(out)
     if problems:

@@ -69,6 +69,13 @@ def test_applies_accept_edit_reject_with_adjudicated_provenance():
     assert out["rejected"] == [{"id": "t-0003", "split": "test", "comment": "ambiguous"}]
 
 
+def test_an_override_reason_is_kept_in_the_record():
+    decs = [decision(d, "accept") for d in D]
+    decs[0]["override"] = {"reason": "supply-house rule", "was": {"action": "edit", "gold": GOLD}}
+    out = apply_decisions(D, decs)
+    assert out["test"][0]["review"]["override"] == "supply-house rule"
+
+
 def test_only_a_human_decision_makes_a_record_verified():
     decs = [decision(d, "accept", method="human" if i == 0 else "adjudicated")
             for i, d in enumerate(D)]  # fmt: skip

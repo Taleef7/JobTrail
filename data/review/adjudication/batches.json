@@ -1,7 +1,7 @@
 {
  "reviewers": {
-  "gpt": "gpt-6-astra (Codex CLI 0.153, reasoning effort high)",
-  "gemini": "gemini-3.1-pro-high (Antigravity CLI 1.2)",
+  "gpt": "gpt-oss-120b-medium (Antigravity CLI 1.2)",
+  "gemini": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
   "claude": "claude-opus-5-5 (subagent)"
  },
  "rules_sha256": "032b88568d6856c2f46ac848fe326293616f2cacfb415d09107a65e9e27f4b5b",

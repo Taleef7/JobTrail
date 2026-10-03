@@ -8,8 +8,10 @@ import pytest
 
 from jobtrail_ml.adjudicate import (
     MAX_CMDLINE,
+    REVIEWERS,
     adjudication_stats,
     aggregate,
+    apply_overrides,
     batches,
     check_votes,
     cmdline_cost,
@@ -183,6 +185,23 @@ def test_zero_edit_agreement_comes_from_the_core_scorer():
 
     worded = {**GOLD, "workPerformed": ["Replaced the P-trap"]}
     assert zero_edit([(GOLD, worded), (GOLD, EDIT_B), (GOLD, GOLD)]) == [True, False, True]
+
+
+def test_an_override_changes_a_decision_and_keeps_what_it_was():
+    x = decide(
+        D, vote(D["id"], "edit", EDIT_B), vote(D["id"], "edit", EDIT_B), vote(D["id"], "accept")
+    )
+    assert x["action"] == "edit"
+    apply_overrides([x], [{"id": D["id"], "action": "accept", "reason": "rule"}], [D])
+    assert (x["action"], x["gold"]) == ("accept", GOLD)
+    assert x["override"] == {"reason": "rule", "was": {"action": "edit", "gold": EDIT_B}}
+
+
+def test_the_committed_batch_manifest_names_the_reviewers_used():
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[2] / "data/review/adjudication/batches.json"
+    assert json.loads(path.read_text(encoding="utf-8"))["reviewers"] == REVIEWERS
 
 
 def test_two_agreeing_reviewers_settle_a_draft_without_the_tiebreaker():

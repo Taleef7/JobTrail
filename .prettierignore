@@ -17,3 +17,4 @@ data/drafts/**
 # Model votes and adjudication outputs (#71), written by ml/scripts/adjudicate.py
 data/review/adjudication/**
 data/review/stats.json
+data/FROZEN.md

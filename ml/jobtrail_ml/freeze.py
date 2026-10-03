@@ -111,6 +111,8 @@ def apply_decisions(drafts: list[dict], decisions: list[dict]) -> dict:
             rec["review"]["comment"] = x["comment"]
         if "votes" in x:
             rec["review"]["votes"] = {r: v["action"] for r, v in x["votes"].items()}
+        if "override" in x:
+            rec["review"]["override"] = x["override"]["reason"]
         out[split].append(rec)
     return out
 

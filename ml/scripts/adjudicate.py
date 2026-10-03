@@ -7,7 +7,8 @@ Usage (from ml/):
   uv run python scripts/adjudicate.py contested             # GPT's tie-break batches
   uv run python scripts/adjudicate.py run gpt [--jobs 2]
   uv run python scripts/adjudicate.py check gpt|gemini|claude [--only b01]
-  uv run python scripts/adjudicate.py decide [--reviewed-at ISO]
+  uv run python scripts/adjudicate.py decide [--reviewed-at ISO]   # + overrides.jsonl
+  uv run python scripts/adjudicate.py sensitivity           # vs the superseded reviewers
 
 Votes land in data/review/adjudication/votes/<reviewer>/<batch>.json. `run` drives the
 Antigravity CLI (Gemini 3.8 Flash and GPT-OSS 120B); the Claude votes are written by Opus
@@ -36,6 +37,7 @@ from jobtrail_ml.adjudicate import (  # noqa: E402
     TIEBREAK,
     adjudication_stats,
     aggregate,
+    apply_overrides,
     batches,
     check_votes,
     contested,
@@ -231,15 +233,67 @@ def cmd_check(args) -> None:
     sys.exit(1 if bad else 0)
 
 
+OVERRIDES = OUT / "overrides.jsonl"
+
+
+def reviewed_at(args) -> str:
+    """--reviewed-at, else the time already in decisions.jsonl, so a rerun reproduces it."""
+    if args.reviewed_at:
+        return args.reviewed_at
+    if (OUT / "decisions.jsonl").exists():
+        return read_jsonl(OUT / "decisions.jsonl")[0]["reviewedAt"]
+    return datetime.now(UTC).isoformat(timespec="seconds")
+
+
+def cmd_sensitivity(_args) -> None:
+    """What the reviewers planned before the owner's model changes (gpt-6-astra,
+    gemini-3.1-pro-high, Claude Opus) decide on the drafts all three covered, vs final."""
+    drafts, _ = load()
+
+    def superseded(name: str) -> dict[str, dict]:
+        out: dict[str, dict] = {}
+        for f in sorted((OUT / "superseded" / name).glob("b*.json")):
+            out.update({v["id"]: v for v in json.loads(f.read_text(encoding="utf-8"))["decisions"]})
+        return out
+
+    astra, pro = superseded("gpt-6-astra"), superseded("gemini-3.1-pro-high")
+    covered = sorted(set(astra) & set(pro))
+    sub = [d for d in drafts if d["id"] in covered]
+    planned = aggregate(sub, {"gpt": astra, "gemini": pro, "claude": load_votes("claude")},
+                        zero_edit, {d["id"]: [] for d in sub}, "")  # fmt: skip
+    final = {x["id"]: x for x in read_jsonl(OUT / "decisions.jsonl")}
+    both = [(x, final[x["id"]]) for x in planned if x["gold"] and final[x["id"]]["gold"]]
+    flat = [p for x, f in both for p in ((x["gold"], f["gold"]), (f["gold"], x["gold"]))]
+    v = zero_edit(flat) if flat else []
+    same = {x["id"]: v[2 * i] and v[2 * i + 1] for i, (x, _) in enumerate(both)}
+    rows = []
+    for x in planned:
+        f = final[x["id"]]
+        if x["gold"] is None or f["gold"] is None:
+            outcome = "same" if x["gold"] is None and f["gold"] is None else "different"
+        else:
+            outcome = "same" if same[x["id"]] else "different"
+        if outcome == "different":
+            fields = [k for k in (x["gold"] or {}) if f["gold"] and x["gold"][k] != f["gold"][k]]
+            rows.append({"id": x["id"], "planned": x["action"], "final": f["action"],
+                         "fields": fields, "planned_key": x["gold"],
+                         "final_key": f["gold"]})  # fmt: skip
+    out = {"reviewers": {"gpt": "gpt-6-astra", "gemini": "gemini-3.1-pro-high",
+                         "claude": "claude-opus-5-5"},
+           "drafts": len(planned), "same": len(planned) - len(rows), "different": rows}  # fmt: skip
+    write_json(OUT / "sensitivity.json", out)
+    print(f"{out['same']}/{out['drafts']} same; different: {[r['id'] for r in rows]}")
+
+
 def cmd_decide(args) -> None:
     drafts, panel = load()
     votes = {r: load_votes(r) for r in REVIEWERS}
     unsettled = contested(drafts, {r: votes[r] for r in FIRST}, zero_edit)
     if sorted(unsettled) != sorted(votes[TIEBREAK]):
         sys.exit("tiebreak.json is stale: rerun `contested` and the tie-break votes")
-    reviewed_at = args.reviewed_at or datetime.now(UTC).isoformat(timespec="seconds")
     decisions = aggregate(drafts, votes, zero_edit, {d["id"]: reasons(d, panel) for d in drafts},
-                          reviewed_at)  # fmt: skip
+                          reviewed_at(args))  # fmt: skip
+    apply_overrides(decisions, read_jsonl(OVERRIDES) if OVERRIDES.exists() else [], drafts)
     order = {s: i for i, s in enumerate(SPLITS)}
     decisions.sort(key=lambda x: (order[x["split"]], x["id"]))
     with (OUT / "decisions.jsonl").open("w", encoding="utf-8", newline="\n") as f:
@@ -255,6 +309,7 @@ def main() -> None:
     sub = ap.add_subparsers(required=True)
     sub.add_parser("prepare").set_defaults(fn=cmd_prepare)
     sub.add_parser("contested").set_defaults(fn=cmd_contested)
+    sub.add_parser("sensitivity").set_defaults(fn=cmd_sensitivity)
     p = sub.add_parser("prompts")
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--reviewer", choices=sorted(REVIEWERS), help="gpt: the tie-break batches")

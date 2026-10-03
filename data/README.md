@@ -55,7 +55,8 @@ One JSON object per line:
   "gold": { "...": "schema v2 record" },
   "source": "synthetic",
   "tags": ["negation", "hours-phrasing"],
-  "verified": true
+  "verified": false,
+  "review": { "method": "adjudicated", "action": "accept", "reasons": [], "reviewedAt": "…" }
 }
 ```
 
