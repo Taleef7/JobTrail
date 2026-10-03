@@ -278,6 +278,40 @@ def test_model_text_with_unicode_line_separators_survives_a_resume(gold, tmp_pat
     assert [g["id"] for g in Run(local(gold), tmp_path).todo()] == ["d-2", "d-3"]
 
 
+@pytest.mark.parametrize("make", ["local", "cloud"])
+def test_a_section_for_the_other_provider_is_refused(gold, make):
+    with pytest.raises(ConfigError, match="has no"):
+        if make == "local":
+            local(gold, cloud={"thinking_level": "high"})
+        else:
+            cloud(gold, server={"ctx": 99})
+
+
+def test_an_empty_gold_file_is_refused(tmp_path):
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("", encoding="utf-8")
+    with pytest.raises(ConfigError, match="no records"):
+        Run(local(empty), tmp_path / "runs")
+
+
+def test_finishing_a_complete_run_again_keeps_its_times(gold, tmp_path):
+    run = Run(local(gold), tmp_path)
+    run.open({"runtime": "x"})
+    for i in (1, 2, 3):
+        run.append(line(i))
+    run.finish("incomplete", score_it=False)
+    first = json.loads((run.dir / "run.json").read_text(encoding="utf-8"))
+    first_finished = first["finished"]
+    meta = {**first, "finished": "2000-01-01T00:00:00+00:00"}
+    (run.dir / "run.json").write_text(json.dumps(meta), encoding="utf-8")
+    Run(local(gold), tmp_path).finish("incomplete", score_it=False)
+    again = json.loads((run.dir / "run.json").read_text(encoding="utf-8"))
+    assert first_finished and again["finished"] == "2000-01-01T00:00:00+00:00"
+    (run.dir / "run.json").unlink()
+    Run(local(gold), tmp_path).finish("incomplete", score_it=False)  # rebuilt, no crash
+    assert json.loads((run.dir / "run.json").read_text(encoding="utf-8"))["status"] == "complete"
+
+
 def test_cost_line_handles_a_run_with_no_predictions():
     assert cost_line({"rate": "2026", "usd": 0.0, "usdPerNote": None}) == (
         "cost at 2026: $0.0000 total, n/a/note"

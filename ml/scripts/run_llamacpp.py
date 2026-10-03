@@ -44,12 +44,10 @@ def main() -> int:
     if cfg["provider"] != "llamacpp":
         sys.exit(f"{args.config} is a {cfg['provider']} config; use run_cloud.py")
     run = Run(cfg, args.out_dir)
-    model = ensure_model(ROOT / cfg["model"]["file"], cfg["model"].get("url"),
-                         cfg["model"]["sha256"])  # fmt: skip
     todo = run.todo()
     print(f"{run.id}: {len(run.gold) - len(todo)}/{len(run.gold)} done, {len(todo)} to go")
-    if todo:  # a finished run is only (re)scored: no server, run.json left as it was
-        generate(run, cfg, model, todo)
+    if todo:  # a finished run is only (re)scored: no model, no server
+        generate(run, cfg, todo)
     report = run.finish("incomplete", score_it=not args.no_score)
     if report:
         print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
@@ -57,7 +55,9 @@ def main() -> int:
     return 0
 
 
-def generate(run: Run, cfg: dict, model: Path, todo: list[dict]) -> None:
+def generate(run: Run, cfg: dict, todo: list[dict]) -> None:
+    model = ensure_model(ROOT / cfg["model"]["file"], cfg["model"].get("url"),
+                         cfg["model"]["sha256"])  # fmt: skip
     schema = extract.schema(cfg["format"]) if cfg["grammar"] else None
     s, kwargs = cfg["sampling"], cfg["server"]["chat_template_kwargs"]
     run.dir.mkdir(parents=True, exist_ok=True)

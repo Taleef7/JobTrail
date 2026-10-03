@@ -120,6 +120,9 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
         raise ConfigError("fine-tuned-short prompts expect compact output (format: compact)")
     if cfg["limit"] is not None and (not isinstance(cfg["limit"], int) or cfg["limit"] < 1):
         raise ConfigError(f"limit must be a positive integer or null, got {cfg['limit']!r}")
+    other = {"llamacpp": "cloud", "gemini": "server"}[cfg["provider"]]
+    if other in raw:
+        raise ConfigError(f"a {cfg['provider']} config has no {other!r} section")
     if cfg["provider"] == "llamacpp":
         if not {"file", "sha256"} <= set(cfg["model"]):
             raise ConfigError("llamacpp model needs file and sha256 (and url to download it)")
@@ -203,6 +206,8 @@ class Run:
         self.dir = out_dir.resolve() / self.id  # the scorer runs from the repo root
         gold_all = read_jsonl(ROOT / cfg["gold"])
         self.gold = gold_all[: cfg["limit"]] if cfg["limit"] else gold_all
+        if not self.gold:
+            raise ConfigError(f"{cfg['gold']} has no records")
         self.pred_path = self.dir / "predictions.jsonl"
         self.done = read_done_ids(self.pred_path)  # drops a line cut off by a crash
         self.meta: dict[str, Any] | None = None
@@ -247,11 +252,16 @@ class Run:
 
     def finish(self, status: str, extra: dict[str, Any] | None = None, score_it: bool = True):
         preds = read_jsonl(self.pred_path)
+        meta_path = self.dir / "run.json"
         if self.meta is None:  # nothing was left to run, so open() was skipped
-            self.meta = json.loads((self.dir / "run.json").read_text(encoding="utf-8"))
+            self.meta = (json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists()
+                         else {"id": self.id, "env": None, "started": None})  # fmt: skip
+        was_complete = self.meta.get("status") == "complete"
+        self.dir.mkdir(parents=True, exist_ok=True)
         self.meta.update({
             "status": "complete" if self.complete else status,
-            "finished": datetime.now(UTC).isoformat(timespec="seconds"),
+            "finished": self.meta["finished"] if was_complete
+            else datetime.now(UTC).isoformat(timespec="seconds"),
             "predictions": len(preds),
             "usage": usage_totals(preds),
             **(extra or {}),

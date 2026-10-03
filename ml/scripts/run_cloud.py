@@ -69,14 +69,30 @@ def main() -> int:
     run = Run(cfg, args.out_dir)
     todo = run.todo()
     print(f"{run.id}: {len(run.gold) - len(todo)}/{len(run.gold)} done, {len(todo)} to go")
+    c = cfg["cloud"]
+    status = "incomplete"
+    if todo:  # a finished run is only (re)scored: no key, no requests
+        status = generate(run, cfg, todo)
+    preds = read_jsonl(run.pred_path)
+    priced = cost(usage_totals(preds), c["pricing"], len(preds))
+    report = run.finish(status, {"cost": priced}, score_it=not args.no_score)
+    for p in priced:
+        print(cost_line(p))
+    if report:
+        print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
+    print(run.dir)
+    return 0 if status != "quota" else 3
+
+
+def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
+    """Predict every note still to do; returns "quota" if the daily quota ran out."""
     c, s, model = cfg["cloud"], cfg["sampling"], cfg["model"]["id"]
+    client = GeminiClient(api_key(c["key_env"]), rpm=c["rpm"])
     run.open({"runtime": f"gemini-api {model}", "host": host(),
               "note": "cloud runs are seeded but not bit-reproducible"})  # fmt: skip
-    client = GeminiClient(api_key(c["key_env"]), rpm=c["rpm"])
     schema = extract.schema(cfg["format"]) if cfg["grammar"] else None
     if schema:
         schema = {k: v for k, v in schema.items() if k != "$schema"}
-    status = "incomplete"
     try:
         for i, g in enumerate(todo, 1):
             msgs = extract.messages(g["note"], cfg["prompt"], cfg["format"])
@@ -93,17 +109,9 @@ def main() -> int:
                         "finishReason": r.finish_reason})  # fmt: skip
             print(f"  {i}/{len(todo)} {g['id']} {r.finish_reason}", flush=True)
     except QuotaExhausted as e:
-        status = "quota"
         print(f"daily quota reached ({e}); rerun the same command tomorrow to resume")
-    preds = read_jsonl(run.pred_path)
-    priced = cost(usage_totals(preds), c["pricing"], len(preds))
-    report = run.finish(status, {"cost": priced}, score_it=not args.no_score)
-    for p in priced:
-        print(cost_line(p))
-    if report:
-        print(f"scored -> {run.dir / 'report.json'}: zero-edit {report['overall']['zeroEditRate']}")
-    print(run.dir)
-    return 0 if status != "quota" else 3
+        return "quota"
+    return "incomplete"
 
 
 if __name__ == "__main__":
