@@ -130,7 +130,8 @@ def generate_batched(run: Run, cfg: dict, todo: list[dict], client: GeminiClient
     """batch_size notes per request. The first line of each batch carries the whole batch's
     tokens (so totals and cost stay exact); no per-note latency is recorded."""
     c, s, model, n = cfg["cloud"], cfg["sampling"], cfg["model"]["id"], cfg["cloud"]["batch_size"]
-    system = extract.system_prompt(cfg["format"]) + extract.BATCH_NOTE
+    system = extract.system_prompt(cfg["format"], extract.prompt_version(cfg["prompt"]))
+    system += extract.BATCH_NOTE
     try:
         for k in range(0, len(todo), n):
             chunk = todo[k : k + n]

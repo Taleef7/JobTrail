@@ -21,7 +21,7 @@ SCHEMAS = {
     "full": ROOT / "packages" / "core" / "schema" / "schema.v2.json",
     "compact": ROOT / "packages" / "core" / "schema" / "schema.v2.compact.json",
 }
-VARIANTS = ("zero-shot", "few-shot", "fine-tuned-short")
+VARIANTS = ("zero-shot", "few-shot", "fine-tuned-short", "zero-shot-v2", "few-shot-v2")
 FORMATS = tuple(SCHEMAS)
 
 EXTRACT_SYSTEM = """\
@@ -46,6 +46,45 @@ false only on an explicit no; otherwise null.
 Label only what the note says. Use null or [] when something isn't mentioned. Answer with \
 the JSON object only."""
 
+# v2 (#73 error analysis): states the rules the v1 prompt left out or that #71 clarified
+# (supply-house parts are materials, package words as units, issues need a finding, silence
+# on approval is null), lists the trades, and uses <placeholders> instead of concrete
+# examples, which the smallest models copied into their answers.
+EXTRACT_SYSTEM_V2 = """\
+Extract a job record from a tradesperson's end-of-job note, as JSON with these fields:
+- jobType: the trade of the job's main task. plumbing: pipes, drains, fixtures, toilets, \
+water heaters, supply lines. electrical: wiring, breakers, panels, outlets, switches, light \
+fixtures. hvac: heating, cooling, thermostats, refrigerant, ducts, furnace filters, condensate \
+lines. carpentry: doors and jambs, decks, trim, built-in shelving. appliance: repairing \
+dryers, dishwashers, refrigerators and their parts. cleaning: cleaning as the job itself. \
+painting: painting and staining, with their prep. roofing: roofs and gutters. general: \
+handyman tasks such as mounting TVs, assembling furniture, drywall patches, door stops. null \
+only if the note gives no clue.
+- workPerformed: one short past-tense action per task done, verb first ("<Verb>ed <object>"). \
+A fix of a problem found is its own task. A trip to the supply house is its own item \
+("Picked up <part> at the supply house"). Never list work that wasn't done.
+- issuesFound: problems the note says were found or noticed on site, as noun phrases. A \
+problem found and fixed is an issue, and its fix is work performed. The job's own task, and \
+words describing the thing being repaired, are not issues.
+- materials: things the note says were used or put in, and parts picked up at the supply \
+house for this job. Not tools, not things the note says weren't used or needed, and not an \
+item named only as the object of a task with no number. quantity: the number said, after any \
+self-correction ("<a>, no <b>" means <b>); null for "some", "a few" or no number. unit: the \
+measure or package word the amount is counted in, singular: feet (always "feet" for length), \
+gallon, quart, pound, roll, tube, box, pack, bundle, bottle, tub, kit. When the item itself is \
+a kit ("1 <thing> kit"), the unit is "kit". null for plain counts of items.
+- laborMinutes: total labor in minutes, as an integer: convert hours, add separately stated \
+times; drive time doesn't count unless the note counts it; null if no time is given.
+- customerApproved: true only on an explicit yes (signed off, approved, gave the go-ahead); \
+false only on an explicit no (declined, didn't sign); null when the note doesn't say.
+- followUps: future actions the note states. Never past actions, never invented ones.
+Label only what this note says. Use null or [] when something isn't mentioned. Answer with \
+the JSON object only."""
+
+FEWSHOT_V2_NOTE = (
+    " The example jobs before the note are unrelated to it: take nothing from them but the format."
+)
+
 COMPACT_LEGEND = (
     " Use the short keys: t=jobType, w=workPerformed, i=issuesFound, m=materials (n=name, "
     "q=quantity, u=unit), l=laborMinutes, a=customerApproved, f=followUps."
@@ -68,8 +107,13 @@ def fewshot_examples() -> list[dict[str, Any]]:
     return [json.loads(x) for x in FEWSHOT.read_text(encoding="utf-8").splitlines() if x]
 
 
-def system_prompt(fmt: str) -> str:
-    return EXTRACT_SYSTEM + (COMPACT_LEGEND if fmt == "compact" else "")
+def system_prompt(fmt: str, version: int = 1) -> str:
+    base = EXTRACT_SYSTEM if version == 1 else EXTRACT_SYSTEM_V2
+    return base + (COMPACT_LEGEND if fmt == "compact" else "")
+
+
+def prompt_version(variant: str) -> int:
+    return 2 if variant.endswith("-v2") else 1
 
 
 def messages(note: str, variant: str, fmt: str) -> list[dict[str, str]]:
@@ -79,8 +123,11 @@ def messages(note: str, variant: str, fmt: str) -> list[dict[str, str]]:
         raise ValueError(f"unknown format {fmt!r}; expected one of {FORMATS}")
     if variant == "fine-tuned-short":
         return [{"role": "user", "content": note}]
-    msgs = [{"role": "system", "content": system_prompt(fmt)}]
-    if variant == "few-shot":
+    system = system_prompt(fmt, prompt_version(variant))
+    if variant == "few-shot-v2":
+        system += FEWSHOT_V2_NOTE
+    msgs = [{"role": "system", "content": system}]
+    if variant in ("few-shot", "few-shot-v2"):
         for ex in fewshot_examples():
             msgs += [{"role": "user", "content": ex["note"]},
                      {"role": "assistant", "content": encode(ex["gold"], fmt)}]  # fmt: skip

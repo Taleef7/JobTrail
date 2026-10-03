@@ -25,7 +25,8 @@ TOOLS = "\n\nDo not use any tools. Answer with JSON only, matching the response 
 
 
 def batch_prompt(cfg: dict, chunk: list[dict]) -> str:
-    rules = extract.system_prompt(cfg["format"]) + extract.BATCH_NOTE + TOOLS
+    version = extract.prompt_version(cfg["prompt"])
+    rules = extract.system_prompt(cfg["format"], version) + extract.BATCH_NOTE + TOOLS
     return f"{rules}\n\n# Notes\n\n{extract.batch_input(chunk)}\n"
 
 

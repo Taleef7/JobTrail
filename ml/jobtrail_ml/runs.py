@@ -146,7 +146,7 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
             raise ConfigError("agy model needs id")
         if raw.get("sampling"):
             raise ConfigError("agy doesn't expose sampling settings; leave sampling out")
-        if cfg["prompt"] != "zero-shot" or not cfg["grammar"]:
+        if cfg["prompt"] not in ("zero-shot", "zero-shot-v2") or not cfg["grammar"]:
             raise ConfigError("agy runs are zero-shot with grammar (batched structured output)")
         cfg["sampling"] = {}
         _known(raw.get("cloud"), AGY_CLOUD, "cloud")
@@ -157,7 +157,7 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
     else:
         if not cfg["model"].get("id"):
             raise ConfigError("gemini model needs id")
-        if cfg["prompt"] == "few-shot":
+        if cfg["prompt"].startswith("few-shot"):
             raise ConfigError("the cloud runner sends one system + one user turn; no few-shot")
         if "max_tokens" not in (raw.get("sampling") or {}):
             cfg["sampling"]["max_tokens"] = None  # thinking counts against the cap
