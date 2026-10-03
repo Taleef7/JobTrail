@@ -1,0 +1,19 @@
+# lfm2-350m-extract-q4-zero-shot (#72): see results/README.md
+name: lfm2-350m-extract-q4-zero-shot
+provider: llamacpp
+model:
+  file: ml/models/LFM2-350M-Extract-Q4_0.gguf
+  url: https://huggingface.co/LiquidAI/LFM2-350M-Extract-GGUF/resolve/main/LFM2-350M-Extract-Q4_0.gguf
+  sha256: ba6a76b746a9a13b0830aea67b8aa68f77307d5cca1139abf6dbb96f61408342
+prompt: zero-shot
+format: full
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones

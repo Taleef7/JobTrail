@@ -27,6 +27,8 @@ class Result:
     text: str
     usage: dict[str, Any] = field(default_factory=dict)
     model_version: str | None = None
+    finish_reason: str | None = None
+    wall_ms: float | None = None  # the successful request alone, without throttling
 
 
 def _retry_delay(error: dict[str, Any]) -> float | None:
@@ -101,7 +103,11 @@ class GeminiClient:
         seed: int | None = None,
         json_schema: dict[str, Any] | None = None,
         thinking_level: str | None = None,
+        max_output_tokens: int | None = None,
+        allow_unfinished: bool = False,
     ) -> Result:
+        """allow_unfinished: return a truncated or blocked answer (finish_reason says
+        why) instead of raising; an eval scores it as the model's failure."""
         config: dict[str, Any] = {"temperature": temperature}
         if seed is not None:
             config["seed"] = seed
@@ -110,6 +116,8 @@ class GeminiClient:
             config["responseJsonSchema"] = json_schema
         if thinking_level:
             config["thinkingConfig"] = {"thinkingLevel": thinking_level}
+        if max_output_tokens:
+            config["maxOutputTokens"] = max_output_tokens
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user}]}],
@@ -118,6 +126,7 @@ class GeminiClient:
         for attempt in range(self._max_retries + 1):
             self._throttle()
             last_try = attempt == self._max_retries
+            start = self._clock()
             try:
                 r = self._http.post(API.format(model=model), json=body)
             except httpx.TransportError as e:  # timeouts, dropped connections
@@ -126,10 +135,14 @@ class GeminiClient:
                 self._sleep(min(60.0, 2.0**attempt))
                 continue
             if r.status_code == 200:
+                wall_ms = (self._clock() - start) * 1000
                 try:
-                    return self._result(r.json())
+                    data = r.json()
                 except ValueError as e:
                     raise GeminiError(f"{model}: unparseable 200 response: {r.text[:200]}") from e
+                result = self._result(data, allow_unfinished)
+                result.wall_ms = wall_ms
+                return result
             error = _error_body(r)
             if r.status_code == 429:
                 if _is_daily(error):
@@ -144,12 +157,16 @@ class GeminiClient:
         raise GeminiError(f"{model}: HTTP {r.status_code}: {error.get('message', r.text[:300])}")
 
     @staticmethod
-    def _result(data: dict[str, Any]) -> Result:
+    def _result(data: dict[str, Any], allow_unfinished: bool = False) -> Result:
+        usage, version = data.get("usageMetadata", {}), data.get("modelVersion")
         candidates = data.get("candidates") or []
         if not candidates:
+            if allow_unfinished:
+                return Result("", usage, version, "NO_CANDIDATES")
             raise GeminiError(f"no candidates: {data.get('promptFeedback')}")
         parts = candidates[0].get("content", {}).get("parts", [])
         text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
-        if candidates[0].get("finishReason") not in (None, "STOP"):
-            raise GeminiError(f"finishReason {candidates[0]['finishReason']}")
-        return Result(text, data.get("usageMetadata", {}), data.get("modelVersion"))
+        reason = candidates[0].get("finishReason")
+        if reason not in (None, "STOP") and not allow_unfinished:
+            raise GeminiError(f"finishReason {reason}")
+        return Result(text, usage, version, reason)
