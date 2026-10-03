@@ -1,11 +1,16 @@
 """#71: settle each eval draft's key without a human reviewer (owner decision, 2026-10-02).
 
-Three reviewers from different model families, none of them a model the eval grades,
-each review every draft alone under data/LABELING.md: accept the draft key, edit it,
-or reject the note as ambiguous. A key is final when two reviewers agree on it, where
-"agree" is the scorer's own zero-edit test in both directions, so wording differences
-the scorer forgives don't count as disagreement. Without a majority the note is
-rejected, as LABELING.md says to do with an ambiguous note.
+Three reviewers from different model families each review drafts alone under
+data/LABELING.md: accept the draft key, edit it, or reject the note as ambiguous. A key
+is final when two reviewers agree on it, where "agree" is the scorer's own zero-edit test
+in both directions, so wording differences the scorer forgives don't count as
+disagreement. Without a majority the note is rejected, as LABELING.md says to do with an
+ambiguous note.
+
+Gemini and Claude review every draft; GPT reviews only the drafts those two leave
+unsettled (TIEBREAK). Under a two-of-three rule a third vote can't change a draft two
+reviewers already agree on, so this spends the limited Codex quota only where it counts
+(owner request, 2026-10-02).
 """
 
 from __future__ import annotations
@@ -28,7 +33,9 @@ REVIEWERS = {
     "gemini": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
     "claude": "claude-opus-5-5 (subagent)",
 }
+FIRST, TIEBREAK = ("gemini", "claude"), "gpt"
 ACTIONS = ("accept", "edit", "reject")
+NO_MAJORITY = "no two reviewers agree on a key"
 MAX_ITEMS = 12
 # Antigravity takes the prompt as an argument, and Windows caps a command line at 32,767
 # characters, with every '"' escaped: cmdline_cost() counts that.
@@ -191,13 +198,14 @@ def aggregate(
     """One decision per draft, in the freeze step's decisions format.
 
     A candidate is a reviewer's final key: the draft's for accept, theirs for edit,
-    none for reject. Two or more rejects reject the note. Otherwise the draft stands
-    if two candidates agree with it (accept); else the first candidate, in REVIEWERS
-    order, that two candidates agree with becomes the key (edit); else no majority,
-    and the note is rejected.
+    none for reject. A reviewer with no vote on a draft is left out. Two or more rejects
+    reject the note. Otherwise the draft stands if two candidates agree with it
+    (accept); else the first candidate, in REVIEWERS order, that two candidates agree
+    with becomes the key (edit); else no majority, and the note is rejected.
     """
     names = list(REVIEWERS)
-    cands = {d["id"]: {r: _candidate(d, votes[r][d["id"]]) for r in names} for d in drafts}
+    cands = {d["id"]: {r: _candidate(d, votes[r][d["id"]]) for r in names
+                       if d["id"] in votes.get(r, {})} for d in drafts}  # fmt: skip
     pairs: dict[tuple[str, str], tuple[dict, dict]] = {}
     for d in drafts:
         keys = [d["gold"], *(c for c in cands[d["id"]].values() if c is not None)]
@@ -218,7 +226,7 @@ def aggregate(
     for d in drafts:
         c = cands[d["id"]]
         live = [(r, g) for r, g in c.items() if g is not None]
-        rejects = [r for r in names if c[r] is None]
+        rejects = [r for r in c if c[r] is None]
         action, gold, comment = "reject", None, ""
         if len(rejects) >= 2:
             comment = "rejected by " + "; ".join(
@@ -231,7 +239,7 @@ def aggregate(
             if winner is not None:
                 action, gold = "edit", winner
             else:
-                comment = "no two reviewers agree on a key"
+                comment = NO_MAJORITY
         out.append({
             "id": d["id"], "split": d["meta"]["split"], "action": action, "gold": gold,
             "comment": comment, "reviewedAt": reviewed_at, "draftHash": draft_hash(d),
@@ -239,7 +247,7 @@ def aggregate(
             "votes": {r: {"action": votes[r][d["id"]]["action"],
                           "agreesWithKey": c[r] is not None and gold is not None
                           and agrees(c[r], gold),
-                          "comment": votes[r][d["id"]]["comment"]} for r in names},
+                          "comment": votes[r][d["id"]]["comment"]} for r in c},
         })  # fmt: skip
     return out
 
@@ -250,17 +258,30 @@ def _candidate(draft: Draft, vote: Vote) -> dict | None:
     return draft["gold"] if vote["action"] == "accept" else vote["gold"]
 
 
+def contested(drafts: list[Draft], votes: dict[str, dict[str, Vote]], agree: Agree) -> list[str]:
+    """Drafts the FIRST reviewers leave without a majority: the tie-breaker's work list."""
+    first = {r: votes[r] for r in FIRST}
+    decided = aggregate(drafts, first, agree, {d["id"]: [] for d in drafts}, "")
+    return [x["id"] for x in decided if x["comment"] == NO_MAJORITY]
+
+
 def adjudication_stats(decisions: list[dict]) -> dict[str, Any]:
     """How the reviewers voted and how often they landed on the final key."""
     names = list(REVIEWERS)
-    votes = {r: dict(Counter(x["votes"][r]["action"] for x in decisions)) for r in names}
-    agreed = {r: sum(x["votes"][r]["agreesWithKey"] for x in decisions) for r in names}
-    support = Counter(sum(x["votes"][r]["agreesWithKey"] for r in names) for x in decisions
-                      if x["action"] != "reject")  # fmt: skip
+    votes = {r: dict(Counter(x["votes"][r]["action"] for x in decisions if r in x["votes"]))
+             for r in names}  # fmt: skip
+    agreed = {r: sum(x["votes"][r]["agreesWithKey"] for x in decisions if r in x["votes"])
+              for r in names}  # fmt: skip
+    support = Counter(
+        f"{sum(v['agreesWithKey'] for v in x['votes'].values())}/{len(x['votes'])}"
+        for x in decisions
+        if x["action"] != "reject"
+    )
     return {
         "reviewers": REVIEWERS,
         "votes": votes,
         "agreesWithFinalKey": agreed,
-        "finalKeySupport": {f"{k}/3": support[k] for k in sorted(support)},
-        "unresolved": sum(x["comment"] == "no two reviewers agree on a key" for x in decisions),
+        "finalKeySupport": dict(sorted(support.items())),
+        "tiebreaks": sum(TIEBREAK in x["votes"] for x in decisions),
+        "unresolved": sum(x["comment"] == NO_MAJORITY for x in decisions),
     }

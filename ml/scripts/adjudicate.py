@@ -3,14 +3,17 @@
 Usage (from ml/):
   uv run python scripts/adjudicate.py prepare               # batches + response schema
   uv run python scripts/adjudicate.py prompts --out DIR     # one prompt file per batch
-  uv run python scripts/adjudicate.py run gpt|gemini [--only b01,b02] [--jobs 3]
+  uv run python scripts/adjudicate.py run gemini [--only b01,b02] [--jobs 3]
+  uv run python scripts/adjudicate.py contested             # GPT's tie-break batches
+  uv run python scripts/adjudicate.py run gpt [--jobs 2]
   uv run python scripts/adjudicate.py check gpt|gemini|claude [--only b01]
   uv run python scripts/adjudicate.py decide [--reviewed-at ISO]
 
 Votes land in data/review/adjudication/votes/<reviewer>/<batch>.json. `run` drives the
-Codex CLI (GPT) and the Antigravity CLI (Gemini); the Claude votes are written by Opus
-subagents from the same prompt files. `run` is resumable: a batch with a valid vote file
-is skipped. `decide` needs every reviewer's vote on every draft.
+Antigravity CLI (Gemini) and the Codex CLI (GPT); the Claude votes are written by Opus
+subagents from the same prompt files. Gemini and Claude vote on every draft (batches
+b01...); GPT votes only on the drafts they leave unsettled (tiebreak.json, batches
+t01...). `run` is resumable: a batch with a valid vote file is skipped.
 """
 
 import argparse
@@ -28,11 +31,14 @@ ML = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ML))
 
 from jobtrail_ml.adjudicate import (  # noqa: E402
+    FIRST,
     REVIEWERS,
+    TIEBREAK,
     adjudication_stats,
     aggregate,
     batches,
     check_votes,
+    contested,
     prompt,
     reasons,
     review_items,
@@ -64,14 +70,31 @@ def load():
     return drafts, panel
 
 
-def plan() -> tuple[list[list[dict]], str]:
+TIEBREAK_FILE = OUT / "tiebreak.json"
+
+
+def plan(reviewer: str | None = None) -> tuple[list[tuple[str, list[dict]]], str]:
+    """(batch name, items) for a reviewer: every draft, or for the tie-breaker only the
+    drafts listed in tiebreak.json."""
     drafts, panel = load()
     rules = RULES.read_text(encoding="utf-8")
-    return batches(review_items(drafts, panel), rules), rules
+    items = review_items(drafts, panel)
+    if reviewer == TIEBREAK:
+        if not TIEBREAK_FILE.exists():
+            sys.exit("no tiebreak.json yet: run `contested` after the gemini and claude votes")
+        wanted = set(json.loads(TIEBREAK_FILE.read_text(encoding="utf-8"))["ids"])
+        chosen = [x for x in items if x["id"] in wanted]
+        return [(f"t{i + 1:02d}", b) for i, b in enumerate(batches(chosen, rules))], rules
+    return [(f"b{i + 1:02d}", b) for i, b in enumerate(batches(items, rules))], rules
 
 
-def batch_name(i: int) -> str:
-    return f"b{i + 1:02d}"
+def load_votes(reviewer: str) -> dict[str, dict]:
+    got: dict[str, dict] = {}
+    for name, b in plan(reviewer)[0]:
+        path = OUT / "votes" / reviewer / f"{name}.json"
+        decisions = json.loads(path.read_text(encoding="utf-8"))["decisions"]
+        got.update(check_votes([x["id"] for x in b], reviewer, decisions))
+    return got
 
 
 def write_json(path: Path, obj) -> None:
@@ -80,24 +103,39 @@ def write_json(path: Path, obj) -> None:
                     newline="\n")  # fmt: skip
 
 
+def manifest(bs: list[tuple[str, list[dict]]], rules: str) -> list[dict]:
+    return [{"batch": name, "ids": [x["id"] for x in b],
+             "prompt_sha256": hashlib.sha256(prompt(rules, b).encode()).hexdigest()}
+            for name, b in bs]  # fmt: skip
+
+
 def cmd_prepare(_args) -> None:
     bs, rules = plan()
     write_json(OUT / "vote.schema.json", vote_schema())
     write_json(OUT / "batches.json", {
         "reviewers": REVIEWERS,
         "rules_sha256": hashlib.sha256(RULES.read_bytes()).hexdigest(),
-        "batches": [{"batch": batch_name(i), "ids": [x["id"] for x in b],
-                     "prompt_sha256": hashlib.sha256(prompt(rules, b).encode()).hexdigest()}
-                    for i, b in enumerate(bs)],
+        "batches": manifest(bs, rules),
     })  # fmt: skip
-    print(f"{sum(map(len, bs))} drafts in {len(bs)} batches -> {OUT}")
+    print(f"{sum(len(b) for _, b in bs)} drafts in {len(bs)} batches -> {OUT}")
+
+
+def cmd_contested(_args) -> None:
+    """After the FIRST reviewers: the drafts they leave unsettled go to the tie-breaker."""
+    drafts, _ = load()
+    ids = contested(drafts, {r: load_votes(r) for r in FIRST}, zero_edit)
+    write_json(TIEBREAK_FILE, {"reviewer": TIEBREAK, "settledBy": list(FIRST), "ids": ids})
+    bs, rules = plan(TIEBREAK)
+    write_json(TIEBREAK_FILE, {"reviewer": TIEBREAK, "settledBy": list(FIRST), "ids": ids,
+                               "batches": manifest(bs, rules)})  # fmt: skip
+    print(f"{len(ids)} of {len(drafts)} drafts need a tie-break, in {len(bs)} batches")
 
 
 def cmd_prompts(args) -> None:
-    bs, rules = plan()
+    bs, rules = plan(args.reviewer)
     args.out.mkdir(parents=True, exist_ok=True)
-    for i, b in enumerate(bs):
-        (args.out / f"{batch_name(i)}.md").write_text(prompt(rules, b), encoding="utf-8")
+    for name, b in bs:
+        (args.out / f"{name}.md").write_text(prompt(rules, b), encoding="utf-8")
     print(f"{len(bs)} prompts -> {args.out}")
 
 
@@ -150,11 +188,11 @@ def valid_votes(path: Path, ids: list[str], reviewer: str) -> bool:
 
 
 def cmd_run(args) -> None:
-    bs, rules = plan()
+    bs, rules = plan(args.reviewer)
     schema = OUT / "vote.schema.json"
     todo = []
-    for i, b in enumerate(bs):
-        name, ids = batch_name(i), [x["id"] for x in b]
+    for name, b in bs:
+        ids = [x["id"] for x in b]
         if args.only and name not in args.only.split(","):
             continue
         path = OUT / "votes" / args.reviewer / f"{name}.json"
@@ -187,10 +225,9 @@ def cmd_run(args) -> None:
 
 def cmd_check(args) -> None:
     """Validate a reviewer's vote files (all batches, or --only)."""
-    bs, _ = plan()
+    bs, _ = plan(args.reviewer)
     bad = 0
-    for i, b in enumerate(bs):
-        name = batch_name(i)
+    for name, b in bs:
         if args.only and name not in args.only.split(","):
             continue
         path = OUT / "votes" / args.reviewer / f"{name}.json"
@@ -206,14 +243,10 @@ def cmd_check(args) -> None:
 
 def cmd_decide(args) -> None:
     drafts, panel = load()
-    bs, _ = plan()
-    votes: dict[str, dict] = {}
-    for reviewer in REVIEWERS:
-        votes[reviewer] = {}
-        for i, b in enumerate(bs):
-            path = OUT / "votes" / reviewer / f"{batch_name(i)}.json"
-            got = json.loads(path.read_text(encoding="utf-8"))["decisions"]
-            votes[reviewer].update(check_votes([x["id"] for x in b], reviewer, got))
+    votes = {r: load_votes(r) for r in REVIEWERS}
+    unsettled = contested(drafts, {r: votes[r] for r in FIRST}, zero_edit)
+    if sorted(unsettled) != sorted(votes[TIEBREAK]):
+        sys.exit("tiebreak.json is stale: rerun `contested` and the tie-break votes")
     reviewed_at = args.reviewed_at or datetime.now(UTC).isoformat(timespec="seconds")
     decisions = aggregate(drafts, votes, zero_edit, {d["id"]: reasons(d, panel) for d in drafts},
                           reviewed_at)  # fmt: skip
@@ -231,8 +264,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(required=True)
     sub.add_parser("prepare").set_defaults(fn=cmd_prepare)
+    sub.add_parser("contested").set_defaults(fn=cmd_contested)
     p = sub.add_parser("prompts")
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--reviewer", choices=sorted(REVIEWERS), help="gpt: the tie-break batches")
     p.set_defaults(fn=cmd_prompts)
     r = sub.add_parser("run")
     r.add_argument("reviewer", choices=sorted(CLIS))

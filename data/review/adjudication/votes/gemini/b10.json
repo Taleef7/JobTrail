@@ -1,0 +1,146 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b10",
+ "usage": {
+  "input_tokens": 22407,
+  "output_tokens": 44987,
+  "thinking_tokens": 44379,
+  "cache_read_tokens": 0,
+  "total_tokens": 67394
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0109"
+  },
+  {
+   "action": "edit",
+   "comment": "Removed condensate pan tablets from materials because the note does not state they were used.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "hvac",
+    "laborMinutes": 100,
+    "materials": [
+     {
+      "name": "run capacitor",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Replaced blower motor capacitor",
+     "Cleared condensate drain line",
+     "Picked up condensate pan tablets at the supply house"
+    ]
+   },
+   "id": "t-0110"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0111"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0112"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0113"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0114"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0115"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0116"
+  },
+  {
+   "action": "edit",
+   "comment": "Added installing fan-rated ceiling box to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [
+     "Ceiling box not rated for the fixture"
+    ],
+    "jobType": "electrical",
+    "laborMinutes": 90,
+    "materials": [
+     {
+      "name": "fan-rated ceiling box",
+      "quantity": 1,
+      "unit": null
+     },
+     {
+      "name": "single pole switch",
+      "quantity": 1,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Installed ceiling light fixture",
+     "Added a new wall switch",
+     "Installed fan-rated ceiling box"
+    ]
+   },
+   "id": "t-0117"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0118"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0119"
+  },
+  {
+   "action": "edit",
+   "comment": "Added securing gutters to work performed.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [],
+    "issuesFound": [],
+    "jobType": "roofing",
+    "laborMinutes": 85,
+    "materials": [
+     {
+      "name": "gutter hanger",
+      "quantity": 5,
+      "unit": null
+     }
+    ],
+    "workPerformed": [
+     "Cleaned gutters",
+     "Secured gutters"
+    ]
+   },
+   "id": "t-0120"
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "reviewer": "gpt",
+ "settledBy": [
+  "gemini",
+  "claude"
+ ],
+ "ids": [
+  "t-0021",
+  "t-0022",
+  "t-0052",
+  "t-0101",
+  "t-0162"
+ ],
+ "batches": [
+  {
+   "batch": "t01",
+   "ids": [
+    "t-0021",
+    "t-0022",
+    "t-0052",
+    "t-0101",
+    "t-0162"
+   ],
+   "prompt_sha256": "69bf9c7fe5ffca32cb2f35a5fad5babec835e8377857de36842e3b4cbab28728"
+  }
+ ]
+}

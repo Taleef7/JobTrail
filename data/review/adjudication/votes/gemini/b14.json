@@ -1,0 +1,112 @@
+{
+ "reviewer": "gemini",
+ "model": "gemini-3.8-flash-high (Antigravity CLI 1.2)",
+ "batch": "b14",
+ "usage": {
+  "input_tokens": 22259,
+  "output_tokens": 63370,
+  "thinking_tokens": 62914,
+  "cache_read_tokens": 0,
+  "total_tokens": 85629
+ },
+ "decisions": [
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0157"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0158"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0159"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0160"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0161"
+  },
+  {
+   "action": "edit",
+   "comment": "Added degreasing the hood duct to workPerformed as the fix for the grease buildup found.",
+   "gold": {
+    "customerApproved": true,
+    "followUps": [
+     "Book monthly kitchen clean"
+    ],
+    "issuesFound": [
+     "Grease buildup inside the hood duct"
+    ],
+    "jobType": "cleaning",
+    "laborMinutes": 60,
+    "materials": [
+     {
+      "name": "degreaser",
+      "quantity": null,
+      "unit": null
+     },
+     {
+      "name": "microfiber cloth",
+      "quantity": 2,
+      "unit": "pack"
+     }
+    ],
+    "workPerformed": [
+     "Deep cleaned kitchen",
+     "Degreased hood duct"
+    ]
+   },
+   "id": "t-0162"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0163"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0164"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "t-0165"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0001"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0002"
+  },
+  {
+   "action": "accept",
+   "comment": "",
+   "gold": null,
+   "id": "d-0003"
+  }
+ ]
+}

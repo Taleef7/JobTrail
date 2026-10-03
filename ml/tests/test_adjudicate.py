@@ -13,6 +13,7 @@ from jobtrail_ml.adjudicate import (
     batches,
     check_votes,
     cmdline_cost,
+    contested,
     prompt,
     reasons,
     review_items,
@@ -182,3 +183,35 @@ def test_zero_edit_agreement_comes_from_the_core_scorer():
 
     worded = {**GOLD, "workPerformed": ["Replaced the P-trap"]}
     assert zero_edit([(GOLD, worded), (GOLD, EDIT_B), (GOLD, GOLD)]) == [True, False, True]
+
+
+def test_two_agreeing_reviewers_settle_a_draft_without_the_tiebreaker():
+    votes = {"gemini": {D["id"]: vote(D["id"], "accept")},
+             "claude": {D["id"]: vote(D["id"], "accept")}}  # fmt: skip
+    x = aggregate([D], votes, lower_agree, {D["id"]: []}, "2026-10-02")[0]
+    assert x["action"] == "accept" and set(x["votes"]) == {"gemini", "claude"}
+
+
+def test_contested_lists_only_drafts_the_first_two_reviewers_leave_open():
+    ds = [draft(1), draft(2), draft(3)]
+    v = {"gemini": {}, "claude": {}}
+    for d in ds:
+        v["gemini"][d["id"]] = vote(d["id"], "accept")
+        v["claude"][d["id"]] = vote(d["id"], "accept")
+    v["claude"]["t-0002"] = vote("t-0002", "edit", EDIT_B)  # 1 accept vs 1 edit: open
+    v["gemini"]["t-0003"] = vote("t-0003", "reject")
+    v["claude"]["t-0003"] = vote("t-0003", "reject")  # two rejects: settled
+    assert contested(ds, v, lower_agree) == ["t-0002"]
+
+
+def test_a_tiebreak_vote_decides_and_is_counted():
+    ds = [draft(1), draft(2)]
+    v = {"gpt": {"t-0002": vote("t-0002", "edit", EDIT_B)}, "gemini": {}, "claude": {}}
+    for d in ds:
+        v["gemini"][d["id"]] = vote(d["id"], "accept")
+        v["claude"][d["id"]] = vote(d["id"], "accept")
+    v["claude"]["t-0002"] = vote("t-0002", "edit", EDIT_B)
+    decs = aggregate(ds, v, lower_agree, {d["id"]: [] for d in ds}, "2026-10-02")
+    assert [(x["action"], x["gold"]) for x in decs] == [("accept", GOLD), ("edit", EDIT_B)]
+    s = adjudication_stats(decs)
+    assert s["tiebreaks"] == 1 and s["finalKeySupport"] == {"2/2": 1, "2/3": 1}
