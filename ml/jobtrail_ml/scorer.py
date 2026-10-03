@@ -22,8 +22,8 @@ def node() -> str:
 def score(gold: Path, pred: Path, out: Path, run: str) -> dict:
     """`pnpm score` on two JSONL files; returns the report it wrote."""
     proc = subprocess.run(
-        [node(), str(SCORE_CLI), "--gold", str(gold), "--pred", str(pred),
-         "--out", str(out), "--run", run],
+        [node(), str(SCORE_CLI), "--gold", str(gold.resolve()), "--pred", str(pred.resolve()),
+         "--out", str(out.resolve()), "--run", run],
         cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False,
     )  # fmt: skip
     if proc.returncode != 0:
