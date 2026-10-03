@@ -104,3 +104,18 @@ def test_prompt_fingerprint_tracks_the_prompt_not_the_note():
     assert a == prompt_fingerprint("zero-shot", "full")
     assert len({a, prompt_fingerprint("few-shot", "full"),
                 prompt_fingerprint("zero-shot", "compact")}) == 3  # fmt: skip
+
+
+def test_agy_batch_prompt_has_the_rules_the_batch_note_and_the_notes():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "run_agy", Path(__file__).parents[1] / "scripts/run_agy.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    text = mod.batch_prompt({"format": "full"}, [{"id": "d-1", "note": "Fixed a leak."}])
+    assert text.startswith(EXTRACT_SYSTEM) and "Do not use any tools" in text
+    assert '"id": "d-1"' in text and "Fixed a leak." in text
+    assert mod.agy_usage({"input_tokens": 5, "output_tokens": 2, "thinking_tokens": 1}) == {
+        "promptTokens": 5, "outputTokens": 2, "thoughtsTokens": 1}  # fmt: skip

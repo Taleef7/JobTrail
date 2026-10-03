@@ -33,7 +33,7 @@ ML = Path(__file__).resolve().parents[1]
 ROOT = ML.parent
 RESULTS = ROOT / "results" / "runs"
 
-PROVIDERS = ("llamacpp", "gemini")
+PROVIDERS = ("llamacpp", "gemini", "agy")
 DEFAULTS: dict[str, Any] = {
     "prompt": "zero-shot",
     "format": "full",
@@ -49,7 +49,9 @@ LLAMACPP_SERVER = {"build": None, "ctx": 4096, "gpu_layers": 0, "threads": None,
                    "chat_template_kwargs": {}, "reasoning_format": "none"}  # fmt: skip
 GEMINI_CLOUD = {"thinking_level": None, "rpm": 8.0, "key_env": "GEMINI_API_KEY", "pricing": None,
                 "batch_size": 1}  # fmt: skip
-MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}}
+# agy: a model through the Antigravity CLI on the owner's plan (no API key; #73).
+AGY_CLOUD = {"batch_size": 15}
+MODEL_KEYS = {"llamacpp": {"file", "url", "sha256"}, "gemini": {"id"}, "agy": {"id"}}
 # Settings that don't change what the model writes stay out of the run ID.
 # The model file and gold are identified by their SHA-256, not their path or URL.
 NOT_IDENTITY = {
@@ -129,7 +131,7 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
         raise ConfigError("fine-tuned-short prompts expect compact output (format: compact)")
     if cfg["limit"] is not None and (not isinstance(cfg["limit"], int) or cfg["limit"] < 1):
         raise ConfigError(f"limit must be a positive integer or null, got {cfg['limit']!r}")
-    other = {"llamacpp": "cloud", "gemini": "server"}[cfg["provider"]]
+    other = {"llamacpp": "cloud", "gemini": "server", "agy": "server"}[cfg["provider"]]
     if other in raw:
         raise ConfigError(f"a {cfg['provider']} config has no {other!r} section")
     if cfg["provider"] == "llamacpp":
@@ -139,6 +141,19 @@ def resolve(raw: dict[str, Any]) -> dict[str, Any]:
         cfg["server"] = _merge(LLAMACPP_SERVER, cfg.get("server") or {})
         if not cfg["server"]["build"]:
             raise ConfigError("server.build must pin the llama.cpp release, e.g. b9837")
+    elif cfg["provider"] == "agy":
+        if not cfg["model"].get("id"):
+            raise ConfigError("agy model needs id")
+        if raw.get("sampling"):
+            raise ConfigError("agy doesn't expose sampling settings; leave sampling out")
+        if cfg["prompt"] != "zero-shot" or not cfg["grammar"]:
+            raise ConfigError("agy runs are zero-shot with grammar (batched structured output)")
+        cfg["sampling"] = {}
+        _known(raw.get("cloud"), AGY_CLOUD, "cloud")
+        cfg["cloud"] = _merge(AGY_CLOUD, cfg.get("cloud") or {})
+        n = cfg["cloud"]["batch_size"]
+        if not isinstance(n, int) or n < 1:
+            raise ConfigError(f"cloud.batch_size must be a positive integer, got {n!r}")
     else:
         if not cfg["model"].get("id"):
             raise ConfigError("gemini model needs id")

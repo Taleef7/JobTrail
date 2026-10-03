@@ -180,8 +180,10 @@ def test_every_committed_config_resolves():
             assert re.fullmatch(r"[0-9a-f]{64}", cfg["model"]["sha256"]), path.name
             assert cfg["model"]["url"].startswith("https://huggingface.co/"), path.name
             assert cfg["sampling"]["temperature"] == 0 and cfg["server"]["gpu_layers"] == 0
-        else:
+        elif cfg["provider"] == "gemini":
             assert cfg["cloud"]["pricing"]["rates"], path.name
+        else:
+            assert cfg["cloud"]["batch_size"] >= 1 and cfg["sampling"] == {}, path.name
 
 
 def _node24() -> bool:
@@ -340,6 +342,24 @@ def test_batching_is_part_of_the_run_id_only_when_used(gold):
 def test_a_reasoning_format_other_than_none_changes_the_run_id(gold):
     assert run_id(local(gold)) == run_id(local(gold, server={"reasoning_format": "none"}))
     assert run_id(local(gold)) != run_id(local(gold, server={"reasoning_format": "deepseek"}))
+
+
+def test_agy_configs_take_no_sampling_and_must_batch_structured_output(gold):
+    base = {
+        "name": "a",
+        "provider": "agy",
+        "gold": str(gold),
+        "model": {"id": "gemini-3.8-flash-high"},
+    }
+    cfg = resolve(base)
+    assert cfg["sampling"] == {} and cfg["cloud"] == {"batch_size": 15}
+    with pytest.raises(ConfigError, match="sampling"):
+        resolve({**base, "sampling": {"temperature": 0}})
+    with pytest.raises(ConfigError, match="zero-shot with grammar"):
+        resolve({**base, "grammar": False})
+    with pytest.raises(ConfigError, match="no 'server'"):
+        resolve({**base, "server": {"ctx": 1}})
+    assert run_id(cfg) != run_id(resolve({**base, "cloud": {"batch_size": 5}}))
 
 
 def test_committed_evidence_runs_keep_their_run_ids():
