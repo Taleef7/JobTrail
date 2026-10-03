@@ -1,0 +1,19 @@
+# granite4-h-350m-q8-few-shot (#73 baseline ladder, from the model survey): see results/README.md
+name: granite4-h-350m-q8-few-shot
+provider: llamacpp
+model:
+  file: ml/models/granite-4.0-h-350m-Q8_0.gguf
+  url: https://huggingface.co/ibm-granite/granite-4.0-h-350m-GGUF/resolve/main/granite-4.0-h-350m-Q8_0.gguf
+  sha256: c7d9873640dc303b6773dcc44e72e5bdf533e1c95ca8421e6191fbff5c94c942
+prompt: few-shot
+format: full
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones

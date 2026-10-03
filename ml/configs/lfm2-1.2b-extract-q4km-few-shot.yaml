@@ -1,0 +1,19 @@
+# lfm2-1.2b-extract-q4km-few-shot (#73 baseline ladder, from the model survey): see results/README.md
+name: lfm2-1.2b-extract-q4km-few-shot
+provider: llamacpp
+model:
+  file: ml/models/LFM2-1.2B-Extract-Q4_K_M.gguf
+  url: https://huggingface.co/LiquidAI/LFM2-1.2B-Extract-GGUF/resolve/main/LFM2-1.2B-Extract-Q4_K_M.gguf
+  sha256: 09b60b507ee7d1698b2b4dfce184c75083d7790c7701910ed60afa2801024702
+prompt: few-shot
+format: full
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones
