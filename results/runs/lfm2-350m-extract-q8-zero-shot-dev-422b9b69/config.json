@@ -1,0 +1,53 @@
+{
+  "name": "lfm2-350m-extract-q8-zero-shot",
+  "provider": "llamacpp",
+  "model": {
+    "file": "ml/models/LFM2-350M-Extract-Q8_0.gguf",
+    "url": "https://huggingface.co/LiquidAI/LFM2-350M-Extract-GGUF/resolve/main/LFM2-350M-Extract-Q8_0.gguf",
+    "sha256": "5ef1940b784d25378b6c140a2678b453ee517d727307d05df8a761562b79df78"
+  },
+  "prompt": "zero-shot",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/dev.jsonl",
+  "limit": null,
+  "sampling": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 512
+  },
+  "server": {
+    "build": "b9837",
+    "ctx": 4096,
+    "gpu_layers": 0,
+    "threads": null,
+    "chat_template_kwargs": {},
+    "reasoning_format": "none"
+  },
+  "identity": {
+    "settings": {
+      "provider": "llamacpp",
+      "model": {
+        "sha256": "5ef1940b784d25378b6c140a2678b453ee517d727307d05df8a761562b79df78"
+      },
+      "prompt": "zero-shot",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {
+        "temperature": 0.0,
+        "seed": 42,
+        "max_tokens": 512
+      },
+      "server": {
+        "build": "b9837",
+        "ctx": 4096,
+        "gpu_layers": 0,
+        "chat_template_kwargs": {}
+      }
+    },
+    "prompt_sha256": "2e3fd4abaf5528641f69ffd8ac945ead6c19f0ee88634a037edb53b104a64fd7",
+    "gold_sha256": "393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c"
+  }
+}

@@ -1,0 +1,20 @@
+# smollm2-135m-q8-few-shot (#73 baseline ladder): see results/README.md
+name: smollm2-135m-q8-few-shot
+provider: llamacpp
+model:
+  file: ml/models/SmolLM2-135M-Instruct-Q8_0.gguf
+  url: https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q8_0.gguf
+  sha256: 5a1395716f7913741cc51d98581b9b1228d80987a9f7d3664106742eb06bba83
+  bytes: 144811360
+prompt: few-shot
+format: full
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones

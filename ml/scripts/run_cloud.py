@@ -95,6 +95,8 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
     if schema:
         schema = {k: v for k, v in schema.items() if k != "$schema"}
     seen = {p["modelVersion"] for p in read_jsonl(run.pred_path) if p.get("modelVersion")}
+    if c["batch_size"] > 1:
+        return generate_batched(run, cfg, client, schema, seen)
     try:
         for i, g in enumerate(todo, 1):
             msgs = extract.messages(g["note"], cfg["prompt"], cfg["format"])
@@ -117,6 +119,46 @@ def generate(run: Run, cfg: dict, todo: list[dict]) -> str:
                         "usage": gemini_usage(r.usage),
                         "finishReason": r.finish_reason})  # fmt: skip
             print(f"  {i}/{len(todo)} {g['id']} {r.finish_reason}", flush=True)
+    except QuotaExhausted as e:
+        print(f"daily quota reached ({e}); rerun the same command tomorrow to resume")
+        return "quota"
+    return "incomplete"
+
+
+def generate_batched(run: Run, cfg: dict, client: GeminiClient, schema: dict,
+                     seen: set[str]) -> str:  # fmt: skip
+    """batch_size notes per request. The first line of each batch carries the whole batch's
+    tokens (so totals and cost stay exact); no per-note latency is recorded. Batches are cut
+    from the whole gold file, so a resume resends an unfinished batch with the same notes."""
+    c, s, model, n = cfg["cloud"], cfg["sampling"], cfg["model"]["id"], cfg["cloud"]["batch_size"]
+    system = extract.system_prompt(cfg["format"], extract.prompt_version(cfg["prompt"]))
+    system += extract.BATCH_NOTE
+    try:
+        batches = run.pending_batches(n)
+        for k, chunk in enumerate(batches, 1):
+            r = client.generate(model, system, extract.batch_input(chunk),
+                                temperature=s["temperature"], seed=s["seed"],
+                                json_schema=extract.batch_schema(schema),
+                                thinking_level=c["thinking_level"],
+                                max_output_tokens=s["max_tokens"],
+                                allow_unfinished=True)  # fmt: skip
+            if new_model_version(seen, r.model_version):
+                print(
+                    f"{model} now answers as {r.model_version}, not {sorted(seen)}: start a "
+                    "new run (delete the folder) rather than mix versions in one report"
+                )
+                return "version-changed"
+            seen.add(r.model_version)
+            usage = gemini_usage(r.usage)
+            run.append_many([
+                {"id": note_id, "raw": raw, "format": cfg["format"], "model": model,
+                 "modelVersion": r.model_version,
+                 "batch": {"first": chunk[0]["id"], "size": len(chunk)},
+                 "usage": usage if j == 0 else {k2: 0 for k2 in usage}, "finishReason": finish}
+                for j, (note_id, raw, finish) in enumerate(
+                    extract.split_batch([g["id"] for g in chunk], r.text, r.finish_reason))
+            ])  # fmt: skip
+            print(f"  batch {k}/{len(batches)}: {r.finish_reason}", flush=True)
     except QuotaExhausted as e:
         print(f"daily quota reached ({e}); rerun the same command tomorrow to resume")
         return "quota"

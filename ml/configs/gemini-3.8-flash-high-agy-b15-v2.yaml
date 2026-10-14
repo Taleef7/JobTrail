@@ -1,0 +1,12 @@
+# The cloud ceiling through the Antigravity CLI (#73): Gemini 3.8 Flash (High) on the
+# owner's Google AI Pro plan. No API key: agy's agent harness, so no API latency or price.
+name: gemini-3.8-flash-high-agy-b15-v2
+provider: agy
+model:
+  id: gemini-3.8-flash-high
+prompt: zero-shot-v2
+format: full
+grammar: true # batched structured output, one record per note id
+gold: data/dev.jsonl
+cloud:
+  batch_size: 15

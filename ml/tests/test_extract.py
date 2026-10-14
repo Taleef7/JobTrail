@@ -10,14 +10,21 @@ from jsonschema import Draft202012Validator
 from jobtrail_ml.extract import (
     COMPACT_LEGEND,
     EXTRACT_SYSTEM,
+    EXTRACT_SYSTEM_V2,
+    FEWSHOT_V2_NOTE,
+    batch_input,
+    batch_schema,
     encode,
     fewshot_examples,
     messages,
     prompt_fingerprint,
     schema,
+    split_batch,
 )
 
 DATA = Path(__file__).resolve().parents[2] / "data"
+# sha256 of EXTRACT_SYSTEM (v1), hashed into every committed run ID
+V1_SHA = "e5e2f9d5551ae6335ce4caa88c5a9dab5b04dbb6b1b489cbc6dec144b307171d"
 
 
 def test_zero_shot_is_the_rules_then_the_note():
@@ -79,8 +86,89 @@ def test_fewshot_notes_share_no_eight_word_run_with_any_eval_note():
         assert not (_grams(ex["note"]) & eval_grams), ex["id"]
 
 
+def test_a_batched_answer_splits_into_one_raw_record_per_note():
+    rec = {"jobType": "plumbing"}
+    text = json.dumps({"records": [{"id": "a", "record": rec}, {"id": "a", "record": {}},
+                                   {"id": "c", "record": rec}]})  # fmt: skip
+    got = split_batch(["a", "b", "c"], text, "STOP")
+    assert got == [("a", json.dumps(rec), "STOP"), ("b", "", "MISSING_IN_BATCH"),
+                   ("c", json.dumps(rec), "STOP")]  # fmt: skip
+    assert split_batch(["a"], "not json", "MAX_TOKENS") == [("a", "", "UNPARSEABLE_BATCH")]
+
+
+def test_batch_input_and_schema_wrap_notes_and_records():
+    assert json.loads(batch_input([{"id": "a", "note": "n", "gold": {}}])) == [
+        {"id": "a", "note": "n"}]  # fmt: skip
+    s = batch_schema({"type": "object"})
+    assert s["properties"]["records"]["items"]["properties"]["record"] == {"type": "object"}
+
+
+def test_v1_prompt_text_is_frozen():
+    # Committed v1 runs hash this exact text into their IDs: v2 must not change it.
+    import hashlib
+
+    assert hashlib.sha256(EXTRACT_SYSTEM.encode()).hexdigest()[:12] == V1_SHA[:12]
+
+
+def test_v2_prompts_state_the_rules_v1_left_out_and_have_no_copyable_examples():
+    v2 = messages("n", "zero-shot-v2", "full")[0]["content"]
+    for rule in (
+        "supply house for this job",
+        'unit is "kit"',
+        "null when the note doesn't say",
+        "found or noticed",
+        "plumbing: pipes",
+    ):
+        assert rule in v2, rule
+    assert "kitchen sink" not in v2 and "Replaced" not in v2  # nothing to copy verbatim
+    fs = messages("n", "few-shot-v2", "full")
+    assert fs[0]["content"].endswith(FEWSHOT_V2_NOTE) and len(fs) == 2 + 2 * len(fewshot_examples())
+    assert messages("n", "zero-shot", "full")[0]["content"] == EXTRACT_SYSTEM
+
+
 def test_prompt_fingerprint_tracks_the_prompt_not_the_note():
     a = prompt_fingerprint("zero-shot", "full")
     assert a == prompt_fingerprint("zero-shot", "full")
     assert len({a, prompt_fingerprint("few-shot", "full"),
                 prompt_fingerprint("zero-shot", "compact")}) == 3  # fmt: skip
+
+
+def test_agy_batch_prompt_has_the_rules_the_batch_note_and_the_notes():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "run_agy", Path(__file__).parents[1] / "scripts/run_agy.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    text = mod.batch_prompt({"format": "full", "prompt": "zero-shot"},
+                            [{"id": "d-1", "note": "Fixed a leak."}])  # fmt: skip
+    assert text.startswith(EXTRACT_SYSTEM) and "Do not use any tools" in text
+    assert '"id": "d-1"' in text and "Fixed a leak." in text
+    assert mod.agy_usage({"input_tokens": 5, "output_tokens": 2, "thinking_tokens": 1}) == {
+        "promptTokens": 5, "outputTokens": 2, "thoughtsTokens": 1}  # fmt: skip
+
+
+def test_agy_v2_batch_prompt_uses_the_v2_rules():
+    import importlib.util
+
+    path = Path(__file__).parents[1] / "scripts/run_agy.py"
+    spec = importlib.util.spec_from_file_location("run_agy", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    text = mod.batch_prompt(
+        {"format": "full", "prompt": "zero-shot-v2"}, [{"id": "a", "note": "n"}]
+    )
+    assert text.startswith(EXTRACT_SYSTEM_V2)
+
+
+def test_the_agy_prompt_text_is_unchanged_since_the_ceiling_runs():
+    # The committed agy runs sent exactly this text; their run IDs now hash it.
+    from jobtrail_ml.extract import agy_prompt_sha
+
+    assert agy_prompt_sha("full", 1) == (
+        "ea2475532e231445b5bc4332af9a01e4eb0f108d0af4f2723b8474315f7c32cc"
+    )
+    assert agy_prompt_sha("full", 2) == (
+        "4474f57565d61404d646f36e96434ca07f0877ddca6f2716e6824fc4bf49385a"
+    )

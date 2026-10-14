@@ -1,0 +1,39 @@
+{
+  "name": "gemini-3.8-flash-high-agy-b15-v2",
+  "provider": "agy",
+  "model": {
+    "id": "gemini-3.8-flash-high"
+  },
+  "prompt": "zero-shot-v2",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/test.jsonl",
+  "limit": null,
+  "sampling": {},
+  "cloud": {
+    "batch_size": 15
+  },
+  "identity": {
+    "settings": {
+      "provider": "agy",
+      "model": {
+        "id": "gemini-3.8-flash-high"
+      },
+      "prompt": "zero-shot-v2",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {},
+      "cloud": {}
+    },
+    "prompt_sha256": "8e0244a76072fe4109430eb4a3ae0e23526f86037dc3f224360b57e3dd2e2335",
+    "gold_sha256": "ceefa18c4113bc8e4052b680225b90530e4671d6cc012f201d5e9adab3ad71d4",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c",
+    "batch": {
+      "size": 15,
+      "note_sha256": "ae39e9f11c4a0b01f398277b9c763f157e1fa0f5680b86ea4ecdbafdcad5f784",
+      "shape_sha256": "06c3b72caeead7d4ac0bbfc80cefa77a704ad9d9e98c198b4691e071e110af5c"
+    },
+    "agy_prompt_sha256": "4474f57565d61404d646f36e96434ca07f0877ddca6f2716e6824fc4bf49385a"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "qwen3-1.7b-q4km-few-shot-dev-b47b3b0d",
+  "env": {
+    "runtime": "llama.cpp b9837-b3fed31b9",
+    "threads": null,
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "chatTemplateCaps": {
+      "supports_object_arguments": true,
+      "supports_parallel_tool_calls": true,
+      "supports_preserve_reasoning": false,
+      "supports_string_content": true,
+      "supports_system_role": true,
+      "supports_tool_calls": true,
+      "supports_tools": true,
+      "supports_typed_content": false
+    }
+  },
+  "started": "2026-10-03T05:40:27+00:00",
+  "status": "complete",
+  "finished": "2026-10-03T05:46:22+00:00",
+  "predictions": 110,
+  "usage": {
+    "promptTokens": 92602,
+    "outputTokens": 10049
+  }
+}

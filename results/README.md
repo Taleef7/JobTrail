@@ -1,22 +1,20 @@
 # Results
 
-Score reports produced by `pnpm score`; every number is defined in [`packages/core/SCORING.md`](../packages/core/SCORING.md).
+The baseline ladder (#73) on the frozen eval sets. **Start with [`docs/RESULTS.md`](../docs/RESULTS.md):** it has the tables, the error analysis and the go/no-go on fine-tuning. Every number is defined in [`packages/core/SCORING.md`](../packages/core/SCORING.md).
 
-| File               | What it is                                                                                                                    |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `rules.demo.jsonl` | Rule-based baseline (`rules-legacy-v0`) predictions on the 3 **demo fixtures** (`packages/core/fixtures/scoring/gold.jsonl`). |
-| `rules.json`       | Its score report.                                                                                                             |
+| Path                    | What                                                                                                                                                  |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `summary.json`          | Every run: metrics overall and per hard-case tag, model size, $/note, and each score report's SHA-256. Written by `ml/scripts/summarize_results.py`.  |
+| `runs/<run id>/`        | One folder per run (`config.json`, `predictions.jsonl`, `run.json`; see Batch runs below). `report.json` isn't committed: `score_run.py` rebuilds it. |
+| `runs/rules-legacy-v0/` | The rule-based floor: `{test,dev}.predictions.jsonl` from `pnpm baseline`; its reports come from `pnpm score`.                                        |
+| `error-analysis/`       | The dev failures read for #73: `samples/`, `open-codes.jsonl`, `taxonomy.json`, `classified.jsonl`.                                                   |
 
-**These are not the baseline's real numbers.** n = 3 hand-written demo notes shows the pipeline works end to end; it measures nothing. The real floor is produced by the same two commands on the frozen test set (#71) in the baseline ladder (#73), which replaces these files. The matcher is validated (`matcher.provisional: false`, #114).
-
-Reproduce:
+Reproduce the rules floor (the model runs reproduce from their configs, below):
 
 ```bash
-pnpm baseline --gold packages/core/fixtures/scoring/gold.jsonl --out results/rules.demo.jsonl
-pnpm score --gold packages/core/fixtures/scoring/gold.jsonl --pred results/rules.demo.jsonl --out results/rules.json --run rules-demo
+pnpm baseline --gold data/test.jsonl --out results/runs/rules-legacy-v0/test.predictions.jsonl
+pnpm score --gold data/test.jsonl --pred results/runs/rules-legacy-v0/test.predictions.jsonl --out results/runs/rules-legacy-v0/test.report.json --run rules-legacy-v0-test
 ```
-
-Latency (`timings.wallMs`) is measured per run on the machine that ran it, so it differs between runs; everything else is deterministic.
 
 ## Batch runs (#72)
 

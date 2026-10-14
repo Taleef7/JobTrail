@@ -1,0 +1,53 @@
+{
+  "name": "gemma3-270m-q8-few-shot",
+  "provider": "llamacpp",
+  "model": {
+    "file": "ml/models/gemma-3-270m-it-Q8_0.gguf",
+    "url": "https://huggingface.co/unsloth/gemma-3-270m-it-GGUF/resolve/main/gemma-3-270m-it-Q8_0.gguf",
+    "sha256": "d156a5159f2f79c1b1d53c7c1cc20f1ff28ab8d00f17a292620aad13399b9698"
+  },
+  "prompt": "few-shot",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/dev.jsonl",
+  "limit": null,
+  "sampling": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 512
+  },
+  "server": {
+    "build": "b9837",
+    "ctx": 4096,
+    "gpu_layers": 0,
+    "threads": null,
+    "chat_template_kwargs": {},
+    "reasoning_format": "none"
+  },
+  "identity": {
+    "settings": {
+      "provider": "llamacpp",
+      "model": {
+        "sha256": "d156a5159f2f79c1b1d53c7c1cc20f1ff28ab8d00f17a292620aad13399b9698"
+      },
+      "prompt": "few-shot",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {
+        "temperature": 0.0,
+        "seed": 42,
+        "max_tokens": 512
+      },
+      "server": {
+        "build": "b9837",
+        "ctx": 4096,
+        "gpu_layers": 0,
+        "chat_template_kwargs": {}
+      }
+    },
+    "prompt_sha256": "5f3c95a59b8fed8b59419d5a473928cac1578be2b0b9a14dc323eafac7bf612c",
+    "gold_sha256": "393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c"
+  }
+}

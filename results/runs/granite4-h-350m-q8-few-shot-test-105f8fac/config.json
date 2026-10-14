@@ -1,0 +1,53 @@
+{
+  "name": "granite4-h-350m-q8-few-shot",
+  "provider": "llamacpp",
+  "model": {
+    "file": "ml/models/granite-4.0-h-350m-Q8_0.gguf",
+    "url": "https://huggingface.co/ibm-granite/granite-4.0-h-350m-GGUF/resolve/main/granite-4.0-h-350m-Q8_0.gguf",
+    "sha256": "c7d9873640dc303b6773dcc44e72e5bdf533e1c95ca8421e6191fbff5c94c942"
+  },
+  "prompt": "few-shot",
+  "format": "full",
+  "grammar": true,
+  "gold": "data/test.jsonl",
+  "limit": null,
+  "sampling": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 512
+  },
+  "server": {
+    "build": "b9837",
+    "ctx": 4096,
+    "gpu_layers": 0,
+    "threads": null,
+    "chat_template_kwargs": {},
+    "reasoning_format": "none"
+  },
+  "identity": {
+    "settings": {
+      "provider": "llamacpp",
+      "model": {
+        "sha256": "c7d9873640dc303b6773dcc44e72e5bdf533e1c95ca8421e6191fbff5c94c942"
+      },
+      "prompt": "few-shot",
+      "format": "full",
+      "grammar": true,
+      "limit": null,
+      "sampling": {
+        "temperature": 0.0,
+        "seed": 42,
+        "max_tokens": 512
+      },
+      "server": {
+        "build": "b9837",
+        "ctx": 4096,
+        "gpu_layers": 0,
+        "chat_template_kwargs": {}
+      }
+    },
+    "prompt_sha256": "5f3c95a59b8fed8b59419d5a473928cac1578be2b0b9a14dc323eafac7bf612c",
+    "gold_sha256": "ceefa18c4113bc8e4052b680225b90530e4671d6cc012f201d5e9adab3ad71d4",
+    "schema_sha256": "9d4767274018974d77b76715219010823c62716f767fba764f4a2c9fb51c7e0c"
+  }
+}
