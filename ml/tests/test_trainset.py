@@ -297,3 +297,43 @@ def test_filter_builds_only_the_configured_set():
     g = _script()
     with pytest.raises(SystemExit, match="limit"):
         g.cmd_filter(argparse.Namespace(limit=g.CONFIG["limit"] + 75))
+
+
+def test_reading_a_file_being_appended_to_never_changes_it(tmp_path):
+    g = _script()
+    path = tmp_path / "notes.1of3.jsonl"
+    whole = '{"id": "tr-0001"}\n'
+    path.write_text(whole + '{"id": "tr-00', encoding="utf-8")  # the writer is mid-append
+    assert [r["id"] for r in g.read_jsonl(path)] == ["tr-0001"]
+    assert path.read_text(encoding="utf-8") == whole + '{"id": "tr-00'  # not "repaired"
+    with path.open("a", encoding="utf-8") as f:  # the writer finishes its line
+        f.write('02"}\n')
+    assert [r["id"] for r in g.read_jsonl(path)] == ["tr-0001", "tr-0002"]
+    path.write_text('{"id": "tr-0001"}\n{"id": "tr\n{"id": "tr-0003"}\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="middle"):
+        g.read_jsonl(path)
+
+
+def test_the_owner_repairs_a_crash_cut_line_before_appending(tmp_path):
+    g = _script()
+    path = tmp_path / "labels-gemini.jsonl"
+    path.write_text('{"id": "tr-0001"}\n{"id": "tr-00', encoding="utf-8")  # crashed mid-line
+    g.append(path, [{"id": "tr-0002"}])
+    assert [r["id"] for r in g.read_jsonl(path)] == ["tr-0001", "tr-0002"]
+    path.write_text('{"id": "tr-0001"}', encoding="utf-8")  # whole record, newline lost
+    g.append(path, [{"id": "tr-0002"}])
+    assert [r["id"] for r in g.read_jsonl(path)] == ["tr-0001", "tr-0002"]
+
+
+def test_every_process_logs_usage_to_a_file_of_its_own():
+    g = _script()
+    runs = [
+        ("write", "", "1/1"),
+        ("write", "", "2/3"),
+        ("label", "gemini", "1/1"),
+        ("label", "gemini-medium", "1/1"),
+        ("label", "gemini", "1/6"),
+    ]
+    names = {g.usage_suffix(*r) for r in runs}
+    assert names == {".write", ".write.2of3", ".label-gemini", ".label-gemini-medium",
+                     ".label-gemini.1of6"}  # fmt: skip

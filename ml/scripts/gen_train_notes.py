@@ -33,7 +33,6 @@ sys.path.insert(0, str(ML))
 from jsonschema import Draft202012Validator  # noqa: E402
 
 from jobtrail_ml import agy, codex, extract, trainset  # noqa: E402
-from jobtrail_ml.generate import read_done_ids  # noqa: E402
 from jobtrail_ml.prompts import (  # noqa: E402
     WRITER_BATCH_SCHEMA,
     WRITER_SYSTEM,
@@ -52,10 +51,20 @@ LABELERS = {**CONFIG["labelers"], **(CONFIG.get("crosscheck") or {})}
 
 
 def read_jsonl(path: Path) -> list[dict]:
+    """Rows of a JSONL file, read only: another process may be appending to it (a labeler
+    reads the writers' notes). An unparseable last line, an append in progress or one cut
+    off by a crash, is skipped; the file's owner repairs it before appending (append)."""
     if not path.exists():
         return []
-    read_done_ids(path)  # drops a line cut off by a crash
-    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x]
+    lines = path.read_text(encoding="utf-8").splitlines()
+    rows = []
+    for i, line in enumerate(lines):
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError as e:
+            if i != len(lines) - 1:
+                raise ValueError(f"{path}:{i + 1}: corrupt line in the middle of the file") from e
+    return rows
 
 
 def read_log(path: Path) -> list[dict]:
@@ -72,8 +81,27 @@ def read_log(path: Path) -> list[dict]:
     return rows
 
 
+def end_on_whole_line(path: Path) -> None:
+    """Repairs a last line cut off by a crash: drops it, or ends it if it's a whole
+    record that only lost its newline. Safe only for the file's one appender, which is
+    why every process appends to files of its own (USAGE_SUFFIX, shard file names)."""
+    if not path.exists():
+        return
+    data = path.read_bytes()
+    if not data or data.endswith(b"\n"):
+        return
+    head, _, tail = data.rpartition(b"\n")
+    try:
+        json.loads(tail)
+        data += b"\n"
+    except ValueError:
+        data = head + b"\n" if head else b""
+    path.write_bytes(data)
+
+
 def append(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    end_on_whole_line(path)
     with path.open("a", encoding="utf-8", newline="\n") as f:
         f.write("".join(json.dumps(r) + "\n" for r in rows))  # ASCII: no stray separators
 
@@ -483,10 +511,17 @@ def main() -> int:
     sub.choices["write"].add_argument("--shard", default="1/1", help=help_shard)
     args = ap.parse_args()
     global USAGE_SUFFIX
-    if getattr(args, "shard", "1/1") != "1/1":
-        k, of = args.shard.split("/")
-        USAGE_SUFFIX = f".{args.cmd}-{getattr(args, 'labeler', '')}.{k}of{of}".replace("-.", ".")
+    USAGE_SUFFIX = usage_suffix(args.cmd, getattr(args, "labeler", ""), getattr(args, "shard", ""))
     return args.fn(args)
+
+
+def usage_suffix(cmd: str, labeler: str, shard: str) -> str:
+    """Each process logs to its own usage file, so it's that file's only appender."""
+    if cmd not in ("write", "label"):
+        return ""
+    k, of = (shard or "1/1").split("/")
+    part = "" if (k, of) == ("1", "1") else f".{k}of{of}"
+    return f".{cmd}{'-' + labeler if labeler else ''}{part}"
 
 
 if __name__ == "__main__":
