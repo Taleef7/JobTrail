@@ -1,0 +1,65 @@
+# Training set (#74). Plans come from the same record-first sampler as the eval drafts
+# (#70, data/scenarios.yaml) with the settings below. Code: ml/jobtrail_ml/trainset.py.
+# Run: ml/scripts/gen_train_notes.py.
+seed: 74
+# The plan is the first N of this fixed pool, so the pilot is a prefix of the full run.
+pool: 6000
+
+# One template per trade never reaches training, so M2 can tell whether a fine-tune
+# learned the task or the templates (a no-go condition in docs/RESULTS.md). Chosen by
+# trainset.holdout(scenarios, holdout_seed) among templates the trade can spare (the
+# rest must still express every hard case) and identified by the template's main task.
+# Eval slice: 49 of 163 test notes, 27 of 110 dev notes.
+holdout_seed: 74
+holdout:
+  appliance: "Replaced dishwasher drain pump"
+  carpentry: "Rehung sagging exterior door"
+  cleaning: "Deep cleaned kitchen"
+  electrical: "Installed GFCI outlets in bathroom"
+  general: "Assembled flat-pack wardrobe"
+  hvac: "Replaced blower motor capacitor"
+  painting: "Stained deck"
+  plumbing: "Replaced toilet wax ring"
+  roofing: "Cleaned gutters"
+
+# Leaning toward the #73 failure taxonomy (results/error-analysis/taxonomy.json).
+# Relative weights; a tag not listed is 1.
+tag_weights:
+  self-correction: 2 # spoken modifiers resolved wrong (10 of 68 failures)
+  negation: 1.5 # ditto
+  extra-labor: 1.5 # times added wrong; content routed to the wrong field (13)
+  hours-phrasing: 1.5 # stated times resolved wrong
+  approval-absent: 1.5 # value invented where the note is silent (7)
+  multiple-materials: 1.5 # content routed to the wrong field or slot
+  supply-house-trip: 1.5 # the materials rule v1 never stated (4)
+# Overrides of scenarios.yaml's mix.
+mix:
+  plain_share: 0.15
+  labor_missing: 0.12 # more notes with no time, for invented values
+
+# Models, on the owner's plans (no API key): the Antigravity CLI unless written codex:...
+writer: gemini-3.8-flash-medium
+# The filter keeps a note only if both labelers agree; the first one's label is the target.
+labelers:
+  gemini: gemini-3.8-flash-high # the #73 ceiling, 97.3% zero-edit on dev with prompt v2
+  # A separate blind run of the same family. GPT-OSS 120B was planned here, but agy
+  # answered 503 "no capacity" for it for 45 minutes on 2026-10-14 (owner's call).
+  gemini-medium: gemini-3.8-flash-medium
+# Not part of the filter: other model families, run on part of the data to report how far
+# they agree with the kept targets. codex:<model>:<effort> runs through the Codex CLI on
+# the owner's ChatGPT plan (limited usage, so the pilot only).
+crosscheck:
+  luna: codex:gpt-6-luna:medium
+  gptoss: gpt-oss-120b-medium # agy; at "no capacity" on 2026-10-14
+label_prompt: zero-shot-v2
+# Plan issues a label may leave out: LABELING.md reads them as the job's own task ("patched
+# the drywall hole gives no issue"), and the frozen gold labels them both ways (t-0049 and
+# d-0059 leave it out). Without this every note that says it is dropped.
+optional_issues:
+  - Doorknob punched through the drywall
+batch_size: 15
+# v1 uses plans 1-930 (owner, 2026-10-14): the issue asked for 3-5k kept, but at about
+# 43 s of agy time per note (writing 7 s, labeling 22 s + 13 s) the owner stopped at what
+# was written and asked for more only if M2 shows it needs more. filter accepts only this. The plan is a fixed prefix, so extending it later
+# (a larger --limit) adds notes without changing any written so far.
+limit: 930

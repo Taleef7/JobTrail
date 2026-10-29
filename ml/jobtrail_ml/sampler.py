@@ -28,7 +28,7 @@ TAGS = [
     "extra-labor",
     "approval-absent",
 ]
-ID_PREFIX = {"test": "t", "dev": "d"}
+ID_PREFIX = {"test": "t", "dev": "d", "train": "tr"}
 MAX_SAID_MINUTES = 90
 Plan = dict[str, Any]
 
@@ -48,8 +48,12 @@ def _conflicts(scenarios: dict[str, Any], tag: str) -> set[str]:
     return set(scenarios["tags"][tag].get("conflicts") or [])
 
 
-def _tag_sets(scenarios: dict[str, Any], rng: random.Random, n: int) -> list[list[str]]:
-    """Balanced tag assignment: each tagged note takes the least-used compatible tag(s)."""
+def _tag_sets(
+    scenarios: dict[str, Any], rng: random.Random, n: int, weights: dict[str, float] | None = None
+) -> list[list[str]]:
+    """Balanced tag assignment: each tagged note takes the least-used compatible tag(s),
+    use counted relative to the tag's weight (default 1), so weight 2 means twice as often."""
+    w = {t: (weights or {}).get(t, 1) for t in TAGS}
     mix = scenarios["mix"]
     n_plain = round(mix["plain_share"] * n)
     used = dict.fromkeys(TAGS, 0)
@@ -60,8 +64,8 @@ def _tag_sets(scenarios: dict[str, Any], rng: random.Random, n: int) -> list[lis
         for _ in range(k):
             blocked = set(chosen).union(*(_conflicts(scenarios, t) for t in chosen))
             options = [t for t in TAGS if t not in blocked]
-            low = min(used[t] for t in options)
-            tag = rng.choice([t for t in options if used[t] == low])
+            low = min(used[t] / w[t] for t in options)
+            tag = rng.choice([t for t in options if used[t] / w[t] == low])
             chosen.append(tag)
             used[tag] += 1
         sets.append(sorted(chosen))
@@ -82,21 +86,33 @@ def _material(spec: dict[str, Any], rng: random.Random, vague_p: float) -> dict[
     return {"name": spec["name"], "quantity": rng.randint(lo, hi), "unit": spec["unit"]}
 
 
+def fits(job: dict[str, Any], tags: list[str]) -> bool:
+    """Whether a job template can express these hard-case tags."""
+    tagset = set(tags)
+    need_materials = 3 if "multiple-materials" in tagset else 0
+    need_work = 2 if "extra-labor" in tagset else 1
+    # negation without the approval option needs a spare material or task to negate
+    spare = 1 if {"negation", "approval-absent"} <= tagset else 0
+    return len(job["materials"]) >= need_materials + spare and len(job["work"]) >= need_work
+
+
+def tag_combos(scenarios: dict[str, Any]) -> list[list[str]]:
+    """Every tag set the sampler can draw: none, one tag, or two that don't conflict."""
+
+    def ok(a: str, b: str) -> bool:
+        return b not in _conflicts(scenarios, a) and a not in _conflicts(scenarios, b)
+
+    pairs = [[a, b] for i, a in enumerate(TAGS) for b in TAGS[i + 1 :] if ok(a, b)]
+    return [[], *([t] for t in TAGS), *pairs]
+
+
 def _plan_one(
     scenarios: dict[str, Any], rng: random.Random, trade: str, style: str, tags: list[str]
 ) -> Plan:
     mix = scenarios["mix"]
     tagset = set(tags)
-    jobs = scenarios["trades"][trade]
-    need_materials = 3 if "multiple-materials" in tagset else 0
-    need_work = 2 if "extra-labor" in tagset else 1
-    # negation without the approval option needs a spare material or task to negate
     spare = 1 if {"negation", "approval-absent"} <= tagset else 0
-    fitting = [
-        j
-        for j in jobs
-        if len(j["materials"]) >= need_materials + spare and len(j["work"]) >= need_work
-    ]
+    fitting = [j for j in scenarios["trades"][trade] if fits(j, tags)]
     if not fitting:
         raise ValueError(f"no {trade} job template fits tags {tags}; extend scenarios.yaml")
     job = rng.choice(fitting)
@@ -226,12 +242,16 @@ def plan_split(
     split: str,
     n: int,
     avoid: set[str] | None = None,
+    weights: dict[str, float] | None = None,
+    per_style: bool = False,
 ) -> list[Plan]:
-    """Plans for one split from its own RNG stream; records in `avoid` are resampled."""
+    """Plans for one split from its own RNG stream; records in `avoid` are resampled.
+    `weights` skews the hard-case tag mix and `per_style` lets a record repeat in another
+    note style (training data, #74: 18 templates run out of distinct records)."""
     import json
 
     rng = random.Random(f"jobtrail-eval:{seed}:{split}")
-    tag_sets = _tag_sets(scenarios, rng, n)
+    tag_sets = _tag_sets(scenarios, rng, n, weights)
     trades = _balanced(list(scenarios["trades"]), rng, n)
     styles = _balanced(list(scenarios["styles"]), rng, n)
     seen = set(avoid or ())
@@ -240,11 +260,11 @@ def plan_split(
         for _ in range(50):
             plan = _plan_one(scenarios, rng, trades[i], styles[i], tag_sets[i])
             key = json.dumps(plan["record"], sort_keys=True)
-            if key not in seen:
+            if key not in seen and (not per_style or f"{styles[i]}|{key}" not in seen):
                 break
         else:
             raise RuntimeError(f"could not draw a unique record for {split} #{i + 1}")
-        seen.add(key)
+        seen.add(f"{styles[i]}|{key}" if per_style else key)
         plans.append({"id": f"{ID_PREFIX[split]}-{i + 1:04d}", "split": split, **plan})
     return plans
 
