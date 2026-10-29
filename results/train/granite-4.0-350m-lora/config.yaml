@@ -1,0 +1,21 @@
+name: granite-4.0-350m-lora
+base: ibm-granite/granite-4.0-350m
+revision: bd8a1497065c0d6ba1ef19af6b0d2b14bacf71c2
+mode: lora
+data: data/train/train.jsonl
+format: compact
+val_frac: 0.05
+seed: 75
+epochs: 3
+learning_rate: 0.0002
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2
+max_length: 768
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  targets: all-linear

@@ -31,6 +31,7 @@ DECISIONS = ROOT / "data" / "review" / "adjudication" / "decisions.jsonl"
 FIELDS = ("zeroEditRate", "schemaValidRate", "jobTypeAccuracy", "laborMinutesAccuracy",
           "customerApprovedAccuracy", "hallucinationRate")  # fmt: skip
 LISTS = ("materials", "workPerformed", "issuesFound", "followUps")
+HELD_OUT = json.loads((ROOT / "data" / "train" / "heldout.json").read_text(encoding="utf-8"))
 
 
 def sha256(path: Path) -> str:
@@ -42,6 +43,23 @@ def metrics(o: dict) -> dict:
     out.update({f"{k}F1": o[k]["f1"] for k in LISTS})
     out["materialsQuantityAccuracy"] = o["materials"]["quantityAccuracy"]
     out["p50WallMs"] = o["latency"]["p50WallMs"] if o["latency"] else None
+    return out
+
+
+def templates(report: dict, split: str) -> dict:
+    """Counts on the eval notes from the job templates #74 held out of training, and on the
+    rest. A fine-tune that learned the templates rather than the task drops on heldOut."""
+    held = set(HELD_OUT[split])
+    out = {}
+    for name, recs in (
+        ("heldOut", [r for r in report["records"] if r["id"] in held]),
+        ("seen", [r for r in report["records"] if r["id"] not in held]),
+    ):
+        out[name] = {
+            "n": len(recs),
+            "zeroEdit": sum(r["zeroEdit"] for r in recs),
+            "jobType": sum(bool(r["scalars"]["jobType"]) for r in recs),
+        }
     return out
 
 
@@ -108,6 +126,7 @@ def runs() -> list[dict]:
             "reportSha256": sha256(d / "report.json"),
             "metrics": metrics(r["overall"]),
             "byTag": {t: metrics(m) for t, m in r["byTag"].items()},
+            "templates": templates(r, split),
         }  # fmt: skip
         if row["rung"] == "cloud":
             ids = claude_matches_final()
@@ -198,6 +217,21 @@ def tag_table(rows: list[dict], picks: list[str]) -> str:
     return "\n".join(lines)
 
 
+def templates_table(rows: list[dict], split: str) -> str:
+    """Fine-tuned runs (#75) on the held-out templates against the rest."""
+    lines = ["| Model | MB | Zero-edit | Seen templates | Held-out templates | Held-out jobType "
+             "| p50 |", "| --- |" + " ---: |" * 6]  # fmt: skip
+    for r in sorted(rows, key=lambda r: -r["metrics"]["zeroEditRate"]):
+        if r["split"] != split or r["prompt"] != "fine-tuned-short":
+            continue
+        s, h, m = r["templates"]["seen"], r["templates"]["heldOut"], r["metrics"]
+        lines.append(f"| {r['model']} | {r['sizeMB']} | {pct(m['zeroEditRate'])} | "
+                     f"{s['zeroEdit']}/{s['n']} ({pct(s['zeroEdit'] / s['n'])}) | "
+                     f"{h['zeroEdit']}/{h['n']} ({pct(h['zeroEdit'] / h['n'])}) | "
+                     f"{h['jobType']}/{h['n']} | {m['p50WallMs'] / 1000:.2f} s |")  # fmt: skip
+    return "\n".join(lines)
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
@@ -213,6 +247,8 @@ def main() -> int:
     if args.markdown:
         for split in ("test", "dev"):
             print(f"\n### {split}\n\n{markdown(rows, split)}")
+            if any(r["split"] == split and r["prompt"] == "fine-tuned-short" for r in rows):
+                print(f"\n### templates ({split})\n\n{templates_table(rows, split)}")
     if args.tags:
         print(f"\n### per tag (test, zero-edit)\n\n{tag_table(rows, args.tags)}")
     return 0

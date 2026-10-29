@@ -14,9 +14,29 @@ dev = [
     "pytest>=8",
     "ruff>=0.8",
 ]
+# Fine-tuning (#75): `uv sync --group train` on a CUDA machine. Not a default group, so CI
+# and the runners stay CPU-only.
+train = [
+    "accelerate>=1.15",
+    "datasets>=5.1",
+    "peft>=0.21",
+    "sentencepiece>=0.2.2", # GGUF export (llama.cpp's convert_hf_to_gguf.py)
+    "torch>=2.14",
+    "transformers>=5.22", # 5.x: warmup_steps < 1 is a ratio; config re-save (keep_base_config)
+    "trl>=1.17",
+]
 
 [tool.uv]
 package = false
+
+# CUDA 13.0 builds: the owner's RTX 5070 Ti (Blackwell, sm_120) needs CUDA >= 12.8.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu130", marker = "sys_platform != 'darwin'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
 
 [tool.ruff]
 line-length = 100

@@ -1,0 +1,25 @@
+# #75: LoRA on LFM2.5-350M (base weights frozen: keeps more of what the model knew?)
+# Run (from ml/, after `uv sync --group train`):
+#   uv run python scripts/train_sft.py configs/train/lfm2.5-350m-lora.yaml
+name: lfm2.5-350m-lora
+base: LiquidAI/LFM2.5-350M
+revision: 9e6c6ccf47cd318696e137d381a7ded8fe4df09f
+mode: lora
+data: data/train/train.jsonl
+format: compact # the record as the model writes it (extract.encode); must match the eval run
+val_frac: 0.05
+seed: 75
+
+epochs: 3
+learning_rate: 2.0e-4
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2 # effective batch 16
+max_length: 768 # tokens, prompt + completion; train_sft.py fails if any example is longer
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  targets: all-linear

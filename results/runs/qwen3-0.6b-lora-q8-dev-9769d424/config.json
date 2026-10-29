@@ -1,0 +1,58 @@
+{
+  "name": "qwen3-0.6b-lora-q8",
+  "provider": "llamacpp",
+  "model": {
+    "file": "ml/models/qwen3-0.6b-lora-Q8_0.gguf",
+    "sha256": "bae1b9db566411e0fb2f66948a9c4ec688e64265f75e24cb34d6a24865d4c6d2",
+    "bytes": 639446720
+  },
+  "prompt": "fine-tuned-short",
+  "format": "compact",
+  "grammar": true,
+  "gold": "data/dev.jsonl",
+  "limit": null,
+  "sampling": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 512
+  },
+  "server": {
+    "build": "b9837",
+    "ctx": 4096,
+    "gpu_layers": 0,
+    "threads": null,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "reasoning_format": "deepseek"
+  },
+  "identity": {
+    "settings": {
+      "provider": "llamacpp",
+      "model": {
+        "sha256": "bae1b9db566411e0fb2f66948a9c4ec688e64265f75e24cb34d6a24865d4c6d2"
+      },
+      "prompt": "fine-tuned-short",
+      "format": "compact",
+      "grammar": true,
+      "limit": null,
+      "sampling": {
+        "temperature": 0.0,
+        "seed": 42,
+        "max_tokens": 512
+      },
+      "server": {
+        "build": "b9837",
+        "ctx": 4096,
+        "gpu_layers": 0,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        }
+      }
+    },
+    "prompt_sha256": "8803006a455e913c84b11e5f60bb6cf946595204cd951d40ca8f6f1804591892",
+    "gold_sha256": "393d67aef350bba1be49ea9ee97de608acec3fd969e4db523ca5970d67d3a679",
+    "schema_sha256": "3e894451eec093816b1445098dbe76400f8ee184d05542770c5d18eea7d06025",
+    "reasoning_format": "deepseek"
+  }
+}

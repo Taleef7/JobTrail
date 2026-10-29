@@ -1,0 +1,20 @@
+# #75: the pilot recipe for one epoch (less memorisation of template -> trade?)
+# Run (from ml/, after `uv sync --group train`):
+#   uv run python scripts/train_sft.py configs/train/lfm2.5-350m-full-e1.yaml
+name: lfm2.5-350m-full-e1
+base: LiquidAI/LFM2.5-350M
+revision: 9e6c6ccf47cd318696e137d381a7ded8fe4df09f
+mode: full # full | lora
+data: data/train/train.jsonl
+format: compact # the record as the model writes it (extract.encode); must match the eval run
+val_frac: 0.05
+seed: 75
+
+epochs: 1
+learning_rate: 5.0e-5
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2 # effective batch 16
+max_length: 768 # tokens, prompt + completion; train_sft.py fails if any example is longer

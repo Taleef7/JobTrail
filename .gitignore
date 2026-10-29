@@ -68,3 +68,6 @@ data/train/raw/
 
 # Built by gen_train_notes.py filter; published to Hugging Face (raw configuration)
 data/train/raw.jsonl
+
+# Fine-tuned weights (#75); results/train/ documents each run.
+ml/checkpoints/

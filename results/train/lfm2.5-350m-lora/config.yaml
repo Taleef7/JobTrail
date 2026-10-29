@@ -1,0 +1,21 @@
+name: lfm2.5-350m-lora
+base: LiquidAI/LFM2.5-350M
+revision: 9e6c6ccf47cd318696e137d381a7ded8fe4df09f
+mode: lora
+data: data/train/train.jsonl
+format: compact
+val_frac: 0.05
+seed: 75
+epochs: 3
+learning_rate: 0.0002
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2
+max_length: 768
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  targets: all-linear
