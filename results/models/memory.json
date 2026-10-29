@@ -1,0 +1,47 @@
+{
+  "1673e8a631842a7c419815e048d7311367c5559f5cb23ac119c211a8cf29f10a": {
+    "file": "jobtrail-lfm2.5-350m-F16.gguf",
+    "peakRamMB": 853,
+    "ctx": 4096,
+    "noteId": "t-0001",
+    "promptTokens": 130,
+    "outputTokens": 80,
+    "os": "Windows 11"
+  },
+  "808579b41b9ea3054ad1ae49f9063b06f6c0bb994f555b7229b6917713c618ff": {
+    "file": "jobtrail-lfm2.5-350m-Q4_0.gguf",
+    "peakRamMB": 384,
+    "ctx": 4096,
+    "noteId": "t-0001",
+    "promptTokens": 130,
+    "outputTokens": 82,
+    "os": "Windows 11"
+  },
+  "43964f24546d42cac967ced15012060ef8ef728ea97b86315477ad4760dda446": {
+    "file": "jobtrail-lfm2.5-350m-Q4_K_M.gguf",
+    "peakRamMB": 394,
+    "ctx": 4096,
+    "noteId": "t-0001",
+    "promptTokens": 130,
+    "outputTokens": 80,
+    "os": "Windows 11"
+  },
+  "a132ed1bcd7356c09828746801ac0e7df316766bec2dac4994c2f1b718c09c36": {
+    "file": "jobtrail-lfm2.5-350m-Q6_K.gguf",
+    "peakRamMB": 454,
+    "ctx": 4096,
+    "noteId": "t-0001",
+    "promptTokens": 130,
+    "outputTokens": 82,
+    "os": "Windows 11"
+  },
+  "8c850f8697b49c99bb9205cef24367700d702b46ad13733a8e911c3c5296ffc5": {
+    "file": "jobtrail-lfm2.5-350m-Q8_0.gguf",
+    "peakRamMB": 536,
+    "ctx": 4096,
+    "noteId": "t-0001",
+    "promptTokens": 130,
+    "outputTokens": 80,
+    "os": "Windows 11"
+  }
+}

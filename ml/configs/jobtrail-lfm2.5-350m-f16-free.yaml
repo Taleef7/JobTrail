@@ -1,0 +1,22 @@
+# jobtrail-lfm2.5-350m-f16-free (#76): the #75 LoRA fine-tune of LFM2.5-350M (configs/train/lfm2.5-350m-lora.yaml),
+# exported to F16 with llama.cpp b9837's convert_hf_to_gguf.py,
+# on test with the grammar off. Published on Hugging Face (taleef/jobtrail-lfm2.5-350m-GGUF).
+name: jobtrail-lfm2.5-350m-f16-free
+provider: llamacpp
+model:
+  file: ml/models/jobtrail-lfm2.5-350m-F16.gguf
+  url: https://huggingface.co/taleef/jobtrail-lfm2.5-350m-GGUF/resolve/5c3f01014520705037e427f87236954b09a36b04/jobtrail-lfm2.5-350m-F16.gguf
+  sha256: 1673e8a631842a7c419815e048d7311367c5559f5cb23ac119c211a8cf29f10a
+  bytes: 711487424
+prompt: fine-tuned-short
+format: compact
+grammar: false
+gold: data/test.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones
