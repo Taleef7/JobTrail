@@ -1,6 +1,7 @@
 """#76: the manifest check compares each published file's size and sha256 with the manifest."""
 
 import importlib.util
+import json
 from pathlib import Path
 
 import httpx
@@ -18,10 +19,12 @@ def _script():
     return mod
 
 
-def _client(headers: dict, status: int = 302) -> httpx.Client:
+def _client(headers: dict, status: int = 302, statuses: list[int] | None = None) -> httpx.Client:
+    queue = list(statuses or [])
+
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "HEAD"  # never downloads the file
-        return httpx.Response(status, headers=headers)
+        return httpx.Response(queue.pop(0) if queue else status, headers=headers)
 
     return httpx.Client(transport=httpx.MockTransport(handler), follow_redirects=False)
 
@@ -49,3 +52,16 @@ def test_peak_rss_reads_this_process():
     import os
 
     assert _script().peak_rss_mb(os.getpid()) > 0
+
+
+def test_check_retries_rate_limits_and_server_errors():
+    ok = {"X-Linked-Size": "10", "X-Linked-ETag": f'"{SHA}"'}
+    assert _script().check(_manifest(), _client(ok, statuses=[429, 503]), wait=0) == []
+    bad = _script().check(_manifest(), _client({}, status=503), wait=0)
+    assert bad == ["m: HTTP 503 without X-Linked-Size"]
+
+
+def test_committed_manifest_is_up_to_date():
+    """models/manifest.json is what build() makes from release.yaml, configs and results."""
+    b = _script()
+    assert b.build() == json.loads(b.MANIFEST.read_text(encoding="utf-8"))

@@ -7,13 +7,15 @@ Usage (from ml/):
 
 `memory` starts llama-server on each config's GGUF (the runner's settings), sends the
 longest test note and records the server's peak resident memory, mapped weights included,
-in results/models/memory.json. Run it on an idle machine; it is the manifest's minRamMB.
+in results/models/memory.json. Run it on an idle machine; it is the manifest's peakRamMB,
+one process on a desktop OS, so an app still needs headroom on top of it.
 
 `manifest` takes each release model's file, sha256 and size from its eval config, its test
 scores from results/summary.json and its memory from results/models/memory.json.
 
-`check` asks Hugging Face for each manifest URL without downloading it: the redirect
-carries the file's size and sha256 (X-Linked-Size, X-Linked-ETag), which must match.
+`check` asks Hugging Face for each manifest URL without downloading it (retrying 429 and
+5xx): the redirect carries the file's size and sha256
+(X-Linked-Size, X-Linked-ETag), which must match.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ import json
 import math
 import platform
 import sys
+import time
 from pathlib import Path
 
 import httpx
@@ -89,7 +92,8 @@ def test_run(name: str, runs: list[dict]) -> dict:
     return hits[0]
 
 
-def cmd_manifest(_args) -> int:
+def build() -> dict:
+    """The manifest from models/release.yaml, the eval configs, summary.json and memory.json."""
     rel = yaml.safe_load(RELEASE.read_text(encoding="utf-8"))
     runs = json.loads(SUMMARY.read_text(encoding="utf-8"))["runs"]
     memory = json.loads(MEMORY.read_text(encoding="utf-8"))
@@ -98,12 +102,15 @@ def cmd_manifest(_args) -> int:
         cfg = load_config(ML / "configs" / f"{item['config']}.yaml")
         m, r = cfg["model"], test_run(item["config"], runs)
         file = Path(m["file"]).name
+        url = f"https://huggingface.co/{rel['repo']}/resolve/{rel['revision']}/{file}"
+        if m.get("url") != url:
+            raise SystemExit(f"{item['config']}: model.url is not {url}")
         held = r["templates"]["heldOut"]
         models.append({
             "id": item["id"], "displayName": item["displayName"], "quant": item["quant"],
-            "url": f"https://huggingface.co/{rel['repo']}/resolve/{rel['revision']}/{file}",
+            "url": url,
             "file": file, "sha256": m["sha256"], "bytes": m["bytes"],
-            "minRamMB": memory[m["sha256"]]["peakRamMB"],
+            "peakRamMB": memory[m["sha256"]]["peakRamMB"],
             "base": rel["base"], "license": rel["license"],
             "prompt": cfg["prompt"], "format": cfg["format"], "grammar": cfg["grammar"],
             "eval": {
@@ -113,16 +120,31 @@ def cmd_manifest(_args) -> int:
                 "p50WallMs": r["metrics"]["p50WallMs"], "measuredOn": rel["measuredOn"],
             },
         })  # fmt: skip
-    write_json(MANIFEST, {"schemaVersion": 1, "issue": 76, "models": models})
-    print(f"{len(models)} models -> {MANIFEST}")
+    return {"schemaVersion": 1, "issue": 76, "models": models}
+
+
+def cmd_manifest(_args) -> int:
+    manifest = build()
+    write_json(MANIFEST, manifest)
+    print(f"{len(manifest['models'])} models -> {MANIFEST}")
     return 0
 
 
-def check(manifest: dict, client: httpx.Client) -> list[str]:
+def head(client: httpx.Client, url: str, tries: int = 4, wait: float = 2.0) -> httpx.Response:
+    """HEAD the URL, retrying Hugging Face's 429 and 5xx with backoff."""
+    for attempt in range(tries):
+        r = client.head(url)
+        if r.status_code != 429 and r.status_code < 500 or attempt == tries - 1:
+            return r
+        time.sleep(wait * 2**attempt)
+    return r
+
+
+def check(manifest: dict, client: httpx.Client, wait: float = 2.0) -> list[str]:
     """Problems with the published files; empty when every URL serves the listed file."""
     problems = []
     for m in manifest["models"]:
-        r = client.head(m["url"])
+        r = head(client, m["url"], wait=wait)
         size, etag = r.headers.get("x-linked-size"), r.headers.get("x-linked-etag", "")
         if r.status_code not in (200, 302) or size is None:
             problems.append(f"{m['id']}: HTTP {r.status_code} without X-Linked-Size")

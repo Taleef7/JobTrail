@@ -182,19 +182,19 @@ The #75 pick (LFM2.5-350M with LoRA) exported to F16 and quantized with llama.cp
 | Q4_0                          |     219 |     384 MB |          65.6% |         87/114 |              20/49 |              65.6% (96.9%) |     0.59 s |
 | _Bar:_ Qwen3-1.7B few-shot v2 |    1107 |          – |          19.0% |         24/114 |               7/49 |                          – |     3.22 s |
 
-Peak RAM is llama-server's peak working set on the longest test note at ctx 4096 (`results/models/memory.json`). p50 is with the grammar on, on the same Ryzen 9 8940HX laptop CPU as the ladder.
+Peak RAM is one llama-server process's peak working set on the longest test note at ctx 4096 (`results/models/memory.json`), on Windows; it is not a device minimum, and the apps need headroom on top. p50 is with the grammar on, on the same Ryzen 9 8940HX laptop CPU as the ladder. p50 moves with machine load: the Q4_K_M grammar-off run wrote byte-identical outputs to the grammar-on run but took 0.85 s against 0.57 s, so differences under about 0.3 s between rows are noise.
 
-- **Not a no-go.** At Q4_K_M the fine-tune scores 70.6% on test, 3.7× the bar, at a fifth of its size and over 5× its speed.
+- **Not a no-go on accuracy.** The Note 9S latency criterion is #77. At Q4_K_M the fine-tune scores 70.6% on test, 3.7× the bar, at a fifth of its size and over 5× its speed.
 - **Held-out templates.**
   - The gap from #75 holds on test: 79.8% on notes from templates seen in training, 49.0% on the 49 notes from held-out templates.
   - The held-out score is still 3.4× the bar's (14.3%) on the same notes.
   - All 18 of Q4_K_M's trade errors on test are on held-out templates (model card, failure taxonomy).
-- **Dev overstated test by about 9 points.** Q8_0 scored 82.7% on dev in #75 (a direct bf16→Q8_0 export) and 73.6% here. Dev picked the recipe, and test has a larger held-out share (30% against 25%).
+- **Dev overstated test by about 9 points.** Q8_0 scored 82.7% on dev in #75 (a direct bf16→Q8_0 export) and 73.6% here. Both slices dropped: seen templates from 89.2% to 85.1%, held-out from 63.0% to 46.9%. Test's larger held-out share (30% against 25%) explains only about 1.4 points; dev picking the recipe, and dev's small held-out slice (27 notes), explain the rest.
 - **Quantization costs little down to Q4_K_M.**
   - Q8_0 matches F16 exactly. Q6_K loses 0.6 points and Q4_K_M 3.0.
-  - Q4_0 loses 8.0 points and 3 held-out notes for 10 MB less, so the catalog leaves it out.
+  - Against Q4_K_M, Q4_0 loses 5.0 points and 4 held-out notes for 10 MB less, so the catalog leaves it out.
   - The manifest offers Q4_K_M (default), Q6_K and Q8_0.
-- **The grammar barely matters now.** Without it, every quant except Q4_0 still writes valid JSON every time, with the same zero-edit. The apps keep it on, because it costs nothing and guards Q4_0-style drift.
+- **The grammar barely matters now.** Without it, every quant except Q4_0 still writes valid JSON every time, and every quant keeps the same zero-edit (Q4_0's field scores drop slightly). The apps keep it on, because it guards Q4_0-style drift and costs no measurable time.
 
 ## Caveats
 
@@ -202,7 +202,7 @@ Peak RAM is llama-server's peak working set on the longest test note at ctx 4096
 - **Choices were made on dev.** Prompt v2 was designed from dev failures, and the headline's prompt per model is the dev winner. The full tables report every variant on both splits.
 - **Test and dev share job templates** with each other and with the future training data (above). Scores here measure these templates, not unseen job types.
 - **The ceiling ran through an agent harness** (Antigravity), batched. Results from the raw API may differ slightly. The owner approves any API-key use; the cost above comes from #72's API measurement.
-- **Latency is from a desktop CPU.** Phones are slower, and that is measured in M2/M3.
+- **Latency is from a laptop CPU.** Phones are slower, and that is measured in M2/M3.
 
 ## Reproduce
 
@@ -224,7 +224,7 @@ uv run python scripts/build_manifest.py memory configs/jobtrail-lfm2.5-350m-q4km
 uv run python scripts/build_manifest.py manifest && uv run python scripts/build_manifest.py check
 ```
 
-GPU training is not bit-for-bit reproducible (and these runs predate `train_sft.py` seeding before the model loads, which fixes the LoRA starting weights), so a retrained GGUF has a different SHA-256 and the runner refuses it until the config's `sha256` and `bytes` are updated. The exact files these numbers come from are published in #76.
+GPU training is not bit-for-bit reproducible (and these runs predate `train_sft.py` seeding before the model loads, which fixes the LoRA starting weights), so a retrained GGUF has a different SHA-256 and the runner refuses it until the config's `sha256` and `bytes` are updated. The #75 GGUFs stay local; #76 published a fresh F16 export of the same checkpoint and its quants, and the test numbers above come from exactly those files.
 
 Score reports aren't committed. `score_run.py` rebuilds each one from its predictions, and `summary.json` records each report's SHA-256.
 
@@ -285,18 +285,18 @@ Score reports aren't committed. `score_run.py` rebuilds each one from its predic
 
 ### templates (test)
 
-| Model                       |  MB | Zero-edit | Seen templates | Held-out templates | Held-out jobType |    p50 |
-| --------------------------- | --: | --------: | -------------: | -----------------: | ---------------: | -----: |
-| jobtrail-lfm2.5-350m-F16    | 711 |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 1.63 s |
-| jobtrail-lfm2.5-350m-F16    | 711 |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 1.56 s |
-| jobtrail-lfm2.5-350m-Q8_0   | 379 |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 0.84 s |
-| jobtrail-lfm2.5-350m-Q8_0   | 379 |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 0.91 s |
-| jobtrail-lfm2.5-350m-Q6_K   | 293 |     73.0% | 95/114 (83.3%) |      24/49 (49.0%) |            31/49 | 0.68 s |
-| jobtrail-lfm2.5-350m-Q6_K   | 293 |     73.0% | 95/114 (83.3%) |      24/49 (49.0%) |            31/49 | 0.71 s |
-| jobtrail-lfm2.5-350m-Q4_K_M | 229 |     70.6% | 91/114 (79.8%) |      24/49 (49.0%) |            31/49 | 0.85 s |
-| jobtrail-lfm2.5-350m-Q4_K_M | 229 |     70.6% | 91/114 (79.8%) |      24/49 (49.0%) |            31/49 | 0.57 s |
-| jobtrail-lfm2.5-350m-Q4_0   | 219 |     65.6% | 87/114 (76.3%) |      20/49 (40.8%) |            31/49 | 0.60 s |
-| jobtrail-lfm2.5-350m-Q4_0   | 219 |     65.6% | 87/114 (76.3%) |      20/49 (40.8%) |            31/49 | 0.59 s |
+| Model                       |  MB | Grammar | Zero-edit | Seen templates | Held-out templates | Held-out jobType |    p50 |
+| --------------------------- | --: | ------- | --------: | -------------: | -----------------: | ---------------: | -----: |
+| jobtrail-lfm2.5-350m-F16    | 711 | off     |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 1.63 s |
+| jobtrail-lfm2.5-350m-F16    | 711 | on      |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 1.56 s |
+| jobtrail-lfm2.5-350m-Q8_0   | 379 | off     |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 0.84 s |
+| jobtrail-lfm2.5-350m-Q8_0   | 379 | on      |     73.6% | 97/114 (85.1%) |      23/49 (46.9%) |            31/49 | 0.91 s |
+| jobtrail-lfm2.5-350m-Q6_K   | 293 | off     |     73.0% | 95/114 (83.3%) |      24/49 (49.0%) |            31/49 | 0.68 s |
+| jobtrail-lfm2.5-350m-Q6_K   | 293 | on      |     73.0% | 95/114 (83.3%) |      24/49 (49.0%) |            31/49 | 0.71 s |
+| jobtrail-lfm2.5-350m-Q4_K_M | 229 | off     |     70.6% | 91/114 (79.8%) |      24/49 (49.0%) |            31/49 | 0.85 s |
+| jobtrail-lfm2.5-350m-Q4_K_M | 229 | on      |     70.6% | 91/114 (79.8%) |      24/49 (49.0%) |            31/49 | 0.57 s |
+| jobtrail-lfm2.5-350m-Q4_0   | 219 | off     |     65.6% | 87/114 (76.3%) |      20/49 (40.8%) |            31/49 | 0.60 s |
+| jobtrail-lfm2.5-350m-Q4_0   | 219 | on      |     65.6% | 87/114 (76.3%) |      20/49 (40.8%) |            31/49 | 0.59 s |
 
 </details>
 

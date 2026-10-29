@@ -27,8 +27,8 @@ A 350M-parameter model that turns a tradesperson's job note into a structured jo
 ```json
 {
   "t": "roofing",
-  "w": ["Replaced missing shingles"],
-  "i": ["lifted shingles along the ridge line"],
+  "w": ["Replaced missing shingles", "Put down roofing cement on lifted shingles"],
+  "i": ["Lifted shingles on the ridge"],
   "m": [{ "n": "roofing cement", "q": null, "u": null }],
   "l": 90,
   "a": true,
@@ -48,9 +48,9 @@ A 350M-parameter model that turns a tradesperson's job note into a structured jo
 | **`jobtrail-lfm2.5-350m-Q4_K_M.gguf`** | **229 MB** |      **70.6%** |          **24/49** | **394 MB** | **0.57 s** |
 | `jobtrail-lfm2.5-350m-Q4_0.gguf`       |     219 MB |          65.6% |              20/49 |     384 MB |     0.59 s |
 
-All quants come from the F16 export, made with llama.cpp b9837 (`convert_hf_to_gguf.py`, then `llama-quantize`). **Q4_K_M** is the app's default; Q4_0 loses 5 points for almost no size saving.
+All quants come from the F16 export, made with llama.cpp b9837 (`convert_hf_to_gguf.py`, then `llama-quantize`). **Q4_K_M** is the app's default; Q4_0 loses 5 points against it for 10 MB.
 
-Numbers are on the JobTrail test set (163 notes), with the grammar on, temperature 0, and llama-server b9837 on CPU only (ctx 4096). p50 is wall time per note on a Ryzen 9 8940HX laptop; phones are slower (JobTrail #77 measures them). Peak RAM is llama-server's peak working set on the longest test note.
+Numbers are on the JobTrail test set (163 notes), with the grammar on, temperature 0, and llama-server b9837 on CPU only (ctx 4096). p50 is wall time per note on a Ryzen 9 8940HX laptop; phones are slower (JobTrail #77 measures them). Peak RAM is one llama-server process's peak working set on the longest test note, on Windows; leave headroom on a device. p50 moves with machine load by up to about 0.3 s.
 
 ## Usage
 
@@ -108,12 +108,16 @@ All 163 outputs were valid JSON with the grammar on. Without it, 96.9–100% wer
 
 ## Limitations and failure taxonomy
 
-- **The trade on unfamiliar jobs.** It is the main failure: 18 of the 48 Q4_K_M failures on test are the trade, and all 18 come from held-out job templates. The model learned which trade goes with the jobs it saw. On a new kind of job it often picks a neighbouring trade:
+- **The trade on unfamiliar jobs.** It is the main failure: 18 of the 48 Q4_K_M failures on test are the trade, and all 18 come from held-out job templates. The model learned which trade goes with the jobs it saw. On a new kind of job it often picks a related trade, and sometimes an unrelated one. The most common errors (12 of the 18):
   - carpentry → general (5)
   - painting → cleaning (3)
   - appliance → plumbing (2)
+  - plumbing → cleaning (2, both a toilet wax-ring job)
   - hvac → plumbing (2)
-- **Work-performed items.** 18 failures. Most are a missed item: 9 only miss one, 4 only add one, and 5 do both.
+
+  All 4 held-out hvac notes get the wrong trade.
+
+- **Work-performed items.** 18 failures. Most are a missed item: 9 only miss one, 4 only add items, and 5 do both.
 - **Materials.** 12 failures: a missed or extra material, or a wrong quantity or unit.
 - **Labour minutes.** 6 failures. Two carry the extra-labor tag and two the hours-phrasing tag.
 - **Synthetic data.** The training and test notes were written by Gemini 3.8 Flash from templates, and their labels were model-reviewed, not human-verified. Real dictated notes are messier. JobTrail reports a spoken-note slice separately when it exists.
