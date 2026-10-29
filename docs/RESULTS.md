@@ -146,7 +146,7 @@ The files are in [`results/error-analysis/`](../results/error-analysis/).
 
 ## Fine-tuning on dev (#75)
 
-Each candidate was trained on the #74 training set (799 notes, [`data/train/`](../data/train/README.md)) on an RTX 5070 Ti Laptop GPU, exported to Q8_0 GGUF with llama.cpp b9837 and scored on dev through the same runner, grammar and scorer as the ladder. The model sees the note alone (`fine-tuned-short`) and writes compact JSON. Configs are in [`ml/configs/train/`](../ml/configs/train/); losses, curves and run details are in [`results/train/`](../results/train/). Test stays untouched until #76/#77.
+Each candidate was trained on the #74 training set ([`data/train/`](../data/train/README.md): 760 notes to learn from, 39 kept back for the validation loss) on an RTX 5070 Ti Laptop GPU, exported to Q8_0 GGUF with llama.cpp b9837 and scored on dev through the same runner, grammar and scorer as the ladder. The model sees the note alone (`fine-tuned-short`) and writes compact JSON. Configs are in [`ml/configs/train/`](../ml/configs/train/); losses, curves and run details are in [`results/train/`](../results/train/). Test stays untouched until #76/#77.
 
 | Model                         |   MB | Recipe                 | Dev zero-edit | Seen templates | Held-out templates | Held-out jobType |        p50 | Training |
 | ----------------------------- | ---: | ---------------------- | ------------: | -------------: | -----------------: | ---------------: | ---------: | -------: |
@@ -154,19 +154,20 @@ Each candidate was trained on the #74 training set (799 notes, [`data/train/`](.
 | Granite 4.0-H-350M            |  366 | LoRA r 16, 3 epochs    |         80.0% |  75/83 (90.4%) |      13/27 (48.1%) |            16/27 |     2.31 s |    328 s |
 | Qwen3-0.6B                    |  639 | LoRA r 16, 3 epochs    |         79.1% |  74/83 (89.2%) |      13/27 (48.1%) |            16/27 |     1.57 s |    144 s |
 | Granite 4.0-350M (dense)      |  378 | LoRA r 16, 3 epochs    |         76.4% |  74/83 (89.2%) |      10/27 (37.0%) |            13/27 |     0.98 s |    100 s |
+| Gemma 3 270M                  |  292 | LoRA r 16, 3 epochs    |         52.7% |  51/83 (61.4%) |       7/27 (25.9%) |            10/27 |     0.87 s |    131 s |
 | LFM2.5-350M                   |  379 | full, 1 epoch          |         75.5% |  70/83 (84.3%) |      13/27 (48.1%) |            16/27 |     0.82 s |     20 s |
 | LFM2.5-350M                   |  379 | full, 3 epochs (pilot) |         74.5% |  73/83 (88.0%) |       9/27 (33.3%) |            11/27 |     0.92 s |     66 s |
 | _Bar:_ Qwen3-1.7B few-shot v2 | 1107 | prompted               |         29.1% |  22/83 (26.5%) |      10/27 (37.0%) |            22/27 |     3.43 s |        – |
 
-"Held-out templates" are the 27 dev notes from the one job template per trade that #74 kept out of training (`data/train/heldout.json`); "seen" is the other 83. Before fine-tuning, LFM2.5-350M, Granite 4.0-H-350M and Qwen3-0.6B scored 0.9–3.6% on dev under their best prompt (the dense Granite was not in the ladder).
+"Held-out templates" are the 27 dev notes from the one job template per trade that #74 kept out of training (`data/train/heldout.json`); "seen" is the other 83. Before fine-tuning, LFM2.5-350M (Q8_0), Granite 4.0-H-350M and Qwen3-0.6B scored 0.9–1.8% on dev under their best prompt (the dense Granite was not in the ladder). p50 is on the eval machine's CPU, a Ryzen 9 8940HX laptop.
 
-- **Every candidate clears the bar by a wide margin**, at 350–600M parameters and 1.5–4× the bar's speed on a desktop CPU.
-- **The gain shrinks on unseen templates but does not vanish.** The held-out notes are not harder in themselves: the bar scores _better_ there (37.0% against 26.5%) and the Gemini ceiling gets 27/27. The LoRA fine-tunes drop from about 89% to 37–63%, at or above the bar. This is not the no-go above, but it is the main weakness.
+- **Every 350–600M candidate clears the bar by a wide margin**, at 1.5–4× the bar's speed. Gemma 3 270M (about 100M parameters outside its embeddings) reaches 52.7% but falls below the bar on held-out templates, gets minutes wrong more often (83.6%) and is no faster than LFM2.5-350M; it is out.
+- **The gain shrinks on unseen templates but does not vanish.** The held-out notes are not harder in themselves: the bar scores _better_ there (37.0% against 26.5%) and the Gemini ceiling gets 27/27. The 350–600M LoRA fine-tunes drop from about 89% to 37–63%, at or above the bar. This is not the no-go above, but it is the main weakness.
 - **The drop is the trade.** On the pilot, 23 of the 27 held-out notes had everything right except possibly `jobType`, and 16 of its 18 held-out failures were a wrong trade: a dishwasher drain pump read as plumbing (gold: appliance), a blower-motor capacitor as electrical (gold: hvac). With two templates per trade in training, the model partly learns "this kind of job → this trade" from the templates rather than from the work.
-- **LoRA generalises better than a full fine-tune.** On LFM2.5-350M, LoRA lifted the held-out slice from 9/27 to 17/27 with the same data and steps. One epoch of full fine-tuning helped the held-out slice (13/27) but cost the seen notes. LoRA keeps the base weights, and with them more of what the model knew about trades.
-- **Choice for #76: LFM2.5-350M with LoRA.** It is best on both slices and the fastest. Granite 4.0-H-350M (Apache-2.0) stays the licence hedge: 2.7 points behind, but 2.8× slower on CPU, which matters on the Note 9S. Its dense sibling Granite 4.0-350M (same licence, no Mamba layers) is as fast as LFM, but on the held-out slice it only matches the bar (10/27). Qwen3-0.6B is 79.1% at Q8_0 (639 MB); #76's quantization ladder decides whether a smaller quant keeps it.
+- **LoRA held up better than a full fine-tune, in one comparison.** On LFM2.5-350M, LoRA lifted the held-out slice from 9/27 to 17/27 with the same data and steps, but also a higher learning rate (2e-4 against 5e-5), and on one seed. One epoch of full fine-tuning helped the held-out slice (13/27) but cost the seen notes. A likely reason is that LoRA leaves the base weights alone, and with them more of what the model knew about trades.
+- **Choice for #76: LFM2.5-350M with LoRA.** It is best overall and on the held-out slice, and the fastest. Granite 4.0-H-350M (Apache-2.0) stays the licence hedge: 2.7 points behind, but 2.8× slower on CPU, which matters on the Note 9S. Its dense sibling Granite 4.0-350M (same licence, no Mamba layers) is close to LFM's speed (0.98 s), but on the held-out slice it only matches the bar (10/27). Qwen3-0.6B is 79.1% at Q8_0 (639 MB); #76's quantization ladder decides whether a smaller quant keeps it.
 
-**Caveats.** The recipe was tuned on LFM2.5-350M's dev score and reused unchanged for the others, which favours LFM. The held-out slice is 27 notes, so one note is 3.7 points. A better trade signal in the training data (more job templates per trade) is the obvious next lever; it is not in this issue.
+**Caveats.** The recipe was picked on LFM2.5-350M's dev scores, the held-out slice included, and reused unchanged for the others, which favours LFM. Dev's held-out notes are now a selection set; test's 49 held-out notes are the clean check (#76/#77). The held-out slice is 27 notes, so one note is 3.7 points. A better trade signal in the training data (more job templates per trade) is the obvious next lever; it is not in this issue.
 
 ## Caveats
 
@@ -189,6 +190,8 @@ uv run python scripts/train_sft.py configs/train/lfm2.5-350m-lora.yaml   # -> ch
 PYTHONPATH=<llama.cpp b9837>/gguf-py uv run python <llama.cpp b9837>/convert_hf_to_gguf.py checkpoints/lfm2.5-350m-lora/final --outtype q8_0 --outfile models/lfm2.5-350m-lora-Q8_0.gguf
 uv run python scripts/run_llamacpp.py --config configs/lfm2.5-350m-lora-q8.yaml
 ```
+
+GPU training is not bit-for-bit reproducible (and these runs predate `train_sft.py` seeding before the model loads, which fixes the LoRA starting weights), so a retrained GGUF has a different SHA-256 and the runner refuses it until the config's `sha256` and `bytes` are updated. The exact files these numbers come from are published in #76.
 
 Score reports aren't committed. `score_run.py` rebuilds each one from its predictions, and `summary.json` records each report's SHA-256.
 
@@ -254,6 +257,7 @@ Score reports aren't committed. `score_run.py` rebuilds each one from its predic
 | local | gemma-3-270m-it-Q8_0         |  292 | few-shot         | on      | 110 |      0.0% |       100.0% |   32.7% |        58.2% |     6.4% |        0.044 |   0.520 |     0.083 |         0.221 |         10.0% | 0.65 s | $0.0000 |
 | local | gemma-3-270m-it-Q8_0         |  292 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 0.78 s | $0.0000 |
 | local | gemma-3-270m-it-Q8_0         |  292 | zero-shot        | on      | 110 |      0.0% |        99.1% |   20.0% |        65.5% |     6.4% |        0.742 |   0.077 |     0.094 |         0.000 |         16.4% | 1.55 s | $0.0000 |
+| local | gemma-3-270m-lora-Q8_0       |  292 | fine-tuned-short | on      | 110 |     52.7% |       100.0% |   84.5% |        83.6% |    99.1% |        0.965 |   0.902 |     0.833 |         1.000 |          0.6% | 0.87 s | $0.0000 |
 | local | granite-4.0-h-350m-Q8_0      |  366 | few-shot         | on      | 110 |      0.9% |        99.1% |   20.9% |        70.9% |    80.9% |        0.900 |   0.823 |     0.738 |         0.820 |          1.3% | 2.98 s | $0.0000 |
 | local | granite-4.0-h-350m-Q8_0      |  366 | zero-shot        | on      | 110 |      0.0% |       100.0% |   31.8% |        70.0% |    47.3% |        0.884 |   0.719 |     0.564 |         0.333 |          2.7% | 3.63 s | $0.0000 |
 | local | granite-4.0-h-350m-lora-Q8_0 |  366 | fine-tuned-short | on      | 110 |     80.0% |       100.0% |   90.0% |        99.1% |   100.0% |        0.997 |   0.977 |     0.988 |         0.983 |          0.0% | 2.31 s | $0.0000 |

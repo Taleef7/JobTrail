@@ -35,7 +35,7 @@ def split_validation(
     rows: list[dict[str, Any]], frac: float, seed: int
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """(train, validation): the notes the trainer learns from, and the ones it only scores
-    each epoch to watch for overfitting. Dev is never used here; it picks checkpoints.
+    each epoch to watch for overfitting. Dev is never used here; it picks the recipe.
 
     Stratified by trade, so every trade shows up in a validation set of only ~40 notes. Notes
     with the same facts go to the same side: 7 plans were written twice in different styles

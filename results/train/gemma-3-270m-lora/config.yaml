@@ -1,0 +1,21 @@
+name: gemma-3-270m-lora
+base: google/gemma-3-270m-it
+revision: ac82b4e820549b854eebf28ce6dedaf9fdfa17b3
+mode: lora
+data: data/train/train.jsonl
+format: compact
+val_frac: 0.05
+seed: 75
+epochs: 3
+learning_rate: 0.0002
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2
+max_length: 768
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  targets: all-linear

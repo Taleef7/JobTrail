@@ -19,9 +19,9 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
-- Fine-tuning (#75): LFM2.5-350M, Granite 4.0-H-350M, Granite 4.0-350M (dense) and Qwen3-0.6B trained on the #74 set on the owner's RTX 5070 Ti Laptop, exported to Q8_0 GGUF and scored on dev; results in `docs/RESULTS.md`.
-  - **Headline (dev zero-edit):** LFM2.5-350M with LoRA 82.7% (0.84 s p50 on a desktop CPU), Granite 4.0-H 80.0%, Qwen3-0.6B 79.1%, dense Granite 76.4%, against the 29.1% bar and 0.9–3.6% for the same models prompted.
-  - **Held-out templates:** 63.0% for LFM2.5-350M with LoRA, down from 89.2% on the rest; nearly every miss is the trade. A full fine-tune of the same model kept only 33.3% there, so LoRA is the recipe.
+- Fine-tuning (#75): LFM2.5-350M, Granite 4.0-H-350M, Granite 4.0-350M (dense), Qwen3-0.6B and Gemma 3 270M trained on the #74 set on the owner's RTX 5070 Ti Laptop, exported to Q8_0 GGUF and scored on dev; results in `docs/RESULTS.md`.
+  - **Headline (dev zero-edit):** LFM2.5-350M with LoRA 82.7% (0.84 s p50 on the eval laptop's CPU), Granite 4.0-H 80.0%, Qwen3-0.6B 79.1%, dense Granite 76.4%, Gemma 3 270M 52.7%, against the 29.1% bar and 0.9–1.8% for the same models prompted.
+  - **Held-out templates:** 63.0% for LFM2.5-350M with LoRA, down from 89.2% on the rest; nearly every miss is the trade. A full fine-tune of the same model kept only 33.3% there (one comparison, also at a lower learning rate), so LoRA is the recipe going into #76.
   - **Code:** `ml/scripts/train_sft.py` and `ml/jobtrail_ml/sft.py` (TRL prompt-completion examples identical to the runner's prompt, a validation split by trade that keeps same-fact notes together). Configs in `ml/configs/train/`; logs and loss curves in `results/train/`. CUDA libraries are in a separate `train` dependency group, so CI stays CPU-only.
   - **Summary:** `summarize_results.py` adds each run's held-out and seen template counts to `results/summary.json`.
 - Synthetic training set v1 (#74): 799 notes with targets, published at [taleef/jobtrail-field-notes](https://huggingface.co/datasets/taleef/jobtrail-field-notes), with its card in `data/train/README.md`.

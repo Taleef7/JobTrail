@@ -1,0 +1,25 @@
+# #75: LoRA on Gemma 3 270M (instruct), the smallest candidate (Gemma Terms of Use, not Apache-2.0)
+# Run (from ml/, after `uv sync --group train`):
+#   uv run python scripts/train_sft.py configs/train/gemma-3-270m-lora.yaml
+name: gemma-3-270m-lora
+base: google/gemma-3-270m-it
+revision: ac82b4e820549b854eebf28ce6dedaf9fdfa17b3
+mode: lora
+data: data/train/train.jsonl
+format: compact # the record as the model writes it (extract.encode); must match the eval run
+val_frac: 0.05
+seed: 75
+
+epochs: 3
+learning_rate: 2.0e-4
+scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+batch_size: 8
+grad_accum: 2 # effective batch 16
+max_length: 768 # tokens, prompt + completion; train_sft.py fails if any example is longer
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  targets: all-linear

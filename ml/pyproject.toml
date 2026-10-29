@@ -17,13 +17,13 @@ dev = [
 # Fine-tuning (#75): `uv sync --group train` on a CUDA machine. Not a default group, so CI
 # and the runners stay CPU-only.
 train = [
-    "accelerate",
-    "datasets",
-    "peft",
-    "sentencepiece>=0.2.2",
-    "torch",
-    "transformers",
-    "trl",
+    "accelerate>=1.15",
+    "datasets>=5.1",
+    "peft>=0.21",
+    "sentencepiece>=0.2.2", # GGUF export (llama.cpp's convert_hf_to_gguf.py)
+    "torch>=2.14",
+    "transformers>=5.22", # 5.x: warmup_steps < 1 is a ratio; config re-save (keep_base_config)
+    "trl>=1.17",
 ]
 
 [tool.uv]

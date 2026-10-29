@@ -36,17 +36,30 @@ def load_config(path: Path) -> dict:
     return cfg
 
 
-def keep_base_config(cfg: dict, out: Path) -> None:
-    """Put the base model's config.json back next to the fine-tuned weights.
+def keep_base_files(cfg: dict, out: Path) -> None:
+    """Put the base model's config.json (and SentencePiece model) next to the fine-tuned weights.
 
     Fine-tuning changes weights, not the architecture, but transformers 5 re-saves the config
     in its own vocabulary: Granite 4.0-H's layer types become full_attention/linear_attention,
     which llama.cpp b9837's converter doesn't know, so every layer exported as Mamba and the
-    GGUF failed to load. The base config is the one the converter supports."""
-    from huggingface_hub import hf_hub_download
+    GGUF failed to load. The base config is the one the converter supports, so long as the
+    shapes it describes are still the saved weights' shapes; anything else fails here.
 
-    src = hf_hub_download(cfg["base"], "config.json", revision=cfg["revision"])
-    (out / "config.json").write_bytes(Path(src).read_bytes())
+    transformers 5 also saves only the fast tokenizer. Gemma 3's converter needs the base's
+    tokenizer.model; without it the fallback trips on Gemma's image token (id = vocab size)."""
+    from huggingface_hub import hf_hub_download, list_repo_files
+
+    if "tokenizer.model" in list_repo_files(cfg["base"], revision=cfg["revision"]):
+        sp = hf_hub_download(cfg["base"], "tokenizer.model", revision=cfg["revision"])
+        (out / "tokenizer.model").write_bytes(Path(sp).read_bytes())
+    src = Path(hf_hub_download(cfg["base"], "config.json", revision=cfg["revision"]))
+    base, saved = (json.loads(p.read_text(encoding="utf-8")) for p in (src, out / "config.json"))
+    for key in ("vocab_size", "hidden_size", "num_hidden_layers", "intermediate_size",
+                "num_attention_heads", "num_key_value_heads", "tie_word_embeddings"):  # fmt: skip
+        if key in base and base[key] != saved.get(key, base[key]):
+            raise SystemExit(f"fine-tuned {key} is {saved[key]}, base has {base[key]}: "
+                             "keeping the base config.json would export a wrong GGUF")  # fmt: skip
+    (out / "config.json").write_bytes(src.read_bytes())
 
 
 def loss_svg(history: list[dict], width: int = 640, height: int = 320) -> str:
@@ -114,6 +127,8 @@ def main() -> int:
     def dataset(part: list[dict]) -> Dataset:
         return Dataset.from_list([sft.to_example(r, cfg["format"]) for r in part])
 
+    # Before the model exists: TRL adds the LoRA weights before Trainer seeds anything.
+    transformers.set_seed(cfg["seed"])
     model = AutoModelForCausalLM.from_pretrained(
         cfg["base"], revision=cfg["revision"], dtype=torch.bfloat16
     )
@@ -161,7 +176,7 @@ def main() -> int:
     final = trainer.model.merge_and_unload() if peft_config else trainer.model
     final.save_pretrained(out_ckpt / "final")
     tok.save_pretrained(out_ckpt / "final")
-    keep_base_config(cfg, out_ckpt / "final")
+    keep_base_files(cfg, out_ckpt / "final")
 
     out_res.mkdir(parents=True, exist_ok=True)
     history = trainer.state.log_history
