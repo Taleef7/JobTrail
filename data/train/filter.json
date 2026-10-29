@@ -1,0 +1,197 @@
+{
+  "issue": 74,
+  "at": "2026-10-29T14:46:37+00:00",
+  "plans": 930,
+  "notes": 930,
+  "missingNotes": 0,
+  "writerGaveUp": [],
+  "filter": {
+    "counts": {
+      "kept": 810,
+      "contradicts-plan": 43,
+      "labelers-disagree": 77
+    },
+    "dropRate": 0.129,
+    "contradictsPlan": {
+      "issuesFound": 18,
+      "materials": 21,
+      "workPerformed": 18,
+      "jobType": 15,
+      "laborMinutes": 15,
+      "customerApproved": 12,
+      "followUps": 11
+    }
+  },
+  "leakage": {
+    "thresholds": {
+      "jaccard5": 0.2,
+      "containment8": 0.3
+    },
+    "checked": 810,
+    "dropped": 11,
+    "sharesAny8gram": 442
+  },
+  "kept": 799,
+  "mix": {
+    "tag": {
+      "(none)": [
+        125,
+        106
+      ],
+      "approval-absent": [
+        152,
+        127
+      ],
+      "extra-labor": [
+        152,
+        131
+      ],
+      "hours-phrasing": [
+        141,
+        118
+      ],
+      "multiple-materials": [
+        159,
+        137
+      ],
+      "negation": [
+        139,
+        115
+      ],
+      "no-materials": [
+        93,
+        86
+      ],
+      "self-correction": [
+        208,
+        188
+      ],
+      "supply-house-trip": [
+        167,
+        145
+      ]
+    },
+    "style": {
+      "rambling": [
+        209,
+        182
+      ],
+      "run-on": [
+        246,
+        210
+      ],
+      "spoken-fillers": [
+        237,
+        204
+      ],
+      "terse": [
+        238,
+        203
+      ]
+    },
+    "trade": {
+      "appliance": [
+        92,
+        74
+      ],
+      "carpentry": [
+        112,
+        87
+      ],
+      "cleaning": [
+        84,
+        79
+      ],
+      "electrical": [
+        99,
+        87
+      ],
+      "general": [
+        104,
+        84
+      ],
+      "hvac": [
+        95,
+        87
+      ],
+      "painting": [
+        112,
+        97
+      ],
+      "plumbing": [
+        123,
+        109
+      ],
+      "roofing": [
+        109,
+        95
+      ]
+    }
+  },
+  "crosscheck": {
+    "luna": {
+      "model": "codex:gpt-6-luna:medium",
+      "labeled": 126,
+      "valid": 126,
+      "agreesWithTarget": 83,
+      "keepsPlanFacts": 98
+    },
+    "gptoss": {
+      "model": "gpt-oss-120b-medium",
+      "labeled": 0,
+      "valid": 0,
+      "agreesWithTarget": 0,
+      "keepsPlanFacts": 0
+    }
+  },
+  "train.jsonl": "292c7b969468db342c96f450bf44015951a83972ec86d54fc272a64c3d59158c",
+  "raw.jsonl": "008102218c5ececa9f39a87c5f3155ce7387132405de8fd70990846f6ca57c5b",
+  "raw": {
+    "answers-gemini-medium.1of3.jsonl": "d15741f5de2a63ea4d5c1cb9f25880e1e515e8c0becfee2a3df0359db56b5968",
+    "answers-gemini-medium.2of3.jsonl": "873303091f9af66eff9c849f28b3174bfdc76d939c9b90f5065353fcd1dfd903",
+    "answers-gemini-medium.3of3.jsonl": "556c4fb18ede8146ee2453816538b05198ec9b42237752023117ba1037cef49e",
+    "answers-gemini-medium.jsonl": "0b1da542d0434b49ffe1225f87d98140cd303125b373fccac78855013549fcea",
+    "answers-gemini.1of2.jsonl": "2c0b94e2d0b11f5f94c398a8272ce9fa527d15c7f8efc6892922659f106c0917",
+    "answers-gemini.1of6.jsonl": "a06d7fa442ae0835e5e5c31acf5fc439d33f73fb212f21236c04cba9190dfa8a",
+    "answers-gemini.2of2.jsonl": "1179e5b90aa8e610938fcb60e641f3c1c4ac9083c7a4f6484b74d3d18ef611e4",
+    "answers-gemini.2of6.jsonl": "e297f5038b74d50b25d1791c0bc47d31de10420be26bd7f1764dab2a790eca35",
+    "answers-gemini.3of6.jsonl": "b6d9778dd789e1d42eb7bb6be3525753a3ad4be4baed893d7509666ba34f2777",
+    "answers-gemini.4of6.jsonl": "09c8a18ce6adb540f3f3684052d538cbd194ab30d8923ccfe3cafd0c84394b1c",
+    "answers-gemini.5of6.jsonl": "536f487549fb6568895956f12894fba964b52ca07ab4d916e28bcd2ba87f91dc",
+    "answers-gemini.6of6.jsonl": "1bb495ce3603878fa3e06af5045a80ebf1797e774751050db98cecac5eb4d5c3",
+    "answers-gemini.jsonl": "1f60844072b5a3ca69437cd83f5671d2c60acdb92b674adc6474a4193be86ff7",
+    "answers-luna.jsonl": "8840e282a90382a0b6e45d9d82df6e262f5dbbf8a69a742374947f0e48af668b",
+    "drops.jsonl": "7d3fa69737ab6638170d8150880049a49314ffec474d999fb8d3ae927ce36b38",
+    "labels-gemini-medium.1of3.jsonl": "f9c7064b087e03512166a245fef31a5ffe6ee5440aa43a94b1600e12fcff31cf",
+    "labels-gemini-medium.2of3.jsonl": "998f8fbfb93c8f3fdbfd9db5be750c5d5e1beb4b41d05b7d144c64bbd6ff6ef3",
+    "labels-gemini-medium.3of3.jsonl": "3c6ad918464a78a3a17c9c95f3ad232b75ee8f982e59560a83a94b79a5cdcb38",
+    "labels-gemini-medium.jsonl": "5d409f3f0a1b9e11d04a046fc970a557163d49292de7fbbfa26958ee67d80ff1",
+    "labels-gemini.1of2.jsonl": "80c0589f39112f584abcdc474e4e13541d774aa02d7da39ae474261561d94f56",
+    "labels-gemini.1of6.jsonl": "dbdfbda2edc98cfd958d26a4e57ec0e4b00dcb93a19fc0507f35233557dc66e7",
+    "labels-gemini.2of2.jsonl": "ede7d7818d16d0b370419aaa217e1a8f07b2e63b44d1b4ab26ffc8e31c088d05",
+    "labels-gemini.2of6.jsonl": "c83372722cbab67434562f674405cd403d39dbb32e07e2e55a13a60c9f0bad26",
+    "labels-gemini.3of6.jsonl": "7690d5c6f2e7bed7697e880a69320251f146b9d84d3d753f0088fa9213199456",
+    "labels-gemini.4of6.jsonl": "0b59cdcb40f213e6bdda73a06926247f23b417a719c66242c12f38247bec596c",
+    "labels-gemini.5of6.jsonl": "8b24dfa705c0b45f396beace522ce7741e9be2993eabb007659c7a8d829d4c67",
+    "labels-gemini.6of6.jsonl": "def9ffeb5f89aa75eafa8203a0e186c68875294e8c707a21275888e4d4cd6733",
+    "labels-gemini.jsonl": "8b44d7d541686270c6ee597de2f9ce403737a52bf42d5e379177e15632352432",
+    "labels-luna.jsonl": "8a8dd0aec5655be5e5425f89d92fcc92dc85177462e3033e86b98ce5874eef3d",
+    "notes.1of3.jsonl": "22678d954a9077bb41b1bcc32ca7078c873751b1d5931dade769d22a45e1afe9",
+    "notes.2of3.jsonl": "269e3ada6c85fc9cbb8a17af16da741956ca95941936fe332c5a75124afcbe55",
+    "notes.3of3.jsonl": "df7eb3257884ab2bc720001324b80482555ce9af6ce10c610654f5a78e072b42",
+    "notes.jsonl": "ad131980b3812d6eafa4c60f02aadff960797401e63275c0ccc95481874d0e92",
+    "usage.jsonl": "c8a559b9a4d9f9520f9b6ed8d1d95a1095e99bd87abe629663335c52e2101601",
+    "usage.label-gemini-medium.1of3.jsonl": "e86df2a6997d793bd692ff4178f404c668fdf3257d0cdd04f74955af438858c4",
+    "usage.label-gemini-medium.2of3.jsonl": "549e529211051e738f8bfd2c556cbebcc5b6dbc8af7c76123db10e90e9dda135",
+    "usage.label-gemini-medium.3of3.jsonl": "c205ca6367cd97f9dec156b0a056ae766b525d0fffbd0d898a23a92933664d92",
+    "usage.label-gemini.1of6.jsonl": "3eca9cabb253e1c8e83a61a25c1b0693f14498008914027a11154064f86c1a1a",
+    "usage.label-gemini.2of6.jsonl": "818ca662b8ad0bd01390d1ee6cd9eb08cc293922dcb8c52480f7c0570f9164a3",
+    "usage.label-gemini.3of6.jsonl": "335c1a1455a66ba5879757fc6601a6a7b43657c916ec33ebffa2bee5725e4ffd",
+    "usage.label-gemini.4of6.jsonl": "fb2425997aeda961027ab88a9f3f1386525e80b8a5ba5db8fe73d42468ef3cc3",
+    "usage.label-gemini.5of6.jsonl": "c08dbafa09ccd814e949ba554cff39e5fd9715abd1b50154fd42797027122c69",
+    "usage.label-gemini.6of6.jsonl": "b43b0eac44a4ad77da5a62cd474672773403b041f1bdee68d3efe91fce7f1f37",
+    "usage.write.1of3.jsonl": "04cd90e2a0a298c26a34328ded0f4c1f6cc241c59ecbc91aa4722fb58515f0d0",
+    "usage.write.2of3.jsonl": "d5133a649859bcba88511eef742f7968c7a2204ca94b6b574a11e0302ada8e45",
+    "usage.write.3of3.jsonl": "cc31df1a1004ca406e6487eaf3a0b0cd1f2e49a9db77ebd8981ad3545f50d0f3"
+  }
+}

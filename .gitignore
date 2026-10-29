@@ -61,3 +61,10 @@ evidence/*/runs/*/report.json
 # results/summary.json records their SHA-256 (#73)
 results/runs/**/report.json
 results/runs/**/*.report.json
+
+# Training-set raw files (#74): every note, model answer and call log (not logs/). Published
+# under raw/ in the dataset on Hugging Face; data/train/filter.json records their SHA-256.
+data/train/raw/
+
+# Built by gen_train_notes.py filter; published to Hugging Face (raw configuration)
+data/train/raw.jsonl

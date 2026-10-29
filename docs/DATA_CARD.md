@@ -124,3 +124,15 @@ uv run python scripts/adjudicate.py sensitivity             # the reviewer-swap 
 ```
 
 The votes themselves came from models and would differ if re-collected.
+
+## The training set (#74)
+
+The training set is separate from the eval sets and has its own card: [`data/train/README.md`](../data/train/README.md), published at [huggingface.co/datasets/taleef/jobtrail-field-notes](https://huggingface.co/datasets/taleef/jobtrail-field-notes). In short:
+
+- **Size:** 799 notes kept of the 930 written for plans 1–930, by the same record-first method. The issue asked for 3,000–5,000; the owner stopped at 930 and will add more only if M2 needs it.
+- **Target:** two blind Gemini 3.8 Flash labels (High and Medium) that agree under the zero-edit test and match the plan's trade, minutes, approval, task/issue/follow-up counts and material amounts (wording and material names aren't checked). The High label is the target.
+- **Kept apart from these sets:**
+  - no training plan repeats a test or dev answer key;
+  - 11 near-copies of a test or dev note were dropped;
+  - one job template per trade is held out of training. That gives an unseen-template slice of 49 test notes and 27 dev notes, listed in `data/train/heldout.json`.
+- **Shared with these sets:** the other templates, and the Gemini family's reading of `LABELING.md`.

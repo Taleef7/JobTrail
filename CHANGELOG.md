@@ -19,6 +19,12 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
+- Synthetic training set v1 (#74): 799 notes with targets, published at [taleef/jobtrail-field-notes](https://huggingface.co/datasets/taleef/jobtrail-field-notes), with its card in `data/train/README.md`.
+  - **How:** Gemini 3.8 Flash Medium wrote 930 notes from record-first plans, weighted toward the #73 failure tags. Two blind labelers (Flash High and Flash Medium) read each one.
+  - **Kept:** a note stays only if both labels agree under the zero-edit test and match the plan's trade, minutes, approval, counts and material amounts. 77 notes were dropped for disagreement, 43 for contradicting the plan, and 11 as near-copies of test or dev notes.
+  - **Held out:** one job template per trade never reaches training, which gives an unseen-template eval slice of 49 test and 27 dev notes.
+  - **Size:** the issue asked for 3–5k notes; the owner stopped at plans 1–930 (about 43 s of model time per note).
+  - **Code:** `ml/scripts/gen_train_notes.py` resumes and shards, and `ml/jobtrail_ml/codex.py` runs the Codex CLI for the cross-family check.
 - Baseline ladder, RESULTS v0 (#73), in `docs/RESULTS.md`:
   - **Runs:** the rules floor, 12 small models (135M–1.7B, llama.cpp, CPU) and a Gemini 3.8 Flash ceiling via the Antigravity CLI, all on the frozen test and dev sets, every run reproducible from its config.
   - **Headline zero-edit on test:** rules 0%; models of 400 MB or less at most 4% on either split; Qwen3-1.7B 19.0%; the ceiling 92.6%.
