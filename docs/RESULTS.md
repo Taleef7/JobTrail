@@ -144,6 +144,30 @@ The files are in [`results/error-analysis/`](../results/error-analysis/).
 
 **Templates are shared, so M2 needs a held-out check.** Dev and test draw on the same 27 job templates (3 per trade, `data/scenarios.yaml`) that M2's training data will come from. A fine-tune could clear the bar by learning the templates rather than the task. M2 must hold some templates out of training and report on them separately. The spoken-note slice (#92), written by the owner without templates, is the other check.
 
+## Fine-tuning on dev (#75)
+
+Each candidate was trained on the #74 training set (799 notes, [`data/train/`](../data/train/README.md)) on an RTX 5070 Ti Laptop GPU, exported to Q8_0 GGUF with llama.cpp b9837 and scored on dev through the same runner, grammar and scorer as the ladder. The model sees the note alone (`fine-tuned-short`) and writes compact JSON. Configs are in [`ml/configs/train/`](../ml/configs/train/); losses, curves and run details are in [`results/train/`](../results/train/). Test stays untouched until #76/#77.
+
+| Model                         |   MB | Recipe                 | Dev zero-edit | Seen templates | Held-out templates | Held-out jobType |        p50 | Training |
+| ----------------------------- | ---: | ---------------------- | ------------: | -------------: | -----------------: | ---------------: | ---------: | -------: |
+| **LFM2.5-350M**               |  379 | LoRA r 16, 3 epochs    |     **82.7%** |  74/83 (89.2%) |  **17/27 (63.0%)** |            19/27 | **0.84 s** |     67 s |
+| Granite 4.0-H-350M            |  366 | LoRA r 16, 3 epochs    |         80.0% |  75/83 (90.4%) |      13/27 (48.1%) |            16/27 |     2.31 s |    328 s |
+| Qwen3-0.6B                    |  639 | LoRA r 16, 3 epochs    |         79.1% |  74/83 (89.2%) |      13/27 (48.1%) |            16/27 |     1.57 s |    144 s |
+| Granite 4.0-350M (dense)      |  378 | LoRA r 16, 3 epochs    |         76.4% |  74/83 (89.2%) |      10/27 (37.0%) |            13/27 |     0.98 s |    100 s |
+| LFM2.5-350M                   |  379 | full, 1 epoch          |         75.5% |  70/83 (84.3%) |      13/27 (48.1%) |            16/27 |     0.82 s |     20 s |
+| LFM2.5-350M                   |  379 | full, 3 epochs (pilot) |         74.5% |  73/83 (88.0%) |       9/27 (33.3%) |            11/27 |     0.92 s |     66 s |
+| _Bar:_ Qwen3-1.7B few-shot v2 | 1107 | prompted               |         29.1% |  22/83 (26.5%) |      10/27 (37.0%) |            22/27 |     3.43 s |        – |
+
+"Held-out templates" are the 27 dev notes from the one job template per trade that #74 kept out of training (`data/train/heldout.json`); "seen" is the other 83. Before fine-tuning, LFM2.5-350M, Granite 4.0-H-350M and Qwen3-0.6B scored 0.9–3.6% on dev under their best prompt (the dense Granite was not in the ladder).
+
+- **Every candidate clears the bar by a wide margin**, at 350–600M parameters and 1.5–4× the bar's speed on a desktop CPU.
+- **The gain shrinks on unseen templates but does not vanish.** The held-out notes are not harder in themselves: the bar scores _better_ there (37.0% against 26.5%) and the Gemini ceiling gets 27/27. The LoRA fine-tunes drop from about 89% to 37–63%, at or above the bar. This is not the no-go above, but it is the main weakness.
+- **The drop is the trade.** On the pilot, 23 of the 27 held-out notes had everything right except possibly `jobType`, and 16 of its 18 held-out failures were a wrong trade: a dishwasher drain pump read as plumbing (gold: appliance), a blower-motor capacitor as electrical (gold: hvac). With two templates per trade in training, the model partly learns "this kind of job → this trade" from the templates rather than from the work.
+- **LoRA generalises better than a full fine-tune.** On LFM2.5-350M, LoRA lifted the held-out slice from 9/27 to 17/27 with the same data and steps. One epoch of full fine-tuning helped the held-out slice (13/27) but cost the seen notes. LoRA keeps the base weights, and with them more of what the model knew about trades.
+- **Choice for #76: LFM2.5-350M with LoRA.** It is best on both slices and the fastest. Granite 4.0-H-350M (Apache-2.0) stays the licence hedge: 2.7 points behind, but 2.8× slower on CPU, which matters on the Note 9S. Its dense sibling Granite 4.0-350M (same licence, no Mamba layers) is as fast as LFM, but on the held-out slice it only matches the bar (10/27). Qwen3-0.6B is 79.1% at Q8_0 (639 MB); #76's quantization ladder decides whether a smaller quant keeps it.
+
+**Caveats.** The recipe was tuned on LFM2.5-350M's dev score and reused unchanged for the others, which favours LFM. The held-out slice is 27 notes, so one note is 3.7 points. A better trade signal in the training data (more job templates per trade) is the obvious next lever; it is not in this issue.
+
 ## Caveats
 
 - **The notes are synthetic.** They were written by one Gemini model from templates, and the labels were model-reviewed, not human-verified. Spoken notes (#92) are reported separately when they exist.
@@ -159,6 +183,11 @@ cd ml
 uv run python scripts/run_llamacpp.py --config configs/<run>.yaml --gold ../data/test.jsonl   # one local run
 uv run python scripts/run_agy.py --config configs/gemini-3.8-flash-high-agy-b15-v2.yaml --gold ../data/test.jsonl
 uv run python scripts/summarize_results.py --markdown   # rebuilds any missing report, writes summary.json + these tables
+# fine-tuning (#75), on a CUDA GPU:
+uv sync --group train
+uv run python scripts/train_sft.py configs/train/lfm2.5-350m-lora.yaml   # -> checkpoints/<name>/final + results/train/<name>/
+PYTHONPATH=<llama.cpp b9837>/gguf-py uv run python <llama.cpp b9837>/convert_hf_to_gguf.py checkpoints/lfm2.5-350m-lora/final --outtype q8_0 --outfile models/lfm2.5-350m-lora-Q8_0.gguf
+uv run python scripts/run_llamacpp.py --config configs/lfm2.5-350m-lora-q8.yaml
 ```
 
 Score reports aren't committed. `score_run.py` rebuilds each one from its predictions, and `summary.json` records each report's SHA-256.
@@ -212,47 +241,53 @@ Score reports aren't committed. `score_run.py` rebuilds each one from its predic
 
 <details><summary>Full table: every run on dev</summary>
 
-| Rung  | Model                        |   MB | Prompt       | Grammar |   n | Zero-edit | Schema-valid | jobType | laborMinutes | Approved | Materials F1 | Work F1 | Issues F1 | Follow-ups F1 | Hallucination |    p50 |  $/note |
-| ----- | ---------------------------- | ---: | ------------ | ------- | --: | --------: | -----------: | ------: | -----------: | -------: | -----------: | ------: | --------: | ------------: | ------------: | -----: | ------: |
-| rules | rules-legacy-v0              |    – | -            | –       | 110 |      0.9% |       100.0% |   38.2% |        67.3% |    38.2% |        0.378 |   0.327 |     0.000 |         0.067 |          3.3% | 0.00 s | $0.0000 |
-| local | SmolLM2-135M-Instruct-Q8_0   |  145 | few-shot     | on      | 110 |      0.0% |        98.2% |   14.5% |        63.6% |     6.4% |        0.183 |   0.506 |     0.083 |         0.073 |         13.5% | 0.46 s | $0.0000 |
-| local | SmolLM2-135M-Instruct-Q8_0   |  145 | zero-shot    | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 2.57 s | $0.0000 |
-| local | SmolLM2-135M-Instruct-Q8_0   |  145 | zero-shot    | on      | 110 |      0.0% |         1.8% |    0.0% |         0.9% |     0.9% |        0.045 |   0.033 |     0.043 |         0.000 |          0.0% | 2.81 s | $0.0000 |
-| local | LFM2.5-350M-QAD-Q4_0         |  219 | few-shot     | on      | 110 |      3.6% |       100.0% |   25.5% |        70.9% |    85.5% |        0.891 |   0.704 |     0.592 |         0.373 |          2.1% | 0.73 s | $0.0000 |
-| local | LFM2.5-350M-QAD-Q4_0         |  219 | zero-shot    | on      | 110 |      0.0% |        94.5% |   20.9% |        64.5% |    81.8% |        0.810 |   0.364 |     0.295 |         0.000 |          8.9% | 0.90 s | $0.0000 |
-| local | LFM2.5-230M-Q8_0             |  247 | few-shot     | on      | 110 |      0.9% |        99.1% |   30.9% |        69.1% |    65.5% |        0.772 |   0.625 |     0.551 |         0.348 |          7.3% | 0.86 s | $0.0000 |
-| local | LFM2.5-230M-Q8_0             |  247 | zero-shot    | on      | 110 |      0.0% |       100.0% |   32.7% |        64.5% |    85.5% |        0.866 |   0.362 |     0.347 |         0.389 |          5.1% | 1.00 s | $0.0000 |
-| local | gemma-3-270m-it-Q8_0         |  292 | few-shot     | on      | 110 |      0.0% |       100.0% |   32.7% |        58.2% |     6.4% |        0.044 |   0.520 |     0.083 |         0.221 |         10.0% | 0.65 s | $0.0000 |
-| local | gemma-3-270m-it-Q8_0         |  292 | zero-shot    | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 0.78 s | $0.0000 |
-| local | gemma-3-270m-it-Q8_0         |  292 | zero-shot    | on      | 110 |      0.0% |        99.1% |   20.0% |        65.5% |     6.4% |        0.742 |   0.077 |     0.094 |         0.000 |         16.4% | 1.55 s | $0.0000 |
-| local | granite-4.0-h-350m-Q8_0      |  366 | few-shot     | on      | 110 |      0.9% |        99.1% |   20.9% |        70.9% |    80.9% |        0.900 |   0.823 |     0.738 |         0.820 |          1.3% | 2.98 s | $0.0000 |
-| local | granite-4.0-h-350m-Q8_0      |  366 | zero-shot    | on      | 110 |      0.0% |       100.0% |   31.8% |        70.0% |    47.3% |        0.884 |   0.719 |     0.564 |         0.333 |          2.7% | 3.63 s | $0.0000 |
-| local | LFM2-350M-Extract-Q8_0       |  379 | few-shot     | on      | 110 |      0.0% |        69.1% |   18.2% |        36.4% |    53.6% |        0.523 |   0.358 |     0.137 |         0.099 |         24.8% | 2.76 s | $0.0000 |
-| local | LFM2-350M-Extract-Q8_0       |  379 | zero-shot    | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 1.47 s | $0.0000 |
-| local | LFM2-350M-Extract-Q8_0       |  379 | zero-shot    | on      | 110 |      0.0% |        80.9% |   18.2% |        51.8% |    61.8% |        0.675 |   0.281 |     0.176 |         0.137 |         21.7% | 2.17 s | $0.0000 |
-| local | LFM2.5-350M-Q8_0             |  379 | few-shot     | on      | 110 |      0.9% |       100.0% |   32.7% |        78.2% |    85.5% |        0.863 |   0.735 |     0.619 |         0.505 |          0.7% | 1.29 s | $0.0000 |
-| local | LFM2.5-350M-Q8_0             |  379 | few-shot-v2  | on      | 110 |      1.8% |       100.0% |   29.1% |        75.5% |    85.5% |        0.844 |   0.710 |     0.631 |         0.385 |          0.0% | 1.10 s | $0.0000 |
-| local | LFM2.5-350M-Q8_0             |  379 | zero-shot    | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 1.63 s | $0.0000 |
-| local | LFM2.5-350M-Q8_0             |  379 | zero-shot    | on      | 110 |      0.0% |        94.5% |   17.3% |        70.0% |    80.0% |        0.786 |   0.361 |     0.386 |         0.000 |         10.3% | 1.42 s | $0.0000 |
-| local | LFM2.5-350M-Q8_0             |  379 | zero-shot-v2 | on      | 110 |      0.0% |        86.4% |   33.6% |        64.5% |    73.6% |        0.723 |   0.340 |     0.261 |         0.273 |         11.1% | 1.45 s | $0.0000 |
-| local | Qwen3-0.6B-Q4_K_M            |  397 | few-shot     | on      | 110 |      1.8% |        99.1% |   39.1% |        83.6% |    85.5% |        0.899 |   0.778 |     0.645 |         0.394 |          1.2% | 2.33 s | $0.0000 |
-| local | Qwen3-0.6B-Q4_K_M            |  397 | zero-shot    | off     | 110 |      1.8% |         5.5% |    3.6% |         4.5% |     4.5% |        0.000 |   0.065 |     0.000 |         0.067 |             – | 2.10 s | $0.0000 |
-| local | Qwen3-0.6B-Q4_K_M            |  397 | zero-shot    | on      | 110 |      1.8% |        99.1% |   32.7% |        73.6% |    83.6% |        0.913 |   0.372 |     0.644 |         0.812 |          1.6% | 2.89 s | $0.0000 |
-| local | LFM2-1.2B-Extract-Q4_K_M     |  731 | few-shot     | on      | 110 |      0.0% |       100.0% |   35.5% |        52.7% |    18.2% |        0.586 |   0.423 |     0.191 |         0.188 |         34.2% | 3.62 s | $0.0000 |
-| local | LFM2-1.2B-Extract-Q4_K_M     |  731 | zero-shot    | on      | 110 |      0.0% |        96.4% |   22.7% |        63.6% |    90.9% |        0.752 |   0.362 |     0.169 |         0.211 |         13.5% | 4.56 s | $0.0000 |
-| local | LFM2.5-1.2B-Instruct-Q4_K_M  |  731 | few-shot     | on      | 110 |      6.4% |       100.0% |   50.9% |        87.3% |    88.2% |        0.924 |   0.842 |     0.492 |         0.847 |          1.8% | 2.32 s | $0.0000 |
-| local | LFM2.5-1.2B-Instruct-Q4_K_M  |  731 | zero-shot    | on      | 110 |      0.0% |       100.0% |   45.5% |        80.9% |    85.5% |        0.904 |   0.474 |     0.288 |         0.806 |          8.8% | 3.84 s | $0.0000 |
-| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | few-shot     | on      | 110 |     19.1% |       100.0% |   77.3% |        82.7% |    96.4% |        0.801 |   0.866 |     0.881 |         0.933 |          0.4% | 2.12 s | $0.0000 |
-| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | few-shot-v2  | on      | 110 |     18.2% |       100.0% |   80.9% |        82.7% |    97.3% |        0.781 |   0.877 |     0.846 |         0.885 |          1.2% | 1.84 s | $0.0000 |
-| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot    | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 2.14 s | $0.0000 |
-| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot    | on      | 110 |      0.0% |        99.1% |    0.0% |        86.4% |    85.5% |        0.849 |   0.611 |     0.448 |         0.542 |          3.9% | 3.43 s | $0.0000 |
-| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot-v2 | on      | 110 |      0.9% |        99.1% |   77.3% |        82.7% |    83.6% |        0.790 |   0.593 |     0.500 |         0.403 |          6.4% | 3.22 s | $0.0000 |
-| local | Qwen3-1.7B-Q4_K_M            | 1107 | few-shot     | on      | 110 |     26.4% |       100.0% |   70.9% |        94.5% |   100.0% |        0.971 |   0.905 |     0.880 |         0.915 |          0.0% | 3.21 s | $0.0000 |
-| local | Qwen3-1.7B-Q4_K_M            | 1107 | few-shot-v2  | on      | 110 |     29.1% |       100.0% |   80.9% |        93.6% |   100.0% |        0.960 |   0.862 |     0.909 |         0.836 |          0.6% | 3.43 s | $0.0000 |
-| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot    | off     | 110 |      0.9% |         2.7% |    0.9% |         2.7% |     2.7% |        0.000 |   0.045 |     0.000 |         0.067 |             – | 3.07 s | $0.0000 |
-| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot    | on      | 110 |      7.3% |       100.0% |   66.4% |        93.6% |    96.4% |        0.971 |   0.743 |     0.792 |         0.982 |          0.0% | 4.15 s | $0.0000 |
-| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot-v2 | on      | 110 |      7.3% |       100.0% |   75.5% |        94.5% |    97.3% |        0.960 |   0.710 |     0.631 |         0.982 |          0.9% | 4.37 s | $0.0000 |
-| cloud | gemini-3.8-flash-high        |    – | zero-shot    | on      | 110 |     88.2% |       100.0% |  100.0% |       100.0% |   100.0% |        0.994 |   1.000 |     0.933 |         1.000 |          0.0% |      – |       – |
-| cloud | gemini-3.8-flash-high        |    – | zero-shot-v2 | on      | 110 |     97.3% |       100.0% |  100.0% |       100.0% |   100.0% |        1.000 |   0.997 |     0.988 |         1.000 |          0.0% |      – |       – |
+| Rung  | Model                        |   MB | Prompt           | Grammar |   n | Zero-edit | Schema-valid | jobType | laborMinutes | Approved | Materials F1 | Work F1 | Issues F1 | Follow-ups F1 | Hallucination |    p50 |  $/note |
+| ----- | ---------------------------- | ---: | ---------------- | ------- | --: | --------: | -----------: | ------: | -----------: | -------: | -----------: | ------: | --------: | ------------: | ------------: | -----: | ------: |
+| rules | rules-legacy-v0              |    – | -                | –       | 110 |      0.9% |       100.0% |   38.2% |        67.3% |    38.2% |        0.378 |   0.327 |     0.000 |         0.067 |          3.3% | 0.00 s | $0.0000 |
+| local | SmolLM2-135M-Instruct-Q8_0   |  145 | few-shot         | on      | 110 |      0.0% |        98.2% |   14.5% |        63.6% |     6.4% |        0.183 |   0.506 |     0.083 |         0.073 |         13.5% | 0.46 s | $0.0000 |
+| local | SmolLM2-135M-Instruct-Q8_0   |  145 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 2.57 s | $0.0000 |
+| local | SmolLM2-135M-Instruct-Q8_0   |  145 | zero-shot        | on      | 110 |      0.0% |         1.8% |    0.0% |         0.9% |     0.9% |        0.045 |   0.033 |     0.043 |         0.000 |          0.0% | 2.81 s | $0.0000 |
+| local | LFM2.5-350M-QAD-Q4_0         |  219 | few-shot         | on      | 110 |      3.6% |       100.0% |   25.5% |        70.9% |    85.5% |        0.891 |   0.704 |     0.592 |         0.373 |          2.1% | 0.73 s | $0.0000 |
+| local | LFM2.5-350M-QAD-Q4_0         |  219 | zero-shot        | on      | 110 |      0.0% |        94.5% |   20.9% |        64.5% |    81.8% |        0.810 |   0.364 |     0.295 |         0.000 |          8.9% | 0.90 s | $0.0000 |
+| local | LFM2.5-230M-Q8_0             |  247 | few-shot         | on      | 110 |      0.9% |        99.1% |   30.9% |        69.1% |    65.5% |        0.772 |   0.625 |     0.551 |         0.348 |          7.3% | 0.86 s | $0.0000 |
+| local | LFM2.5-230M-Q8_0             |  247 | zero-shot        | on      | 110 |      0.0% |       100.0% |   32.7% |        64.5% |    85.5% |        0.866 |   0.362 |     0.347 |         0.389 |          5.1% | 1.00 s | $0.0000 |
+| local | gemma-3-270m-it-Q8_0         |  292 | few-shot         | on      | 110 |      0.0% |       100.0% |   32.7% |        58.2% |     6.4% |        0.044 |   0.520 |     0.083 |         0.221 |         10.0% | 0.65 s | $0.0000 |
+| local | gemma-3-270m-it-Q8_0         |  292 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 0.78 s | $0.0000 |
+| local | gemma-3-270m-it-Q8_0         |  292 | zero-shot        | on      | 110 |      0.0% |        99.1% |   20.0% |        65.5% |     6.4% |        0.742 |   0.077 |     0.094 |         0.000 |         16.4% | 1.55 s | $0.0000 |
+| local | granite-4.0-h-350m-Q8_0      |  366 | few-shot         | on      | 110 |      0.9% |        99.1% |   20.9% |        70.9% |    80.9% |        0.900 |   0.823 |     0.738 |         0.820 |          1.3% | 2.98 s | $0.0000 |
+| local | granite-4.0-h-350m-Q8_0      |  366 | zero-shot        | on      | 110 |      0.0% |       100.0% |   31.8% |        70.0% |    47.3% |        0.884 |   0.719 |     0.564 |         0.333 |          2.7% | 3.63 s | $0.0000 |
+| local | granite-4.0-h-350m-lora-Q8_0 |  366 | fine-tuned-short | on      | 110 |     80.0% |       100.0% |   90.0% |        99.1% |   100.0% |        0.997 |   0.977 |     0.988 |         0.983 |          0.0% | 2.31 s | $0.0000 |
+| local | granite-4.0-350m-lora-Q8_0   |  378 | fine-tuned-short | on      | 110 |     76.4% |       100.0% |   86.4% |       100.0% |   100.0% |        0.994 |   0.974 |     0.976 |         0.982 |          0.0% | 0.98 s | $0.0000 |
+| local | LFM2-350M-Extract-Q8_0       |  379 | few-shot         | on      | 110 |      0.0% |        69.1% |   18.2% |        36.4% |    53.6% |        0.523 |   0.358 |     0.137 |         0.099 |         24.8% | 2.76 s | $0.0000 |
+| local | LFM2-350M-Extract-Q8_0       |  379 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 1.47 s | $0.0000 |
+| local | LFM2-350M-Extract-Q8_0       |  379 | zero-shot        | on      | 110 |      0.0% |        80.9% |   18.2% |        51.8% |    61.8% |        0.675 |   0.281 |     0.176 |         0.137 |         21.7% | 2.17 s | $0.0000 |
+| local | LFM2.5-350M-Q8_0             |  379 | few-shot         | on      | 110 |      0.9% |       100.0% |   32.7% |        78.2% |    85.5% |        0.863 |   0.735 |     0.619 |         0.505 |          0.7% | 1.29 s | $0.0000 |
+| local | LFM2.5-350M-Q8_0             |  379 | few-shot-v2      | on      | 110 |      1.8% |       100.0% |   29.1% |        75.5% |    85.5% |        0.844 |   0.710 |     0.631 |         0.385 |          0.0% | 1.10 s | $0.0000 |
+| local | LFM2.5-350M-Q8_0             |  379 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 1.63 s | $0.0000 |
+| local | LFM2.5-350M-Q8_0             |  379 | zero-shot        | on      | 110 |      0.0% |        94.5% |   17.3% |        70.0% |    80.0% |        0.786 |   0.361 |     0.386 |         0.000 |         10.3% | 1.42 s | $0.0000 |
+| local | LFM2.5-350M-Q8_0             |  379 | zero-shot-v2     | on      | 110 |      0.0% |        86.4% |   33.6% |        64.5% |    73.6% |        0.723 |   0.340 |     0.261 |         0.273 |         11.1% | 1.45 s | $0.0000 |
+| local | lfm2.5-350m-ft-v1-Q8_0       |  379 | fine-tuned-short | on      | 110 |     74.5% |       100.0% |   85.5% |        98.2% |   100.0% |        0.994 |   0.962 |     0.988 |         0.982 |          0.0% | 0.92 s | $0.0000 |
+| local | lfm2.5-350m-full-e1-Q8_0     |  379 | fine-tuned-short | on      | 110 |     75.5% |       100.0% |   90.0% |        92.7% |   100.0% |        0.994 |   0.971 |     0.988 |         1.000 |          0.0% | 0.82 s | $0.0000 |
+| local | lfm2.5-350m-lora-Q8_0        |  379 | fine-tuned-short | on      | 110 |     82.7% |       100.0% |   92.7% |        98.2% |   100.0% |        0.997 |   0.971 |     0.988 |         0.982 |          0.0% | 0.84 s | $0.0000 |
+| local | Qwen3-0.6B-Q4_K_M            |  397 | few-shot         | on      | 110 |      1.8% |        99.1% |   39.1% |        83.6% |    85.5% |        0.899 |   0.778 |     0.645 |         0.394 |          1.2% | 2.33 s | $0.0000 |
+| local | Qwen3-0.6B-Q4_K_M            |  397 | zero-shot        | off     | 110 |      1.8% |         5.5% |    3.6% |         4.5% |     4.5% |        0.000 |   0.065 |     0.000 |         0.067 |             – | 2.10 s | $0.0000 |
+| local | Qwen3-0.6B-Q4_K_M            |  397 | zero-shot        | on      | 110 |      1.8% |        99.1% |   32.7% |        73.6% |    83.6% |        0.913 |   0.372 |     0.644 |         0.812 |          1.6% | 2.89 s | $0.0000 |
+| local | qwen3-0.6b-lora-Q8_0         |  639 | fine-tuned-short | on      | 110 |     79.1% |       100.0% |   90.0% |        98.2% |   100.0% |        1.000 |   0.977 |     0.976 |         1.000 |          0.0% | 1.57 s | $0.0000 |
+| local | LFM2-1.2B-Extract-Q4_K_M     |  731 | few-shot         | on      | 110 |      0.0% |       100.0% |   35.5% |        52.7% |    18.2% |        0.586 |   0.423 |     0.191 |         0.188 |         34.2% | 3.62 s | $0.0000 |
+| local | LFM2-1.2B-Extract-Q4_K_M     |  731 | zero-shot        | on      | 110 |      0.0% |        96.4% |   22.7% |        63.6% |    90.9% |        0.752 |   0.362 |     0.169 |         0.211 |         13.5% | 4.56 s | $0.0000 |
+| local | LFM2.5-1.2B-Instruct-Q4_K_M  |  731 | few-shot         | on      | 110 |      6.4% |       100.0% |   50.9% |        87.3% |    88.2% |        0.924 |   0.842 |     0.492 |         0.847 |          1.8% | 2.32 s | $0.0000 |
+| local | LFM2.5-1.2B-Instruct-Q4_K_M  |  731 | zero-shot        | on      | 110 |      0.0% |       100.0% |   45.5% |        80.9% |    85.5% |        0.904 |   0.474 |     0.288 |         0.806 |          8.8% | 3.84 s | $0.0000 |
+| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | few-shot         | on      | 110 |     19.1% |       100.0% |   77.3% |        82.7% |    96.4% |        0.801 |   0.866 |     0.881 |         0.933 |          0.4% | 2.12 s | $0.0000 |
+| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | few-shot-v2      | on      | 110 |     18.2% |       100.0% |   80.9% |        82.7% |    97.3% |        0.781 |   0.877 |     0.846 |         0.885 |          1.2% | 1.84 s | $0.0000 |
+| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot        | off     | 110 |      0.0% |         0.0% |    0.0% |         0.0% |     0.0% |        0.000 |   0.000 |     0.000 |         0.000 |             – | 2.14 s | $0.0000 |
+| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot        | on      | 110 |      0.0% |        99.1% |    0.0% |        86.4% |    85.5% |        0.849 |   0.611 |     0.448 |         0.542 |          3.9% | 3.43 s | $0.0000 |
+| local | Llama-3.2-1B-Instruct-Q4_K_M |  808 | zero-shot-v2     | on      | 110 |      0.9% |        99.1% |   77.3% |        82.7% |    83.6% |        0.790 |   0.593 |     0.500 |         0.403 |          6.4% | 3.22 s | $0.0000 |
+| local | Qwen3-1.7B-Q4_K_M            | 1107 | few-shot         | on      | 110 |     26.4% |       100.0% |   70.9% |        94.5% |   100.0% |        0.971 |   0.905 |     0.880 |         0.915 |          0.0% | 3.21 s | $0.0000 |
+| local | Qwen3-1.7B-Q4_K_M            | 1107 | few-shot-v2      | on      | 110 |     29.1% |       100.0% |   80.9% |        93.6% |   100.0% |        0.960 |   0.862 |     0.909 |         0.836 |          0.6% | 3.43 s | $0.0000 |
+| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot        | off     | 110 |      0.9% |         2.7% |    0.9% |         2.7% |     2.7% |        0.000 |   0.045 |     0.000 |         0.067 |             – | 3.07 s | $0.0000 |
+| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot        | on      | 110 |      7.3% |       100.0% |   66.4% |        93.6% |    96.4% |        0.971 |   0.743 |     0.792 |         0.982 |          0.0% | 4.15 s | $0.0000 |
+| local | Qwen3-1.7B-Q4_K_M            | 1107 | zero-shot-v2     | on      | 110 |      7.3% |       100.0% |   75.5% |        94.5% |    97.3% |        0.960 |   0.710 |     0.631 |         0.982 |          0.9% | 4.37 s | $0.0000 |
+| cloud | gemini-3.8-flash-high        |    – | zero-shot        | on      | 110 |     88.2% |       100.0% |  100.0% |       100.0% |   100.0% |        0.994 |   1.000 |     0.933 |         1.000 |          0.0% |      – |       – |
+| cloud | gemini-3.8-flash-high        |    – | zero-shot-v2     | on      | 110 |     97.3% |       100.0% |  100.0% |       100.0% |   100.0% |        1.000 |   0.997 |     0.988 |         1.000 |          0.0% |      – |       – |
 
 </details>

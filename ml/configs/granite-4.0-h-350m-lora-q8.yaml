@@ -1,0 +1,21 @@
+# granite-4.0-h-350m-lora-q8 (#75): LoRA (r 16) on Granite 4.0-H-350M, trained on the #74 training set
+# (configs/train/granite-4.0-h-350m-lora.yaml, results/train/granite-4.0-h-350m-lora), exported to Q8_0 GGUF
+# with llama.cpp b9837's convert_hf_to_gguf.py. The file is local until #76 publishes it.
+name: granite-4.0-h-350m-lora-q8
+provider: llamacpp
+model:
+  file: ml/models/granite-4.0-h-350m-lora-Q8_0.gguf
+  sha256: 09fd5b67f3ace5a9d078ce70630b663c9fd98fc72555f4f96ce9e8567e21a3ea
+  bytes: 366195328
+prompt: fine-tuned-short
+format: compact
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones

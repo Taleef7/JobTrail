@@ -178,7 +178,10 @@ def test_every_committed_config_resolves():
         assert cfg["name"] == path.stem, path.name
         if cfg["provider"] == "llamacpp":
             assert re.fullmatch(r"[0-9a-f]{64}", cfg["model"]["sha256"]), path.name
-            assert cfg["model"]["url"].startswith("https://huggingface.co/"), path.name
+            if cfg["prompt"] == "fine-tuned-short":  # #75's own GGUFs: local until #76 publishes
+                assert "url" not in cfg["model"] and cfg["model"]["bytes"] > 0, path.name
+            else:
+                assert cfg["model"]["url"].startswith("https://huggingface.co/"), path.name
             assert cfg["sampling"]["temperature"] == 0 and cfg["server"]["gpu_layers"] == 0
         elif cfg["provider"] == "gemini":
             assert cfg["cloud"]["pricing"]["rates"], path.name

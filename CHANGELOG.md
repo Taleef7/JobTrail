@@ -19,6 +19,11 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
+- Fine-tuning (#75): LFM2.5-350M, Granite 4.0-H-350M, Granite 4.0-350M (dense) and Qwen3-0.6B trained on the #74 set on the owner's RTX 5070 Ti Laptop, exported to Q8_0 GGUF and scored on dev; results in `docs/RESULTS.md`.
+  - **Headline (dev zero-edit):** LFM2.5-350M with LoRA 82.7% (0.84 s p50 on a desktop CPU), Granite 4.0-H 80.0%, Qwen3-0.6B 79.1%, dense Granite 76.4%, against the 29.1% bar and 0.9–3.6% for the same models prompted.
+  - **Held-out templates:** 63.0% for LFM2.5-350M with LoRA, down from 89.2% on the rest; nearly every miss is the trade. A full fine-tune of the same model kept only 33.3% there, so LoRA is the recipe.
+  - **Code:** `ml/scripts/train_sft.py` and `ml/jobtrail_ml/sft.py` (TRL prompt-completion examples identical to the runner's prompt, a validation split by trade that keeps same-fact notes together). Configs in `ml/configs/train/`; logs and loss curves in `results/train/`. CUDA libraries are in a separate `train` dependency group, so CI stays CPU-only.
+  - **Summary:** `summarize_results.py` adds each run's held-out and seen template counts to `results/summary.json`.
 - Synthetic training set v1 (#74): 799 notes with targets, published at [taleef/jobtrail-field-notes](https://huggingface.co/datasets/taleef/jobtrail-field-notes), with its card in `data/train/README.md`.
   - **How:** Gemini 3.8 Flash Medium wrote 930 notes from record-first plans, weighted toward the #73 failure tags. Two blind labelers (Flash High and Flash Medium) read each one.
   - **Kept:** a note stays only if both labels agree under the zero-edit test and match the plan's trade, minutes, approval, counts and material amounts. 77 notes were dropped for disagreement, 43 for contradicting the plan, and 11 as near-copies of test or dev notes.

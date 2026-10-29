@@ -1,0 +1,24 @@
+# qwen3-0.6b-lora-q8 (#75): LoRA (r 16) on Qwen3-0.6B, trained on the #74 training set
+# (configs/train/qwen3-0.6b-lora.yaml, results/train/qwen3-0.6b-lora), exported to Q8_0 GGUF
+# with llama.cpp b9837's convert_hf_to_gguf.py. The file is local until #76 publishes it.
+name: qwen3-0.6b-lora-q8
+provider: llamacpp
+model:
+  file: ml/models/qwen3-0.6b-lora-Q8_0.gguf
+  sha256: bae1b9db566411e0fb2f66948a9c4ec688e64265f75e24cb34d6a24865d4c6d2
+  bytes: 639446720
+prompt: fine-tuned-short
+format: compact
+grammar: true
+gold: data/dev.jsonl
+sampling:
+  temperature: 0
+  seed: 42
+  max_tokens: 512
+server:
+  build: b9837 # llama.cpp release; checked at start
+  ctx: 4096
+  gpu_layers: 0 # CPU only, like the phones
+  reasoning_format: deepseek # see runs.py: Qwen3's empty think block
+  chat_template_kwargs:
+    enable_thinking: false # the template pre-fills the empty think block training ends with
