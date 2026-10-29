@@ -451,20 +451,23 @@ def write_json(path: Path, obj) -> None:
     path.write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
+HELP_LIMIT = "plans 1..N (default: config.yaml)"
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name, fn in (("write", cmd_write), ("filter", cmd_filter)):
         p = sub.add_parser(name)
-        p.add_argument("--limit", type=int, default=CONFIG["limit"], help="plans 1..N (default: config.yaml)")
+        p.add_argument("--limit", type=int, default=CONFIG["limit"], help=HELP_LIMIT)
         p.set_defaults(fn=fn, follow=False)
     help_follow = "keep going (retrying) until every note is written"
     sub.choices["write"].add_argument("--follow", action="store_true", help=help_follow)
     sub.add_parser("heldout").set_defaults(fn=cmd_heldout)
     p = sub.add_parser("label")
     p.add_argument("labeler", choices=list(LABELERS))
-    p.add_argument("--limit", type=int, default=CONFIG["limit"], help="plans 1..N (default: config.yaml)")
+    p.add_argument("--limit", type=int, default=CONFIG["limit"], help=HELP_LIMIT)
     p.add_argument(
         "--follow",
         action="store_true",

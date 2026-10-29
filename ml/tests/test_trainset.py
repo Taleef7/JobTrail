@@ -281,7 +281,8 @@ def test_raw_rows_name_only_the_labelers_that_saw_the_note_and_every_drop_reason
     labels = {"gemini": {i: rec for i in ids}, "luna": {"tr-0001": None}, "gptoss": {}}
     verdict = {"tr-0001": {"reason": None, "contradicts": []},
                "tr-0002": {"reason": None, "contradicts": []},  # kept, then a near-copy
-               "tr-0003": {"reason": "contradicts-plan", "contradicts": ["laborMinutes"]}}  # fmt: skip
+               "tr-0003": {"reason": "contradicts-plan",
+                           "contradicts": ["laborMinutes"]}}  # fmt: skip
     rows = {r["id"]: r for r in g.raw_rows(notes, by_id, labels, verdict, ["tr-0001"])}
     assert rows["tr-0001"]["labels"] == {"gemini": rec, "luna": None}  # null = invalid answer
     assert rows["tr-0002"]["labels"] == {"gemini": rec}  # luna never saw it: absent, not null
