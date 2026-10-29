@@ -19,6 +19,10 @@ Each merged issue adds an entry. The legacy app (v0.1.0) is preserved at the `le
 - Legacy app (Expo 54 + Firebase sync + cascade AI), its docs, EAS and release-drafter workflows — archived at tag `legacy-v0` (#62). An audit found the core flow and sync engine broken and on-device claims unverified; see the design doc.
 
 ### Added
+- Model release (#76): the #75 fine-tune (LFM2.5-350M with LoRA) published at [taleef/jobtrail-lfm2.5-350m-GGUF](https://huggingface.co/taleef/jobtrail-lfm2.5-350m-GGUF) as F16, Q8_0, Q6_K, Q4_K_M and Q4_0, with `models/MODEL_CARD.md` (the HF README) and the base model's LFM Open License v1.0.
+  - **Test zero-edit, grammar on:** Q8_0 and F16 73.6%, Q6_K 73.0%, Q4_K_M 70.6%, Q4_0 65.6%, against the 19.0% bar. Held-out templates: 24/49 at Q4_K_M, against the bar's 7/49. The grammar-off runs have the same zero-edit.
+  - **Catalog:** `models/manifest.json`, built from `models/release.yaml` by `ml/scripts/build_manifest.py`, lists Q4_K_M (default, 229 MB, 394 MB peak RAM), Q6_K and Q8_0. Each entry has its URL pinned to the HF commit, sha256, size, peak process RAM (`peakRamMB`) and test scores. A new CI job checks that each URL serves the listed size and sha256.
+  - **Docs:** `docs/RESULTS.md` § "The fine-tuned model on test (#76)" has the accuracy × size × quant table.
 - Fine-tuning (#75): LFM2.5-350M, Granite 4.0-H-350M, Granite 4.0-350M (dense), Qwen3-0.6B and Gemma 3 270M trained on the #74 set on the owner's RTX 5070 Ti Laptop, exported to Q8_0 GGUF and scored on dev; results in `docs/RESULTS.md`.
   - **Headline (dev zero-edit):** LFM2.5-350M with LoRA 82.7% (0.84 s p50 on the eval laptop's CPU), Granite 4.0-H 80.0%, Qwen3-0.6B 79.1%, dense Granite 76.4%, Gemma 3 270M 52.7%, against the 29.1% bar and 0.9–1.8% for the same models prompted.
   - **Held-out templates:** 63.0% for LFM2.5-350M with LoRA, down from 89.2% on the rest; nearly every miss is the trade. A full fine-tune of the same model kept only 33.3% there (one comparison, also at a lower learning rate), so LoRA is the recipe going into #76.

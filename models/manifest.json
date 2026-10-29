@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "issue": 76,
+  "models": [
+    {
+      "id": "jobtrail-lfm2.5-350m-q4_k_m",
+      "displayName": "JobTrail 350M · Q4_K_M (default)",
+      "quant": "Q4_K_M",
+      "url": "https://huggingface.co/taleef/jobtrail-lfm2.5-350m-GGUF/resolve/5c3f01014520705037e427f87236954b09a36b04/jobtrail-lfm2.5-350m-Q4_K_M.gguf",
+      "file": "jobtrail-lfm2.5-350m-Q4_K_M.gguf",
+      "sha256": "43964f24546d42cac967ced15012060ef8ef728ea97b86315477ad4760dda446",
+      "bytes": 229314496,
+      "peakRamMB": 394,
+      "base": "LiquidAI/LFM2.5-350M",
+      "license": "LFM Open License v1.0",
+      "prompt": "fine-tuned-short",
+      "format": "compact",
+      "grammar": true,
+      "eval": {
+        "split": "test",
+        "n": 163,
+        "run": "jobtrail-lfm2.5-350m-q4km-test-825a0578",
+        "zeroEditRate": 0.7055214723926381,
+        "heldOutTemplates": {
+          "n": 49,
+          "zeroEdit": 24
+        },
+        "p50WallMs": 570.599,
+        "measuredOn": "Ryzen 9 8940HX laptop, CPU only, llama.cpp b9837"
+      }
+    },
+    {
+      "id": "jobtrail-lfm2.5-350m-q6_k",
+      "displayName": "JobTrail 350M · Q6_K (more accurate)",
+      "quant": "Q6_K",
+      "url": "https://huggingface.co/taleef/jobtrail-lfm2.5-350m-GGUF/resolve/5c3f01014520705037e427f87236954b09a36b04/jobtrail-lfm2.5-350m-Q6_K.gguf",
+      "file": "jobtrail-lfm2.5-350m-Q6_K.gguf",
+      "sha256": "a132ed1bcd7356c09828746801ac0e7df316766bec2dac4994c2f1b718c09c36",
+      "bytes": 293384128,
+      "peakRamMB": 454,
+      "base": "LiquidAI/LFM2.5-350M",
+      "license": "LFM Open License v1.0",
+      "prompt": "fine-tuned-short",
+      "format": "compact",
+      "grammar": true,
+      "eval": {
+        "split": "test",
+        "n": 163,
+        "run": "jobtrail-lfm2.5-350m-q6k-test-5e297b2b",
+        "zeroEditRate": 0.7300613496932515,
+        "heldOutTemplates": {
+          "n": 49,
+          "zeroEdit": 24
+        },
+        "p50WallMs": 713.044,
+        "measuredOn": "Ryzen 9 8940HX laptop, CPU only, llama.cpp b9837"
+      }
+    },
+    {
+      "id": "jobtrail-lfm2.5-350m-q8_0",
+      "displayName": "JobTrail 350M · Q8_0 (most accurate)",
+      "quant": "Q8_0",
+      "url": "https://huggingface.co/taleef/jobtrail-lfm2.5-350m-GGUF/resolve/5c3f01014520705037e427f87236954b09a36b04/jobtrail-lfm2.5-350m-Q8_0.gguf",
+      "file": "jobtrail-lfm2.5-350m-Q8_0.gguf",
+      "sha256": "8c850f8697b49c99bb9205cef24367700d702b46ad13733a8e911c3c5296ffc5",
+      "bytes": 379219904,
+      "peakRamMB": 536,
+      "base": "LiquidAI/LFM2.5-350M",
+      "license": "LFM Open License v1.0",
+      "prompt": "fine-tuned-short",
+      "format": "compact",
+      "grammar": true,
+      "eval": {
+        "split": "test",
+        "n": 163,
+        "run": "jobtrail-lfm2.5-350m-q8-test-81bb5ea8",
+        "zeroEditRate": 0.7361963190184049,
+        "heldOutTemplates": {
+          "n": 49,
+          "zeroEdit": 23
+        },
+        "p50WallMs": 905.17,
+        "measuredOn": "Ryzen 9 8940HX laptop, CPU only, llama.cpp b9837"
+      }
+    }
+  ]
+}

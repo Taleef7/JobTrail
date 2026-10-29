@@ -219,13 +219,14 @@ def tag_table(rows: list[dict], picks: list[str]) -> str:
 
 def templates_table(rows: list[dict], split: str) -> str:
     """Fine-tuned runs (#75) on the held-out templates against the rest."""
-    lines = ["| Model | MB | Zero-edit | Seen templates | Held-out templates | Held-out jobType "
-             "| p50 |", "| --- |" + " ---: |" * 6]  # fmt: skip
+    lines = ["| Model | MB | Grammar | Zero-edit | Seen templates | Held-out templates "
+             "| Held-out jobType | p50 |", "| --- | ---: | --- |" + " ---: |" * 5]  # fmt: skip
     for r in sorted(rows, key=lambda r: -r["metrics"]["zeroEditRate"]):
         if r["split"] != split or r["prompt"] != "fine-tuned-short":
             continue
         s, h, m = r["templates"]["seen"], r["templates"]["heldOut"], r["metrics"]
-        lines.append(f"| {r['model']} | {r['sizeMB']} | {pct(m['zeroEditRate'])} | "
+        grammar = "on" if r["grammar"] else "off"
+        lines.append(f"| {r['model']} | {r['sizeMB']} | {grammar} | {pct(m['zeroEditRate'])} | "
                      f"{s['zeroEdit']}/{s['n']} ({pct(s['zeroEdit'] / s['n'])}) | "
                      f"{h['zeroEdit']}/{h['n']} ({pct(h['zeroEdit'] / h['n'])}) | "
                      f"{h['jobType']}/{h['n']} | {m['p50WallMs'] / 1000:.2f} s |")  # fmt: skip

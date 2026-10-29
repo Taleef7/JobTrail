@@ -1,0 +1,31 @@
+{
+  "id": "jobtrail-lfm2.5-350m-q4km-free-test-d9b0e9c8",
+  "env": {
+    "runtime": "llama.cpp b9837-b3fed31b9",
+    "threads": null,
+    "host": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+      "python": "3.12.10"
+    },
+    "chatTemplateCaps": {
+      "supports_object_arguments": true,
+      "supports_parallel_tool_calls": true,
+      "supports_preserve_reasoning": true,
+      "supports_string_content": true,
+      "supports_system_role": true,
+      "supports_tool_calls": true,
+      "supports_tools": true,
+      "supports_typed_content": false
+    }
+  },
+  "started": "2026-10-29T18:57:58+00:00",
+  "status": "complete",
+  "finished": "2026-10-29T19:02:42+00:00",
+  "predictions": 163,
+  "usage": {
+    "promptTokens": 10900,
+    "outputTokens": 14078
+  }
+}

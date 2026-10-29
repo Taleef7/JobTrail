@@ -1,6 +1,6 @@
 # lfm2.5-350m-full-e1-q8 (#75): the pilot recipe for one epoch, trained on the #74 training set
 # (configs/train/lfm2.5-350m-full-e1.yaml, results/train/lfm2.5-350m-full-e1), exported to Q8_0 GGUF
-# with llama.cpp b9837's convert_hf_to_gguf.py. The file is local until #76 publishes it.
+# with llama.cpp b9837's convert_hf_to_gguf.py. The file stays local (#76 published a fresh F16 export and its quants).
 name: lfm2.5-350m-full-e1-q8
 provider: llamacpp
 model:
